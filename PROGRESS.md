@@ -265,6 +265,38 @@
 
 ---
 
+## Feature 15: Error Pages & SEO
+**Branch:** `feature/error-pages-seo`
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 15.1 | 404 Not Found page — branded with back-to-dashboard link | ✅ Done | |
+| 15.2 | 500/Error page — uses useRouteError for status + message | ✅ Done | |
+| 15.3 | ErrorBoundary — React class boundary for rendering crashes | ✅ Done | |
+| 15.4 | Catch-all route `*` → NotFoundPage | ✅ Done | |
+| 15.5 | SEO meta tags — title, description, keywords, OG, Twitter Card | ✅ Done | |
+| 15.6 | JSON-LD structured data — SoftwareApplication, WebSite, FAQPage | ✅ Done | |
+| 15.7 | robots.txt + sitemap.xml | ✅ Done | |
+| 15.8 | **TEST CHECKPOINT** — 70/70 tests + frontend build clean | ✅ Done | |
+
+---
+
+## Feature 16: Deployment & CLI
+**Branch:** `feature/deploy`
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 16.1 | Railway config — Procfile + railway.json | ✅ Done | |
+| 16.2 | Netlify config — netlify.toml + _redirects | ✅ Done | |
+| 16.3 | Backend production — PORT env, CORS, docs toggle | ✅ Done | |
+| 16.4 | Frontend API module — src/api.js with env-based URL | ✅ Done | |
+| 16.5 | Environment templates — .env.example for backend + frontend | ✅ Done | |
+| 16.6 | `proteus.py` CLI — run, install, test, build commands | ✅ Done | |
+| 16.7 | `proteus.bat` + `proteus.sh` — cross-platform wrappers | ✅ Done | |
+| 16.8 | **TEST CHECKPOINT** — 70/70 tests + frontend build clean | ✅ Done | |
+
+---
+
 ## Summary
 
 | Feature | Phases | Status |
@@ -284,7 +316,9 @@
 | 12 — Frontend: History | 8 | ✅ Complete |
 | 13 — UI Theme (Dark Mode) | 14 | ✅ Complete |
 | 14 — E2E Integration & Polish | 9 | ✅ Complete |
-| **Total** | **135** | **All Complete** |
+| 15 — Error Pages & SEO | 8 | ✅ Complete |
+| 16 — Deployment & CLI | 8 | ✅ Complete |
+| **Total** | **151** | **All Complete** |
 
 ---
 

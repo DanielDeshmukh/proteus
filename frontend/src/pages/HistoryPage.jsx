@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Layout } from "../components/Layout"
 import { Spinner } from "../components/Spinner"
+import { apiGet, apiDelete } from "../api"
 
 export function HistoryPage() {
   const [runs, setRuns] = useState([])
@@ -16,9 +17,7 @@ export function HistoryPage() {
   const fetchHistory = async () => {
     setLoading(true)
     try {
-      const res = await fetch("/api/history?limit=50")
-      if (!res.ok) throw new Error("Failed to fetch history")
-      const data = await res.json()
+      const data = await apiGet("/api/history?limit=50")
       setRuns(data.runs || [])
     } catch (err) {
       setError(err.message)
@@ -31,7 +30,7 @@ export function HistoryPage() {
     e.stopPropagation()
     if (!confirm("Delete this run?")) return
     try {
-      await fetch(`/api/history/${runId}`, { method: "DELETE" })
+      await apiDelete(`/api/history/${runId}`)
       setRuns(runs.filter((r) => r.id !== runId))
       if (selectedRun?.id === runId) setSelectedRun(null)
     } catch (err) {

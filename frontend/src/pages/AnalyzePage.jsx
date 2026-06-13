@@ -10,6 +10,7 @@ import { GapAnalysisDisplay } from "../components/GapAnalysisDisplay"
 import { RewriteDisplay } from "../components/RewriteDisplay"
 import { CoverLetterDisplay } from "../components/CoverLetterDisplay"
 import { ActionList } from "../components/ActionList"
+import { apiPost } from "../api"
 
 const pipelineStages = [
   { num: "01", name: "Parse", desc: "Extracts role, requirements, and seniority signal from the JD" },
@@ -51,17 +52,7 @@ export function AnalyzePage() {
         formData.append("resume_file", resume.value)
       }
 
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.detail || "Analysis failed")
-      }
-
-      const data = await response.json()
+      const data = await apiPost("/api/analyze", formData)
       setResult(data)
     } catch (err) {
       setError(err.message)

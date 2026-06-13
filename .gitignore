@@ -29,6 +29,7 @@ frontend/dist/
 # Database
 *.db
 *.sqlite
+backend/db/proteus.db
 
 # pytest
 .pytest_cache/
