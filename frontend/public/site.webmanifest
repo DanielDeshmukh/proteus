@@ -1,0 +1,16 @@
+{
+  "name": "PROTEUS",
+  "short_name": "PROTEUS",
+  "description": "AI-Powered Job Application Intelligence",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111315",
+  "theme_color": "#111315",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
