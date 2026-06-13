@@ -77,16 +77,16 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 4.1 | Set up embedding model integration — `nvidia/nv-embedqa-e5-v5` via NIM client | ⬜ Pending | |
-| 4.2 | Implement embedding computation for JD requirements and resume bullets | ⬜ Pending | |
-| 4.3 | Implement cosine similarity scoring | ⬜ Pending | |
-| 4.4 | Implement `agents/gap_analyzer.py` — rank requirements by gap size | ⬜ Pending | |
-| 4.5 | Define Pydantic models for gap analysis output | ⬜ Pending | |
-| 4.6 | Unit test: gap analyzer with known JD-resume pairs | ⬜ Pending | |
-| 4.7 | Unit test: semantic matching — "vector databases" matches "Qdrant-based retrieval" | ⬜ Pending | |
-| 4.8 | Unit test: edge cases — empty resume, perfect match | ⬜ Pending | |
-| 4.9 | Integration test: JD parse → resume parse → gap analysis pipeline | ⬜ Pending | |
-| 4.10 | **TEST CHECKPOINT** — Full unit + integration suite for gap analyzer | ⬜ Pending | |
+| 4.1 | Set up embedding model integration — `nvidia/nv-embedqa-e5-v5` via NIM client | ✅ Done | |
+| 4.2 | Implement embedding computation for JD requirements and resume bullets | ✅ Done | |
+| 4.3 | Implement cosine similarity scoring | ✅ Done | |
+| 4.4 | Implement `agents/gap_analyzer.py` — rank requirements by gap size | ✅ Done | |
+| 4.5 | Define Pydantic models for gap analysis output (`agents/gap_models.py`) | ✅ Done | |
+| 4.6 | Unit test: gap analyzer with known JD-resume pairs | ✅ Done | |
+| 4.7 | Unit test: semantic matching — cosine similarity correctness | ✅ Done | |
+| 4.8 | Unit test: edge cases — empty resume, no requirements | ✅ Done | |
+| 4.9 | Integration test: JD parse → resume parse → gap analysis pipeline | ✅ Done | |
+| 4.10 | **TEST CHECKPOINT** — Full unit + integration suite for gap analyzer | ✅ Done | 16/16 tests pass |
 
 ---
 
@@ -251,7 +251,7 @@
 | 1 — JD Parser Agent | 9 | ✅ Complete |
 | 2 — Resume Parser Agent | 9 | ⬜ Not Started |
 | 3 — File Parsers | 9 | ⬜ Not Started |
-| 4 — Gap Analyzer Agent | 10 | ⬜ Not Started |
+| 4 — Gap Analyzer Agent | 10 | ✅ Complete |
 | 5 — Rewrite Suggester | 8 | ⬜ Not Started |
 | 6 — Cover Letter Generator | 9 | ⬜ Not Started |
 | 7 — Pipeline & Aggregator | 10 | ⬜ Not Started |
