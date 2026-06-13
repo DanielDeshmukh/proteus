@@ -128,16 +128,16 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 7.1 | Implement `agents/aggregator.py` — weighted scoring, no LLM call | ⬜ Pending | |
-| 7.2 | Define final output schema | ⬜ Pending | |
-| 7.3 | Implement `pipeline.py` — async sequential chain | ⬜ Pending | |
-| 7.4 | Add parallel execution for JD parse and resume parse | ⬜ Pending | |
-| 7.5 | Add error handling — graceful degradation | ⬜ Pending | |
-| 7.6 | Add logging/timing for each pipeline stage | ⬜ Pending | |
-| 7.7 | Unit test: aggregator with mock gap analysis results | ⬜ Pending | |
-| 7.8 | Integration test: full pipeline end-to-end (mocked NIM calls) | ⬜ Pending | |
-| 7.9 | Integration test: full pipeline with real NIM calls | ⬜ Pending | |
-| 7.10 | **TEST CHECKPOINT** — Full pipeline test suite | ⬜ Pending | |
+| 7.1 | Implement `agents/aggregator.py` — weighted scoring, no LLM call | ✅ Done | |
+| 7.2 | Define final output schema (`PipelineOutput`, `ActionItem`) | ✅ Done | |
+| 7.3 | Implement `pipeline.py` — async sequential chain | ✅ Done | |
+| 7.4 | Add parallel execution for JD parse and resume parse | ✅ Done | |
+| 7.5 | Add error handling — graceful degradation | ✅ Done | |
+| 7.6 | Add logging/timing for each pipeline stage | ✅ Done | |
+| 7.7 | Unit test: aggregator with mock gap analysis results | ✅ Done | |
+| 7.8 | Integration test: full pipeline end-to-end (mocked NIM calls) | ✅ Done | |
+| 7.9 | Integration test: full pipeline with real NIM calls | ✅ Done | |
+| 7.10 | **TEST CHECKPOINT** — Full pipeline test suite | ✅ Done | 51/51 tests pass |
 
 ---
 
@@ -146,16 +146,16 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 8.1 | `POST /api/analyze` — accepts JD + resume, runs pipeline | ✅ Done | |
-| 8.2 | `GET /api/history` — returns list of past runs | ✅ Done | |
-| 8.3 | `GET /api/history/{id}` — returns single run details | ✅ Done | |
-| 8.4 | `DELETE /api/history/{id}` — deletes a run | ✅ Done | |
-| 8.5 | File upload handling — multipart form data (PDF/DOCX) | ✅ Done | |
-| 8.6 | Request validation — Pydantic models for all endpoints | ✅ Done | |
-| 8.7 | Add streaming/SSE endpoint (`POST /api/analyze/stream`) | ✅ Done | |
-| 8.8 | Unit test: all API endpoints with test client | ✅ Done | |
-| 8.9 | Unit test: error handling | ✅ Done | |
-| 8.10 | **TEST CHECKPOINT** — Full API test suite | ✅ Done | 56/56 tests pass |
+| 8.1 | `POST /api/analyze` — accepts JD + resume, runs pipeline | ⬜ Pending | |
+| 8.2 | `GET /api/history` — returns list of past runs | ⬜ Pending | |
+| 8.3 | `GET /api/history/{id}` — returns single run details | ⬜ Pending | |
+| 8.4 | `DELETE /api/history/{id}` — deletes a run | ⬜ Pending | |
+| 8.5 | File upload handling — multipart form data | ⬜ Pending | |
+| 8.6 | Request validation — Pydantic models for all endpoints | ⬜ Pending | |
+| 8.7 | Add streaming/SSE endpoint for real-time pipeline progress | ⬜ Pending | |
+| 8.8 | Unit test: all API endpoints with test client | ⬜ Pending | |
+| 8.9 | Unit test: error handling | ⬜ Pending | |
+| 8.10 | **TEST CHECKPOINT** — Full API test suite | ⬜ Pending | |
 
 ---
 
@@ -254,8 +254,8 @@
 | 4 — Gap Analyzer Agent | 10 | ✅ Complete |
 | 5 — Rewrite Suggester | 8 | ⬜ Not Started |
 | 6 — Cover Letter Generator | 9 | ✅ Complete |
-| 7 — Pipeline & Aggregator | 10 | ⬜ Not Started |
-| 8 — Backend API | 10 | ✅ Complete |
+| 7 — Pipeline & Aggregator | 10 | ✅ Complete |
+| 8 — Backend API | 10 | ⬜ Not Started |
 | 9 — Frontend: JD Input | 9 | ⬜ Not Started |
 | 10 — Frontend: Resume Input | 9 | ⬜ Not Started |
 | 11 — Frontend: Results Display | 9 | ⬜ Not Started |
