@@ -128,16 +128,16 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 7.1 | Implement `agents/aggregator.py` — weighted scoring, no LLM call | ⬜ Pending | |
-| 7.2 | Define final output schema | ⬜ Pending | |
-| 7.3 | Implement `pipeline.py` — async sequential chain | ⬜ Pending | |
-| 7.4 | Add parallel execution for JD parse and resume parse | ⬜ Pending | |
-| 7.5 | Add error handling — graceful degradation | ⬜ Pending | |
-| 7.6 | Add logging/timing for each pipeline stage | ⬜ Pending | |
-| 7.7 | Unit test: aggregator with mock gap analysis results | ⬜ Pending | |
-| 7.8 | Integration test: full pipeline end-to-end (mocked NIM calls) | ⬜ Pending | |
-| 7.9 | Integration test: full pipeline with real NIM calls | ⬜ Pending | |
-| 7.10 | **TEST CHECKPOINT** — Full pipeline test suite | ⬜ Pending | |
+| 7.1 | Implement `agents/aggregator.py` — weighted scoring, no LLM call | ✅ Done | |
+| 7.2 | Define final output schema (`PipelineOutput`, `ActionItem`) | ✅ Done | |
+| 7.3 | Implement `pipeline.py` — async sequential chain | ✅ Done | |
+| 7.4 | Add parallel execution for JD parse and resume parse | ✅ Done | |
+| 7.5 | Add error handling — graceful degradation | ✅ Done | |
+| 7.6 | Add logging/timing for each pipeline stage | ✅ Done | |
+| 7.7 | Unit test: aggregator with mock gap analysis results | ✅ Done | |
+| 7.8 | Integration test: full pipeline end-to-end (mocked NIM calls) | ✅ Done | |
+| 7.9 | Integration test: full pipeline with real NIM calls | ✅ Done | |
+| 7.10 | **TEST CHECKPOINT** — Full pipeline test suite | ✅ Done | 51/51 tests pass |
 
 ---
 
@@ -254,7 +254,7 @@
 | 4 — Gap Analyzer Agent | 10 | ✅ Complete |
 | 5 — Rewrite Suggester | 8 | ⬜ Not Started |
 | 6 — Cover Letter Generator | 9 | ✅ Complete |
-| 7 — Pipeline & Aggregator | 10 | ⬜ Not Started |
+| 7 — Pipeline & Aggregator | 10 | ✅ Complete |
 | 8 — Backend API | 10 | ⬜ Not Started |
 | 9 — Frontend: JD Input | 9 | ⬜ Not Started |
 | 10 — Frontend: Resume Input | 9 | ⬜ Not Started |
