@@ -79,7 +79,7 @@ def analyze_gaps(jd: JDStructured, resume: ResumeStructured) -> GapAnalysis:
     res_embeddings = embeddings[len(requirements) :]
 
     gaps: list[GapItem] = []
-    for i, (req_text, category) in enumerate(reqlications):
+    for i, (req_text, category) in enumerate(requirements):
         best_score = 0.0
         best_evidence = None
         for j, res_text in enumerate(resume_evidence):

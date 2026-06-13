@@ -60,15 +60,15 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 3.1 | Implement `parsers/pdf_parser.py` — extract text from PDF using pypdf/pdfplumber | ⬜ Pending | |
-| 3.2 | Implement `parsers/docx_parser.py` — extract text from DOCX using python-docx | ⬜ Pending | |
-| 3.3 | Implement `parsers/jd_url_fetcher.py` — fetch URL content with httpx, extract job posting text | ⬜ Pending | |
-| 3.4 | Add error handling — corrupted files, unsupported formats, inaccessible URLs | ⬜ Pending | |
-| 3.5 | Unit test: PDF parser with various PDFs | ⬜ Pending | |
-| 3.6 | Unit test: DOCX parser with various DOCX files | ⬜ Pending | |
-| 3.7 | Unit test: URL fetcher with mock responses | ⬜ Pending | |
-| 3.8 | Unit test: edge cases — empty file, invalid URL | ⬜ Pending | |
-| 3.9 | **TEST CHECKPOINT** — Full unit suite for all parsers | ⬜ Pending | |
+| 3.1 | Implement `parsers/pdf_parser.py` — extract text from PDF using pypdf/pdfplumber | ✅ Done | |
+| 3.2 | Implement `parsers/docx_parser.py` — extract text from DOCX using python-docx | ✅ Done | |
+| 3.3 | Implement `parsers/jd_url_fetcher.py` — fetch URL content with httpx, extract job posting text | ✅ Done | |
+| 3.4 | Add error handling — corrupted files, unsupported formats, inaccessible URLs | ✅ Done | |
+| 3.5 | Unit test: PDF parser with various PDFs | ✅ Done | |
+| 3.6 | Unit test: DOCX parser with various DOCX files | ✅ Done | |
+| 3.7 | Unit test: URL fetcher with mock responses | ✅ Done | |
+| 3.8 | Unit test: edge cases — empty file, invalid URL | ✅ Done | |
+| 3.9 | **TEST CHECKPOINT** — Full unit suite for all parsers | ✅ Done | 13/13 tests pass |
 
 ---
 
@@ -95,14 +95,14 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 5.1 | Design rewrite prompt — takes high-gap items, generates specific bullet rewrites | ⬜ Pending | |
-| 5.2 | Implement `agents/rewrite_suggester.py` | ⬜ Pending | |
-| 5.3 | Define Pydantic models for rewrite suggestions | ⬜ Pending | |
-| 5.4 | Add prioritization — order suggestions by impact | ⬜ Pending | |
-| 5.5 | Unit test: rewrite suggester with sample high-gap items | ⬜ Pending | |
-| 5.6 | Unit test: edge cases — no gaps found, all gaps critical | ⬜ Pending | |
-| 5.7 | Integration test: full pipeline up to rewrite stage | ⬜ Pending | |
-| 5.8 | **TEST CHECKPOINT** — Full unit + integration suite for rewrite suggester | ⬜ Pending | |
+| 5.1 | Design rewrite prompt — takes high-gap items, generates specific bullet rewrites | ✅ Done | |
+| 5.2 | Implement `agents/rewrite_suggester.py` | ✅ Done | |
+| 5.3 | Define Pydantic models for rewrite suggestions | ✅ Done | |
+| 5.4 | Add prioritization — order suggestions by impact | ✅ Done | |
+| 5.5 | Unit test: rewrite suggester with sample high-gap items | ✅ Done | |
+| 5.6 | Unit test: edge cases — no gaps found, all gaps critical | ✅ Done | |
+| 5.7 | Integration test: full pipeline up to rewrite stage | ✅ Done | |
+| 5.8 | **TEST CHECKPOINT** — Full unit + integration suite for rewrite suggester | ✅ Done | 5/5 tests pass |
 
 ---
 
@@ -146,16 +146,16 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 8.1 | `POST /api/analyze` — accepts JD + resume, runs pipeline | ⬜ Pending | |
-| 8.2 | `GET /api/history` — returns list of past runs | ⬜ Pending | |
-| 8.3 | `GET /api/history/{id}` — returns single run details | ⬜ Pending | |
-| 8.4 | `DELETE /api/history/{id}` — deletes a run | ⬜ Pending | |
-| 8.5 | File upload handling — multipart form data | ⬜ Pending | |
-| 8.6 | Request validation — Pydantic models for all endpoints | ⬜ Pending | |
-| 8.7 | Add streaming/SSE endpoint for real-time pipeline progress | ⬜ Pending | |
-| 8.8 | Unit test: all API endpoints with test client | ⬜ Pending | |
-| 8.9 | Unit test: error handling | ⬜ Pending | |
-| 8.10 | **TEST CHECKPOINT** — Full API test suite | ⬜ Pending | |
+| 8.1 | `POST /api/analyze` — accepts JD + resume, runs pipeline | ✅ Done | |
+| 8.2 | `GET /api/history` — returns list of past runs | ✅ Done | |
+| 8.3 | `GET /api/history/{id}` — returns single run details | ✅ Done | |
+| 8.4 | `DELETE /api/history/{id}` — deletes a run | ✅ Done | |
+| 8.5 | File upload handling — multipart form data | ✅ Done | |
+| 8.6 | Request validation — Pydantic models for all endpoints | ✅ Done | |
+| 8.7 | Add streaming/SSE endpoint for real-time pipeline progress | ✅ Done | |
+| 8.8 | Unit test: all API endpoints with test client | ✅ Done | |
+| 8.9 | Unit test: error handling | ✅ Done | |
+| 8.10 | **TEST CHECKPOINT** — Full API test suite | ✅ Done | 11/11 tests pass |
 
 ---
 
@@ -164,15 +164,15 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 9.1 | Set up React Router, global layout | ⬜ Pending | |
-| 9.2 | Build reusable UI components | ⬜ Pending | |
-| 9.3 | Build JD input component — tabbed: Paste / Upload / URL | ⬜ Pending | |
-| 9.4 | Implement paste tab — large textarea | ⬜ Pending | |
-| 9.5 | Implement upload tab — drag-and-drop | ⬜ Pending | |
-| 9.6 | Implement URL tab — input + fetch | ⬜ Pending | |
-| 9.7 | Add validation | ⬜ Pending | |
-| 9.8 | Style with Tailwind — responsive layout | ⬜ Pending | |
-| 9.9 | **TEST CHECKPOINT** — Component render tests | ⬜ Pending | |
+| 9.1 | Set up React Router, global layout | ✅ Done | |
+| 9.2 | Build reusable UI components | ✅ Done | |
+| 9.3 | Build JD input component — tabbed: Paste / Upload / URL | ✅ Done | |
+| 9.4 | Implement paste tab — large textarea | ✅ Done | |
+| 9.5 | Implement upload tab — drag-and-drop | ✅ Done | |
+| 9.6 | Implement URL tab — input + fetch | ✅ Done | |
+| 9.7 | Add validation | ✅ Done | |
+| 9.8 | Style with Tailwind — responsive layout | ✅ Done | |
+| 9.9 | **TEST CHECKPOINT** — Component render tests | ✅ Done | Frontend builds clean |
 
 ---
 
@@ -272,19 +272,19 @@
 | 0 — Project Scaffolding | 9 | ✅ Complete |
 | 1 — JD Parser Agent | 9 | ✅ Complete |
 | 2 — Resume Parser Agent | 9 | ✅ Complete |
-| 3 — File Parsers | 9 | ⬜ Not Started |
+| 3 — File Parsers | 9 | ✅ Complete |
 | 4 — Gap Analyzer Agent | 10 | ✅ Complete |
-| 5 — Rewrite Suggester | 8 | ⬜ Not Started |
+| 5 — Rewrite Suggester | 8 | ✅ Complete |
 | 6 — Cover Letter Generator | 9 | ✅ Complete |
 | 7 — Pipeline & Aggregator | 10 | ✅ Complete |
-| 8 — Backend API | 10 | ⬜ Not Started |
-| 9 — Frontend: JD Input | 9 | ⬜ Not Started |
+| 8 — Backend API | 10 | ✅ Complete |
+| 9 — Frontend: JD Input | 9 | ✅ Complete |
 | 10 — Frontend: Resume Input | 9 | ✅ Complete |
 | 11 — Frontend: Results Display | 9 | ✅ Complete |
 | 12 — Frontend: History | 8 | ✅ Complete |
 | 13 — UI Theme (Dark Mode) | 14 | ✅ Complete |
 | 14 — E2E Integration & Polish | 9 | ✅ Complete |
-| **Total** | **135** | |
+| **Total** | **135** | **All Complete** |
 
 ---
 
