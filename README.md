@@ -16,6 +16,7 @@ PROTEUS is a JD-aware application toolkit that takes a single job description �
 - [Features](#features)
 - [Project Structure](#project-structure)
 - [Setup](#setup)
+- [Testing](#testing)
 - [Roadmap](#roadmap)
 - [License](#license)
 
@@ -59,91 +60,163 @@ Every handoff between tools loses context. The cover letter tool has no idea wha
 
 ## The Agent Pipeline
 
-PROTEUS is built as a five-stage pipeline (six including the cover letter stage), where each stage has one narrow job and passes structured output to the next.
+PROTEUS is built as a five-stage pipeline (six including the score aggregation), where each stage has one narrow job and passes structured output to the next.
 
 | # | Agent | Job | NIM Model |
 |---|-------|-----|-----------|
-| 1 | **JD Parser** | Extracts structured requirements from the job description: hard skills, soft skills, seniority signals, domain keywords, and verbatim "ATS-bait" terms (specific tools/frameworks named in the posting) | `mistral-7b-instruct-v0.3` / `phi-3-mini-128k-instruct` |
-| 2 | **Resume Parser** | Breaks the resume into structured, taggable units — skills, project descriptions, certifications, experience bullets — rather than treating it as one blob of text | `mistral-7b-instruct-v0.3` / `phi-3-mini-128k-instruct` |
-| 3 | **Semantic Gap Analyzer** | Embeds both the JD requirements and resume bullets and computes similarity — so "experience with vector databases" correctly matches "implemented Qdrant-based retrieval" even with zero literal keyword overlap. Outputs a ranked list of requirements by gap size | `nvidia/nv-embedqa-e5-v5` (no LLM call — pure embedding + cosine similarity) |
-| 4 | **Rewrite Suggester** | For high-gap items, generates specific rewrite suggestions for existing bullets, or flags experience that exists but isn't surfaced | `llama-3.3-70b-instruct` / `qwen2.5-coder-32b-instruct` (for technical roles) |
-| 5 | **Cover Letter Generator** | Drafts a cover letter using the *same* JD structure, resume structure, and gap analysis as agent 4 — so the cover letter and resume rewrites tell a consistent story instead of being generated independently | `llama-3.3-70b-instruct` |
+| 1 | **JD Parser** | Extracts structured requirements from the job description: hard skills, soft skills, seniority signals, domain keywords, and verbatim "ATS-bait" terms | `mistral-7b-instruct-v0.3` |
+| 2 | **Resume Parser** | Breaks the resume into structured, taggable units — skills, project descriptions, certifications, experience bullets | `mistral-7b-instruct-v0.3` |
+| 3 | **Semantic Gap Analyzer** | Embeds both JD requirements and resume bullets, computes cosine similarity. Outputs a ranked list of requirements by gap size | `nvidia/nv-embedqa-e5-v5` (embedding + cosine similarity) |
+| 4 | **Rewrite Suggester** | For high-gap items, generates specific rewrite suggestions for existing bullets, or flags experience that exists but isn't surfaced | `meta/llama-3.3-70b-instruct` |
+| 5 | **Cover Letter Generator** | Drafts a cover letter using the same JD structure, resume structure, and gap analysis as agent 4 | `meta/llama-3.3-70b-instruct` |
 | 6 | **Score Aggregator** | Rolls everything into an overall match score and a prioritized action list. Pure code — weighted scoring, no LLM call needed | — |
 
-Agents run as a plain sequential async chain (no LangGraph) since the pipeline is linear with no branching — JD parse and resume parse can run in parallel, then gap analysis → rewrite + cover letter → aggregation.
+Agents run as a plain sequential async chain (no LangGraph) since the pipeline is linear with no branching — JD parse and resume parse run in parallel, then gap analysis → rewrite + cover letter → aggregation.
 
 ## Tech Stack
 
-- **Frontend:** React (Vite) + Tailwind
-- **Backend:** FastAPI
-- **LLM Inference:** NVIDIA NIM (OpenAI-compatible API — `base_url="https://integrate.api.nvidia.com/v1"`)
+- **Frontend:** React 19 (Vite) + Tailwind CSS v4 — dark theme with Fraunces, Inter, JetBrains Mono
+- **Backend:** FastAPI + Python 3.11+
+- **LLM Inference:** NVIDIA NIM (OpenAI-compatible API)
 - **Embeddings:** `nvidia/nv-embedqa-e5-v5`
-- **File Parsing:** `pypdf` / `pdfplumber` (PDF), `python-docx` (DOCX)
-- **JD URL Ingestion:** `httpx` + content extraction
-- **Storage:** SQLite (local — application history and run logs, no external DB dependency)
+- **File Parsing:** `pypdf` / `pdfplumber` (PDF), `python-docx` (DOCX), `BeautifulSoup` (URL fetch)
+- **Storage:** SQLite via `aiosqlite` (async, local — no external DB dependency)
+- **Testing:** pytest (70 tests) + Vitest
 
 ## Features
 
 - **Three ways to input a JD:** paste text, upload a file, or paste a job posting URL
 - **Two ways to input a resume:** paste text or upload PDF/DOCX
-- **Semantic match scoring** — goes beyond keyword matching using embedding similarity
-- **Gap analysis report** — ranked list of what's missing and how badly
-- **Tailored rewrite suggestions** — specific, bullet-level, JD-aware
-- **Consistent cover letter generation** — written from the same context as the resume analysis, not in isolation
-- **Application history** — every run logged locally to SQLite for tracking match scores and outcomes over time
+- **Semantic match scoring** — embedding-based similarity, not just keyword matching
+- **Gap analysis report** — ranked by impact, with severity badges (critical/moderate/minor)
+- **Tailored rewrite suggestions** — bullet-level, JD-aware, before/after comparison
+- **Consistent cover letter** — written from the same context as the resume analysis
+- **Application history** — every run logged to SQLite, searchable with score trend tracking
+- **Streaming API** — SSE endpoint for real-time pipeline progress
+- **Dark theme UI** — gold accent design system with responsive layout
 
 ## Project Structure
 
 ```
 proteus/
 ├── backend/
-│   ├── main.py                 # FastAPI app entrypoint
+│   ├── main.py                     # FastAPI app, all API endpoints
+│   ├── pipeline.py                 # Async pipeline orchestrator
+│   ├── nim_client.py               # NIM API wrapper (OpenAI-compatible)
 │   ├── agents/
-│   │   ├── jd_parser.py
-│   │   ├── resume_parser.py
-│   │   ├── gap_analyzer.py
-│   │   ├── rewrite_suggester.py
-│   │   ├── cover_letter.py
-│   │   └── aggregator.py
-│   ├── pipeline.py             # orchestrates the async chain
+│   │   ├── jd_models.py            # JDStructured Pydantic model
+│   │   ├── jd_parser.py            # JD parsing agent
+│   │   ├── resume_models.py        # ResumeStructured Pydantic model
+│   │   ├── resume_parser.py        # Resume parsing agent
+│   │   ├── gap_models.py           # GapItem, GapAnalysis, MatchStatus
+│   │   ├── gap_analyzer.py         # Embedding-based gap analysis
+│   │   ├── rewrite_models.py       # RewriteSuggestion, RewriteOutput
+│   │   ├── rewrite_suggester.py    # LLM rewrite engine
+│   │   ├── cover_letter_models.py  # CoverLetterOutput, Tone
+│   │   ├── cover_letter.py         # Cover letter generator
+│   │   └── aggregator.py           # Weighted scoring, ActionItem
 │   ├── parsers/
-│   │   ├── pdf_parser.py
-│   │   ├── docx_parser.py
-│   │   └── jd_url_fetcher.py
+│   │   ├── pdf_parser.py           # PDF text extraction
+│   │   ├── docx_parser.py          # DOCX text extraction
+│   │   └── jd_url_fetcher.py       # URL fetch + HTML parsing
 │   ├── db/
-│   │   └── sqlite_store.py
-│   └── nim_client.py           # NIM API wrapper
+│   │   └── sqlite_store.py         # SQLite CRUD for application runs
+│   ├── tests/
+│   │   ├── test_api.py             # API endpoint tests
+│   │   ├── test_e2e.py             # End-to-end flow tests (8 tests)
+│   │   ├── test_jd_models.py
+│   │   ├── test_resume_models.py
+│   │   ├── test_gap_analyzer.py
+│   │   ├── test_rewrite_suggester.py
+│   │   ├── test_cover_letter.py
+│   │   ├── test_aggregator.py
+│   │   ├── test_db.py
+│   │   ├── test_health.py
+│   │   ├── test_pdf_parser.py
+│   │   ├── test_docx_parser.py
+│   │   └── test_url_fetcher.py
+│   └── pyproject.toml
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── Layout.jsx          # Topbar, nav, brand
+│   │   │   ├── Button.jsx          # Gold gradient primary
+│   │   │   ├── Card.jsx            # Dark surface cards
+│   │   │   ├── Tabs.jsx            # Pill-style tabs
+│   │   │   ├── TextArea.jsx        # Dark input
+│   │   │   ├── FileUpload.jsx      # Drag & drop
+│   │   │   ├── Spinner.jsx         # Gold spinner
+│   │   │   ├── Toast.jsx           # Notifications
+│   │   │   ├── JDInput.jsx         # JD input panel
+│   │   │   ├── ResumeInput.jsx     # Resume input panel
+│   │   │   ├── ScoreDisplay.jsx    # SVG gauge + breakdown
+│   │   │   ├── GapAnalysisDisplay.jsx
+│   │   │   ├── RewriteDisplay.jsx
+│   │   │   ├── CoverLetterDisplay.jsx
+│   │   │   └── ActionList.jsx
 │   │   ├── pages/
-│   │   └── App.jsx
-│   └── ...
+│   │   │   ├── AnalyzePage.jsx     # Main dashboard
+│   │   │   └── HistoryPage.jsx     # History table
+│   │   ├── App.jsx
+│   │   └── index.css               # Theme variables, fonts
+│   └── vite.config.js
+├── PROGRESS.md                     # Development tracker
+├── proteus-ui-preview.html         # Design reference
 └── README.md
 ```
 
 ## Setup
 
-```bash
-# Backend
-cd backend
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt --break-system-packages
-export NVIDIA_NIM_API_KEY=your_key_here
-uvicorn main:app --reload
+### Backend
 
-# Frontend
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Set your NVIDIA NIM API key
+export NVIDIA_NIM_API_KEY=your_key_here   # Windows: set NVIDIA_NIM_API_KEY=your_key_here
+
+# Run the server
+uvicorn main:app --reload
+# Backend runs on http://localhost:8000
+```
+
+### Frontend
+
+```bash
 cd frontend
 npm install
 npm run dev
+# Frontend runs on http://localhost:5173 (proxies /api to :8000)
 ```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NVIDIA_NIM_API_KEY` | Yes | Your NVIDIA NIM API key for LLM inference |
+
+## Testing
+
+```bash
+cd backend
+python -m pytest tests/ -v          # Run all 70 tests
+python -m pytest tests/test_e2e.py -v  # Run E2E tests only
+```
+
+Test coverage:
+- **Unit tests:** Models, gap analyzer, rewrite suggester, cover letter, aggregator, parsers
+- **API tests:** Health, validation, history CRUD, streaming
+- **E2E tests:** Full flow (paste JD + resume → results → history), URL-based JD, error scenarios, file upload, pagination
 
 ## Roadmap
 
-- **v1** — Core pipeline + web UI: JD/resume ingestion, scoring, gap analysis, rewrite suggestions, cover letter generation
-- **v2** — Application tracking dashboard: visualize match scores and outcomes across all logged runs over time
-- **v3** — Browser extension for one-click JD capture from job board pages
-- **Stretch** — Company/role context enrichment (stage, focus areas) to adjust cover letter tone per target company; multi-resume version management for different role tracks
+- **v1 (current)** — Core pipeline + dark theme web UI + 70 tests
+- **v2** — Browser extension for one-click JD capture from job board pages
+- **v3** — Multi-resume version management for different role tracks
+- **Stretch** — Company/role context enrichment to adjust cover letter tone per target
 
 ## License
 
