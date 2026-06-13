@@ -14,23 +14,33 @@ def log(svc, msg, c=C): print(f"{c}{B}[{svc}]{W} {msg}")
 def nt(): return os.name == "nt"
 def npm(): return "npm.cmd" if nt() else "npm"
 
+def be_python():
+    """Find the backend venv Python."""
+    if nt():
+        venv_py = BACKEND / "venv" / "Scripts" / "python.exe"
+    else:
+        venv_py = BACKEND / "venv" / "bin" / "python"
+    if venv_py.exists():
+        return str(venv_py)
+    return sys.executable
+
 def run_be():
-    log("proteus", f"Backend  → http://localhost:{BE_PORT}")
-    return subprocess.Popen([sys.executable, "-m", "uvicorn", "main:app", "--reload", "--port", str(BE_PORT)], cwd=BACKEND, shell=nt())
+    log("proteus", f"Backend  -> http://localhost:{BE_PORT}")
+    return subprocess.Popen([be_python(), "-m", "uvicorn", "main:app", "--reload", "--port", str(BE_PORT)], cwd=BACKEND, shell=nt())
 
 def run_fe():
-    log("proteus", f"Frontend → http://localhost:{FE_PORT}")
+    log("proteus", f"Frontend -> http://localhost:{FE_PORT}")
     return subprocess.Popen([npm(), "run", "dev", "--", "--port", str(FE_PORT)], cwd=FRONTEND, shell=nt())
 
 def install():
     log("proteus", "Installing backend...")
-    subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], cwd=BACKEND, check=True)
+    subprocess.run([be_python(), "-m", "pip", "install", "-r", "requirements.txt"], cwd=BACKEND, check=True)
     log("proteus", "Installing frontend...")
     subprocess.run([npm(), "install"], cwd=FRONTEND, check=True)
     log("proteus", f"{G}Done.{W}")
 
 def test():
-    r1 = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q"], cwd=BACKEND)
+    r1 = subprocess.run([be_python(), "-m", "pytest", "tests/", "-q"], cwd=BACKEND)
     r2 = subprocess.run([npm(), "run", "build"], cwd=FRONTEND)
     if r1.returncode == 0 and r2.returncode == 0:
         log("proteus", f"{G}All passed.{W}")

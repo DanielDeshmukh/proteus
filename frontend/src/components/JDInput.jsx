@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Tabs } from "./Tabs"
 import { TextArea } from "./TextArea"
 import { FileUpload } from "./FileUpload"
@@ -15,6 +15,20 @@ export function JDInput({ onJDReady }) {
   const [jdFile, setJdFile] = useState(null)
   const [jdUrl, setJdUrl] = useState("")
   const [errors, setErrors] = useState({})
+
+  useEffect(() => {
+    if (activeTab === "paste" && jdText.trim()) {
+      onJDReady({ type: "text", value: jdText })
+    } else if (activeTab === "upload" && jdFile) {
+      onJDReady({ type: "file", value: jdFile })
+    } else if (activeTab === "url" && jdUrl.trim() && jdUrl.startsWith("http")) {
+      onJDReady({ type: "url", value: jdUrl })
+    }
+  }, [activeTab, jdText, jdFile, jdUrl])
+
+  useEffect(() => {
+    onJDReady(null)
+  }, [activeTab])
 
   const validate = () => {
     const newErrors = {}

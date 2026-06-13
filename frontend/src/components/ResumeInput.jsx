@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Tabs } from "./Tabs"
 import { TextArea } from "./TextArea"
 import { FileUpload } from "./FileUpload"
@@ -13,6 +13,18 @@ export function ResumeInput({ onResumeReady }) {
   const [resumeText, setResumeText] = useState("")
   const [resumeFile, setResumeFile] = useState(null)
   const [errors, setErrors] = useState({})
+
+  useEffect(() => {
+    if (activeTab === "paste" && resumeText.trim()) {
+      onResumeReady({ type: "text", value: resumeText })
+    } else if (activeTab === "upload" && resumeFile) {
+      onResumeReady({ type: "file", value: resumeFile })
+    }
+  }, [activeTab, resumeText, resumeFile])
+
+  useEffect(() => {
+    onResumeReady(null)
+  }, [activeTab])
 
   const validate = () => {
     const newErrors = {}
