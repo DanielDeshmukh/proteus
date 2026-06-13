@@ -1,3 +1,4 @@
+import os
 import json
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +15,10 @@ from parsers.jd_url_fetcher import fetch_jd_from_url
 from agents.cover_letter_models import Tone
 
 
+ENV = os.environ.get("PROTEUS_ENV", "development")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
@@ -22,18 +27,29 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="PROTEUS API",
-    description="JD-aware application toolkit",
-    version="0.1.0",
+    description="JD-aware application toolkit — semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD.",
+    version="1.0.0",
     lifespan=lifespan,
+    docs_url="/api/docs" if ENV == "development" else None,
+    redoc_url="/api/redoc" if ENV == "development" else None,
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if ENV == "development":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173", "http://localhost:3000", "http://localhost:8888"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[FRONTEND_URL],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 class AnalyzeRequest(BaseModel):
@@ -57,7 +73,7 @@ class AnalyzeResponse(BaseModel):
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "service": "proteus-backend"}
+    return {"status": "ok", "service": "proteus-backend", "env": ENV}
 
 
 @app.post("/api/analyze")
