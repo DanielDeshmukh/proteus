@@ -7,7 +7,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://proteus-api.up.railway.app/api/:splat"
+  to = "https://proteus-production-4212.up.railway.app/api/:splat"
   status = 200
   force = false
 
