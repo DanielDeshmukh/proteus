@@ -9,15 +9,15 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 0.1 | Initialize backend Python project — `pyproject.toml`, virtual env, `requirements.txt` with FastAPI, uvicorn, httpx, pypdf, pdfplumber, python-docx | ⬜ Pending | |
-| 0.2 | Initialize frontend React project — Vite + Tailwind, clean boilerplate | ⬜ Pending | |
-| 0.3 | Create backend directory structure: `agents/`, `parsers/`, `db/`, `main.py`, `pipeline.py`, `nim_client.py` | ⬜ Pending | |
-| 0.4 | Create frontend directory structure: `components/`, `pages/`, `App.jsx` | ⬜ Pending | |
-| 0.5 | Set up NVIDIA NIM client wrapper (`nim_client.py`) — OpenAI-compatible base URL, API key from env, request helpers for chat completions and embeddings | ⬜ Pending | |
-| 0.6 | Set up SQLite store (`db/sqlite_store.py`) — schema for application runs, match scores, timestamps | ⬜ Pending | |
-| 0.7 | Configure CORS, basic health-check endpoint in `main.py`, verify backend starts | ⬜ Pending | |
-| 0.8 | Configure Vite proxy to backend, verify frontend starts and can reach backend | ⬜ Pending | |
-| 0.9 | **TEST CHECKPOINT** — Smoke test: backend health endpoint returns 200, frontend renders, NIM client connects | ⬜ Pending | |
+| 0.1 | Initialize backend Python project — `pyproject.toml`, virtual env, `requirements.txt` with FastAPI, uvicorn, httpx, pypdf, pdfplumber, python-docx | ✅ Done | |
+| 0.2 | Initialize frontend React project — Vite + Tailwind, clean boilerplate | ✅ Done | |
+| 0.3 | Create backend directory structure: `agents/`, `parsers/`, `db/`, `main.py`, `pipeline.py`, `nim_client.py` | ✅ Done | |
+| 0.4 | Create frontend directory structure: `components/`, `pages/`, `App.jsx` | ✅ Done | |
+| 0.5 | Set up NVIDIA NIM client wrapper (`nim_client.py`) — OpenAI-compatible base URL, API key from env, request helpers for chat completions and embeddings | ✅ Done | |
+| 0.6 | Set up SQLite store (`db/sqlite_store.py`) — schema for application runs, match scores, timestamps | ✅ Done | |
+| 0.7 | Configure CORS, basic health-check endpoint in `main.py`, verify backend starts | ✅ Done | |
+| 0.8 | Configure Vite proxy to backend, verify frontend starts and can reach backend | ✅ Done | |
+| 0.9 | **TEST CHECKPOINT** — Smoke test: backend health endpoint returns 200, frontend renders, NIM client connects | ✅ Done | 5/5 tests pass |
 
 ---
 
@@ -247,7 +247,7 @@
 
 | Feature | Phases | Status |
 |---------|--------|--------|
-| 0 — Project Scaffolding | 9 | ⬜ Not Started |
+| 0 — Project Scaffolding | 9 | ✅ Complete |
 | 1 — JD Parser Agent | 9 | ⬜ Not Started |
 | 2 — Resume Parser Agent | 9 | ⬜ Not Started |
 | 3 — File Parsers | 9 | ⬜ Not Started |
