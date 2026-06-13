@@ -111,15 +111,15 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 6.1 | Design cover letter prompt — uses same JD structure + resume structure + gap analysis | ⬜ Pending | |
-| 6.2 | Implement `agents/cover_letter.py` | ⬜ Pending | |
-| 6.3 | Define Pydantic models for cover letter output | ⬜ Pending | |
-| 6.4 | Add tone control — professional, enthusiastic, concise variants | ⬜ Pending | |
-| 6.5 | Unit test: cover letter generator with different JD/resume combinations | ⬜ Pending | |
-| 6.6 | Unit test: verify cover letter references actual resume experience | ⬜ Pending | |
-| 6.7 | Unit test: edge cases — very short JD, no experience to highlight | ⬜ Pending | |
-| 6.8 | Integration test: full pipeline through cover letter generation | ⬜ Pending | |
-| 6.9 | **TEST CHECKPOINT** — Full unit + integration suite for cover letter | ⬜ Pending | |
+| 6.1 | Design cover letter prompt — uses same JD structure + resume structure + gap analysis | ✅ Done | |
+| 6.2 | Implement `agents/cover_letter.py` | ✅ Done | |
+| 6.3 | Define Pydantic models for cover letter output (`agents/cover_letter_models.py`) | ✅ Done | |
+| 6.4 | Add tone control — professional, enthusiastic, concise variants | ✅ Done | |
+| 6.5 | Unit test: cover letter generator with different JD/resume combinations | ✅ Done | |
+| 6.6 | Unit test: verify cover letter references actual resume experience | ✅ Done | |
+| 6.7 | Unit test: edge cases — very short JD, no experience to highlight | ✅ Done | |
+| 6.8 | Integration test: full pipeline through cover letter generation | ✅ Done | |
+| 6.9 | **TEST CHECKPOINT** — Full unit + integration suite for cover letter | ✅ Done | 40/40 tests pass |
 
 ---
 
@@ -253,7 +253,7 @@
 | 3 — File Parsers | 9 | ⬜ Not Started |
 | 4 — Gap Analyzer Agent | 10 | ✅ Complete |
 | 5 — Rewrite Suggester | 8 | ⬜ Not Started |
-| 6 — Cover Letter Generator | 9 | ⬜ Not Started |
+| 6 — Cover Letter Generator | 9 | ✅ Complete |
 | 7 — Pipeline & Aggregator | 10 | ⬜ Not Started |
 | 8 — Backend API | 10 | ⬜ Not Started |
 | 9 — Frontend: JD Input | 9 | ⬜ Not Started |
