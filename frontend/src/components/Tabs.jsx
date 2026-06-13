@@ -1,14 +1,33 @@
 export function Tabs({ tabs, activeTab, onTabChange }) {
   return (
-    <div className="flex border-b border-gray-200">
+    <div
+      style={{
+        display: "flex",
+        gap: "4px",
+        background: "var(--surface-sunken)",
+        borderRadius: "var(--radius-md)",
+        padding: "3px",
+        border: "1px solid var(--border)",
+      }}
+    >
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === tab.id
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-          }`}
+          style={{
+            fontFamily: "var(--font-sans)",
+            fontSize: "12.5px",
+            fontWeight: 500,
+            color: activeTab === tab.id ? "var(--surface-sunken)" : "var(--text-soft)",
+            background: activeTab === tab.id ? "var(--color-gold)" : "none",
+            border: "none",
+            padding: "6px 13px",
+            borderRadius: "7px",
+            cursor: "pointer",
+            transition: "all .15s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
           onClick={() => onTabChange(tab.id)}
         >
           {tab.label}

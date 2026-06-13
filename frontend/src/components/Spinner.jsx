@@ -6,7 +6,8 @@ export function Spinner({ size = "md" }) {
   }
   return (
     <svg
-      className={`animate-spin ${sizes[size]} text-blue-600`}
+      className={`animate-spin ${sizes[size]}`}
+      style={{ color: "var(--color-gold)" }}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

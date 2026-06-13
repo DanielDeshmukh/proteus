@@ -226,20 +226,25 @@
 
 ---
 
-## Feature 13: End-to-End Integration & Polish
-**Branch:** `feature/e2e-polish`
+## Feature 13: UI Theme — Dark Mode from proteus-ui-preview.html
+**Branch:** `feature/ui-polish`
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 13.1 | E2E test: full flow — paste JD + upload resume → view results → check history | ⬜ Pending | |
-| 13.2 | E2E test: URL-based JD ingestion flow | ⬜ Pending | |
-| 13.3 | E2E test: error scenarios | ⬜ Pending | |
-| 13.4 | Performance check — pipeline completes in <30s | ⬜ Pending | |
-| 13.5 | Accessibility pass | ⬜ Pending | |
-| 13.6 | Mobile responsiveness | ⬜ Pending | |
-| 13.7 | Final README update | ⬜ Pending | |
-| 13.8 | Final code review | ⬜ Pending | |
-| 13.9 | **FINAL TEST CHECKPOINT** — Full test suite | ⬜ Pending | |
+| 13.1 | Dark theme CSS variables, fonts (Fraunces, Inter, JetBrains Mono) | ✅ Done | |
+| 13.2 | Layout/Topbar — Proteus brand mark, nav, active states | ✅ Done | |
+| 13.3 | Reusable components — Button (gold gradient), Card, Tabs | ✅ Done | |
+| 13.4 | TextArea, FileUpload, Spinner, Toast — dark theme | ✅ Done | |
+| 13.5 | JDInput panel with dark theme | ✅ Done | |
+| 13.6 | ResumeInput panel with dark theme | ✅ Done | |
+| 13.7 | ScoreDisplay — SVG circular gauge + breakdown bars | ✅ Done | |
+| 13.8 | GapAnalysisDisplay — severity badges (critical/moderate/minor) | ✅ Done | |
+| 13.9 | RewriteDisplay — before/after with gold tags | ✅ Done | |
+| 13.10 | CoverLetterDisplay — letter sheet with copy button | ✅ Done | |
+| 13.11 | ActionList — priority badges | ✅ Done | |
+| 13.12 | AnalyzePage — hero, workspace panels, pipeline visual, results | ✅ Done | |
+| 13.13 | HistoryPage — table with score cell, status badges | ✅ Done | |
+| 13.14 | **TEST CHECKPOINT** — 62/62 backend tests + frontend build clean | ✅ Done | |
 
 ---
 
@@ -260,7 +265,7 @@
 | 10 — Frontend: Resume Input | 9 | ✅ Complete |
 | 11 — Frontend: Results Display | 9 | ✅ Complete |
 | 12 — Frontend: History | 8 | ✅ Complete |
-| 13 — E2E Integration | 9 | ⬜ Not Started |
+| 13 — UI Theme (Dark Mode) | 14 | ✅ Complete |
 | **Total** | **126** | |
 
 ---

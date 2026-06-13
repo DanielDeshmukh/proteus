@@ -1,46 +1,74 @@
 export function GapAnalysisDisplay({ gaps }) {
   if (!gaps || !gaps.gaps || gaps.gaps.length === 0) return null
 
-  const statusColors = {
-    matched: "bg-green-100 text-green-800 border-green-200",
-    partial: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    missing: "bg-red-100 text-red-800 border-red-200",
+  const severityStyles = {
+    missing: {
+      background: "rgba(232, 213, 163, 0.14)",
+      color: "var(--color-gold-light)",
+      border: "1px solid rgba(232, 213, 163, 0.3)",
+    },
+    partial: {
+      background: "rgba(201, 169, 98, 0.10)",
+      color: "var(--color-gold)",
+      border: "1px solid rgba(201, 169, 98, 0.25)",
+    },
+    matched: {
+      background: "rgba(125, 138, 150, 0.10)",
+      color: "var(--color-silver)",
+      border: "1px solid rgba(125, 138, 150, 0.22)",
+    },
   }
 
-  const statusLabels = {
-    matched: "Matched",
-    partial: "Partial",
-    missing: "Missing",
+  const severityLabels = {
+    missing: "Critical",
+    partial: "Moderate",
+    matched: "Minor",
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-4 text-sm">
-        <span className="text-green-600 font-medium">{gaps.matched_count} matched</span>
-        <span className="text-yellow-600 font-medium">{gaps.partial_count} partial</span>
-        <span className="text-red-600 font-medium">{gaps.missing_count} missing</span>
-        <span className="text-gray-400">/ {gaps.total_requirements} total</span>
-      </div>
-
-      <div className="space-y-2">
-        {gaps.gaps.map((gap, i) => (
-          <div
-            key={i}
-            className={`flex items-center justify-between p-3 rounded-lg border ${statusColors[gap.status]}`}
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+      {gaps.gaps.map((gap, i) => (
+        <div
+          key={i}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "110px 1fr",
+            gap: "20px",
+            padding: "16px 0",
+            borderBottom: i < gaps.gaps.length - 1 ? "1px solid var(--border)" : "none",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              padding: "5px 10px",
+              borderRadius: "100px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "24px",
+              width: "fit-content",
+              ...severityStyles[gap.status],
+            }}
           >
-            <div className="flex-1">
-              <span className="font-medium">{gap.requirement}</span>
-              <span className="text-xs ml-2 opacity-70">({gap.category})</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm">{Math.round(gap.similarity_score * 100)}%</span>
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/50">
-                {statusLabels[gap.status]}
+            {severityLabels[gap.status] || gap.status}
+          </span>
+          <div>
+            <h4 style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text)", marginBottom: "6px" }}>
+              {gap.requirement}
+            </h4>
+            <p style={{ fontSize: "13px", color: "var(--text-soft)", lineHeight: 1.65 }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--color-gold)" }}>
+                {Math.round(gap.similarity_score * 100)}%
               </span>
-            </div>
+              {" "}match — {gap.category}
+            </p>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   )
 }
