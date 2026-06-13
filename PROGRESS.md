@@ -60,15 +60,15 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 3.1 | Implement `parsers/pdf_parser.py` — extract text from PDF using pypdf/pdfplumber | ⬜ Pending | |
-| 3.2 | Implement `parsers/docx_parser.py` — extract text from DOCX using python-docx | ⬜ Pending | |
-| 3.3 | Implement `parsers/jd_url_fetcher.py` — fetch URL content with httpx, extract job posting text | ⬜ Pending | |
-| 3.4 | Add error handling — corrupted files, unsupported formats, inaccessible URLs | ⬜ Pending | |
-| 3.5 | Unit test: PDF parser with various PDFs | ⬜ Pending | |
-| 3.6 | Unit test: DOCX parser with various DOCX files | ⬜ Pending | |
-| 3.7 | Unit test: URL fetcher with mock responses | ⬜ Pending | |
-| 3.8 | Unit test: edge cases — empty file, invalid URL | ⬜ Pending | |
-| 3.9 | **TEST CHECKPOINT** — Full unit suite for all parsers | ⬜ Pending | |
+| 3.1 | Implement `parsers/pdf_parser.py` — extract text from PDF using pypdf/pdfplumber | ✅ Done | |
+| 3.2 | Implement `parsers/docx_parser.py` — extract text from DOCX using python-docx | ✅ Done | |
+| 3.3 | Implement `parsers/jd_url_fetcher.py` — fetch URL content with httpx, extract job posting text | ✅ Done | |
+| 3.4 | Add error handling — corrupted files, unsupported formats, inaccessible URLs | ✅ Done | |
+| 3.5 | Unit test: PDF parser with various PDFs | ✅ Done | |
+| 3.6 | Unit test: DOCX parser with various DOCX files | ✅ Done | |
+| 3.7 | Unit test: URL fetcher with mock responses | ✅ Done | |
+| 3.8 | Unit test: edge cases — empty file, invalid URL | ✅ Done | |
+| 3.9 | **TEST CHECKPOINT** — Full unit suite for all parsers | ✅ Done | 23/23 tests pass |
 
 ---
 
@@ -250,7 +250,7 @@
 | 0 — Project Scaffolding | 9 | ✅ Complete |
 | 1 — JD Parser Agent | 9 | ✅ Complete |
 | 2 — Resume Parser Agent | 9 | ⬜ Not Started |
-| 3 — File Parsers | 9 | ⬜ Not Started |
+| 3 — File Parsers | 9 | ✅ Complete |
 | 4 — Gap Analyzer Agent | 10 | ⬜ Not Started |
 | 5 — Rewrite Suggester | 8 | ⬜ Not Started |
 | 6 — Cover Letter Generator | 9 | ⬜ Not Started |
