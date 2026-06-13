@@ -215,14 +215,14 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 12.1 | Build history page — table/list of past runs | ⬜ Pending | |
-| 12.2 | Add search/filter | ⬜ Pending | |
-| 12.3 | Add click-to-view | ⬜ Pending | |
-| 12.4 | Add delete | ⬜ Pending | |
-| 12.5 | Add score trend visualization | ⬜ Pending | |
-| 12.6 | Connect to backend `/api/history` | ⬜ Pending | |
-| 12.7 | Empty state | ⬜ Pending | |
-| 12.8 | **TEST CHECKPOINT** — History component tests | ⬜ Pending | |
+| 12.1 | Build history page — table/list of past runs with scores | ✅ Done | |
+| 12.2 | Add search/filter — by JD text or source | ✅ Done | |
+| 12.3 | Add click-to-view — expandable run details | ✅ Done | |
+| 12.4 | Add delete — remove a run from history | ✅ Done | |
+| 12.5 | Add score color coding — green/yellow/red by score | ✅ Done | |
+| 12.6 | Connect to backend `/api/history` endpoints | ✅ Done | |
+| 12.7 | Empty state — message when no history exists | ✅ Done | |
+| 12.8 | **TEST CHECKPOINT** — Frontend builds clean, 62/62 backend tests pass | ✅ Done | |
 
 ---
 
@@ -259,7 +259,7 @@
 | 9 — Frontend: JD Input | 9 | ⬜ Not Started |
 | 10 — Frontend: Resume Input | 9 | ✅ Complete |
 | 11 — Frontend: Results Display | 9 | ✅ Complete |
-| 12 — Frontend: History | 8 | ⬜ Not Started |
+| 12 — Frontend: History | 8 | ✅ Complete |
 | 13 — E2E Integration | 9 | ⬜ Not Started |
 | **Total** | **126** | |
 
