@@ -5,6 +5,11 @@ import { ResumeInput } from "../components/ResumeInput"
 import { Card, CardHeader, CardContent } from "../components/Card"
 import { Spinner } from "../components/Spinner"
 import { Toast } from "../components/Toast"
+import { ScoreDisplay } from "../components/ScoreDisplay"
+import { GapAnalysisDisplay } from "../components/GapAnalysisDisplay"
+import { RewriteDisplay } from "../components/RewriteDisplay"
+import { CoverLetterDisplay } from "../components/CoverLetterDisplay"
+import { ActionList } from "../components/ActionList"
 
 export function AnalyzePage() {
   const [jd, setJd] = useState(null)
@@ -107,49 +112,74 @@ export function AnalyzePage() {
         </button>
 
         {result && (
-          <Card>
-            <CardHeader>
-              <h2 className="text-lg font-semibold">Results</h2>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="text-center p-6 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-gray-600">Overall Match Score</p>
-                  <p className="text-5xl font-bold text-blue-600">
-                    {Math.round((result.overall_score || 0) * 100)}%
-                  </p>
-                </div>
-
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <h2 className="text-lg font-semibold">Match Score</h2>
+              </CardHeader>
+              <CardContent>
+                <ScoreDisplay score={result.overall_score} />
                 {result.section_scores && (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3 mt-4">
                     {Object.entries(result.section_scores).map(([key, value]) => (
-                      <div key={key} className="p-3 bg-gray-50 rounded-lg">
+                      <div key={key} className="p-3 bg-gray-50 rounded-lg text-center">
                         <p className="text-xs text-gray-500 capitalize">{key.replace("_", " ")}</p>
                         <p className="text-lg font-semibold">{Math.round(value * 100)}%</p>
                       </div>
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
 
-                {result.action_list && result.action_list.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Priority Actions</h3>
-                    <ul className="space-y-2">
-                      {result.action_list.map((action, i) => (
-                        <li key={i} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
-                          <span className="font-medium">#{action.priority}</span> {action.action}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+            {result.gap_analysis && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-lg font-semibold">Gap Analysis</h2>
+                </CardHeader>
+                <CardContent>
+                  <GapAnalysisDisplay gaps={result.gap_analysis} />
+                </CardContent>
+              </Card>
+            )}
 
-                <p className="text-xs text-gray-400 text-center">
-                  Run ID: {result.run_id} | {result.timings?.total?.toFixed(1)}s
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            {result.rewrite_suggestions && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-lg font-semibold">Rewrite Suggestions</h2>
+                </CardHeader>
+                <CardContent>
+                  <RewriteDisplay rewrites={result.rewrite_suggestions} />
+                </CardContent>
+              </Card>
+            )}
+
+            {result.cover_letter && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-lg font-semibold">Cover Letter</h2>
+                </CardHeader>
+                <CardContent>
+                  <CoverLetterDisplay coverLetter={result.cover_letter} />
+                </CardContent>
+              </Card>
+            )}
+
+            {result.action_list && result.action_list.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <h2 className="text-lg font-semibold">Priority Actions</h2>
+                </CardHeader>
+                <CardContent>
+                  <ActionList actions={result.action_list} />
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="text-center text-xs text-gray-400 pb-4">
+              Run ID: {result.run_id} | {result.timings?.total?.toFixed(1)}s
+            </div>
+          </div>
         )}
       </div>
     </Layout>
