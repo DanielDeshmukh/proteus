@@ -3,11 +3,6 @@ from httpx import AsyncClient, ASGITransport
 from main import app
 
 
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
 @pytest.mark.anyio
 async def test_health_check():
     transport = ASGITransport(app=app)

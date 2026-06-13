@@ -1,3 +1,4 @@
+import os
 import pytest
 import aiosqlite
 from db.sqlite_store import init_db, save_run, get_run, list_runs, delete_run, DB_PATH
@@ -7,7 +8,6 @@ from db.sqlite_store import init_db, save_run, get_run, list_runs, delete_run, D
 async def setup_db():
     await init_db()
     yield
-    import os
     if os.path.exists(DB_PATH):
         os.remove(DB_PATH)
 
