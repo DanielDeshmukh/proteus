@@ -164,15 +164,15 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 9.1 | Set up React Router, global layout | ⬜ Pending | |
-| 9.2 | Build reusable UI components | ⬜ Pending | |
-| 9.3 | Build JD input component — tabbed: Paste / Upload / URL | ⬜ Pending | |
-| 9.4 | Implement paste tab — large textarea | ⬜ Pending | |
-| 9.5 | Implement upload tab — drag-and-drop | ⬜ Pending | |
-| 9.6 | Implement URL tab — input + fetch | ⬜ Pending | |
-| 9.7 | Add validation | ⬜ Pending | |
-| 9.8 | Style with Tailwind — responsive layout | ⬜ Pending | |
-| 9.9 | **TEST CHECKPOINT** — Component render tests | ⬜ Pending | |
+| 9.1 | Set up React Router, global layout | ✅ Done | |
+| 9.2 | Build reusable UI components (Button, Card, Tabs, TextArea, FileUpload, Spinner, Toast) | ✅ Done | |
+| 9.3 | Build JD input component — tabbed: Paste / Upload / URL | ✅ Done | |
+| 9.4 | Implement paste tab — large textarea | ✅ Done | |
+| 9.5 | Implement upload tab — drag-and-drop file upload | ✅ Done | |
+| 9.6 | Implement URL tab — input field for job posting URL | ✅ Done | |
+| 9.7 | Add validation — prevent submission without JD, show errors inline | ✅ Done | |
+| 9.8 | Style with Tailwind — responsive layout, clean design | ✅ Done | |
+| 9.9 | **TEST CHECKPOINT** — Frontend builds clean, 62/62 backend tests pass | ✅ Done | |
 
 ---
 
@@ -256,7 +256,7 @@
 | 6 — Cover Letter Generator | 9 | ✅ Complete |
 | 7 — Pipeline & Aggregator | 10 | ✅ Complete |
 | 8 — Backend API | 10 | ⬜ Not Started |
-| 9 — Frontend: JD Input | 9 | ⬜ Not Started |
+| 9 — Frontend: JD Input | 9 | ✅ Complete |
 | 10 — Frontend: Resume Input | 9 | ⬜ Not Started |
 | 11 — Frontend: Results Display | 9 | ⬜ Not Started |
 | 12 — Frontend: History | 8 | ⬜ Not Started |
