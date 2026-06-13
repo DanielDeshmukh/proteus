@@ -248,6 +248,23 @@
 
 ---
 
+## Feature 14: End-to-End Integration & Polish
+**Branch:** `feature/e2e-polish`
+
+| # | Phase | Status | Notes |
+|---|-------|--------|-------|
+| 14.1 | E2E test: full flow — paste JD + resume → results → history → delete | ✅ Done | |
+| 14.2 | E2E test: URL-based JD ingestion flow | ✅ Done | |
+| 14.3 | E2E test: error scenarios (no JD, no resume, invalid URL) | ✅ Done | |
+| 14.4 | Performance check — pipeline completes in <10s (mocked) | ✅ Done | |
+| 14.5 | Accessibility pass — semantic HTML, responsive layout | ✅ Done | |
+| 14.6 | Mobile responsiveness — CSS media queries for 880px breakpoint | ✅ Done | |
+| 14.7 | Final README update — full project docs with test count | ✅ Done | |
+| 14.8 | Final code review | ✅ Done | |
+| 14.9 | **FINAL TEST CHECKPOINT** — 70/70 backend tests + frontend build clean | ✅ Done | |
+
+---
+
 ## Summary
 
 | Feature | Phases | Status |
@@ -266,7 +283,8 @@
 | 11 — Frontend: Results Display | 9 | ✅ Complete |
 | 12 — Frontend: History | 8 | ✅ Complete |
 | 13 — UI Theme (Dark Mode) | 14 | ✅ Complete |
-| **Total** | **126** | |
+| 14 — E2E Integration & Polish | 9 | ✅ Complete |
+| **Total** | **135** | |
 
 ---
 

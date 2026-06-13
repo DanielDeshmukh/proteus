@@ -48,3 +48,31 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* Mobile responsiveness */
+@media (max-width: 880px) {
+  .workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .score-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .pipeline-track {
+    grid-template-columns: 1fr !important;
+    gap: 28px;
+  }
+  .pipeline-track::before {
+    display: none;
+  }
+  .gap-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+  .rewrite-grid {
+    grid-template-columns: 1fr !important;
+    gap: 4px;
+  }
+  .hero-title {
+    font-size: 36px !important;
+  }
+}

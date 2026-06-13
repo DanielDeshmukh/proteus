@@ -87,6 +87,7 @@ export function AnalyzePage() {
           Application intelligence
         </p>
         <h1
+          className="hero-title"
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 400,
@@ -117,7 +118,7 @@ export function AnalyzePage() {
       {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
 
       {/* Workspace */}
-      <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "48px" }}>
+      <section className="workspace-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "48px" }}>
         <div
           style={{
             background: "var(--surface)",
@@ -207,6 +208,7 @@ export function AnalyzePage() {
           </span>
         </div>
         <div
+          className="pipeline-track"
           style={{
             position: "relative",
             display: "grid",
