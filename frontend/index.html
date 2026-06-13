@@ -2,9 +2,144 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
+    <!-- Primary SEO -->
+    <title>PROTEUS — AI-Powered Job Application Intelligence | Resume Match Score & Cover Letter Generator</title>
+    <meta name="description" content="PROTEUS analyzes your resume against any job description using a 5-agent AI pipeline. Get semantic match scores, gap analysis, bullet-level rewrite suggestions, and tailored cover letters — all from one JD." />
+    <meta name="keywords" content="resume optimizer, job description match, ATS score, cover letter generator, AI resume builder, job application tool, semantic matching, career tools, resume analysis, keyword matching" />
+    <meta name="author" content="Daniel Deshmukh" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://proteus-app.dev/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://proteus-app.dev/" />
+    <meta property="og:title" content="PROTEUS — AI-Powered Job Application Intelligence" />
+    <meta property="og:description" content="One pipeline. One JD. Every output stays consistent. Get semantic match scores, gap analysis, rewrite suggestions, and tailored cover letters from a single job description." />
+    <meta property="og:image" content="https://proteus-app.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="PROTEUS" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://proteus-app.dev/" />
+    <meta name="twitter:title" content="PROTEUS — AI-Powered Job Application Intelligence" />
+    <meta name="twitter:description" content="One pipeline. One JD. Every output stays consistent. Semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD." />
+    <meta name="twitter:image" content="https://proteus-app.dev/og-image.png" />
+    <meta name="twitter:creator" content="@deshmukh_dev" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#111315" />
+    <meta name="msapplication-TileColor" content="#111315" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "PROTEUS",
+      "alternateName": "PROTEUS Application Intelligence",
+      "url": "https://proteus-app.dev",
+      "description": "AI-powered job application toolkit that analyzes your resume against job descriptions using a 5-agent pipeline. Produces semantic match scores, gap analysis, bullet-level rewrite suggestions, and tailored cover letters.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Daniel Deshmukh",
+        "url": "https://github.com/DanielDeshmukh"
+      },
+      "featureList": [
+        "Semantic resume-job match scoring",
+        "AI-powered gap analysis",
+        "Bullet-level rewrite suggestions",
+        "Tailored cover letter generation",
+        "Application history tracking",
+        "PDF and DOCX file upload",
+        "Job description URL ingestion"
+      ],
+      "softwareHelp": {
+        "@type": "HelpOnlineSystem",
+        "url": "https://github.com/DanielDeshmukh/proteus#readme"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PROTEUS",
+      "url": "https://proteus-app.dev",
+      "description": "AI-powered job application intelligence — semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://proteus-app.dev/history?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is PROTEUS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PROTEUS is an AI-powered job application toolkit that takes a job description and your resume, runs them through a 5-agent pipeline using NVIDIA NIM, and returns a semantic match score, gap analysis, bullet-level rewrite suggestions, and a tailored cover letter."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does PROTEUS score my resume against a job description?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PROTEUS uses embedding-based semantic similarity (nvidia/nv-embedqa-e5-v5) to compare your resume against JD requirements. Unlike keyword matching, it understands that 'implemented Qdrant-based retrieval' matches 'experience with vector databases' even without literal keyword overlap."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What file formats does PROTEUS support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PROTEUS supports PDF, DOCX, and plain text files for both job descriptions and resumes. You can also paste text directly or provide a job posting URL."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is PROTEUS free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, PROTEUS is an open-source project available under the MIT license. You can run it locally with your own NVIDIA NIM API key."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
