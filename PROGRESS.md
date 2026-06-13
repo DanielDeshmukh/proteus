@@ -95,14 +95,14 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 5.1 | Design rewrite prompt — takes high-gap items, generates specific bullet rewrites | ⬜ Pending | |
-| 5.2 | Implement `agents/rewrite_suggester.py` | ⬜ Pending | |
-| 5.3 | Define Pydantic models for rewrite suggestions | ⬜ Pending | |
-| 5.4 | Add prioritization — order suggestions by impact | ⬜ Pending | |
-| 5.5 | Unit test: rewrite suggester with sample high-gap items | ⬜ Pending | |
-| 5.6 | Unit test: edge cases — no gaps found, all gaps critical | ⬜ Pending | |
-| 5.7 | Integration test: full pipeline up to rewrite stage | ⬜ Pending | |
-| 5.8 | **TEST CHECKPOINT** — Full unit + integration suite for rewrite suggester | ⬜ Pending | |
+| 5.1 | Design rewrite prompt — takes high-gap items, generates specific bullet rewrites | ✅ Done | |
+| 5.2 | Implement `agents/rewrite_suggester.py` | ✅ Done | |
+| 5.3 | Define Pydantic models for rewrite suggestions (`agents/rewrite_models.py`) | ✅ Done | |
+| 5.4 | Add prioritization — order suggestions by impact | ✅ Done | |
+| 5.5 | Unit test: rewrite suggester with sample high-gap items | ✅ Done | |
+| 5.6 | Unit test: edge cases — no gaps found, all gaps critical | ✅ Done | |
+| 5.7 | Integration test: full pipeline up to rewrite stage | ✅ Done | |
+| 5.8 | **TEST CHECKPOINT** — Full unit + integration suite for rewrite suggester | ✅ Done | 40/40 tests pass |
 
 ---
 
@@ -252,7 +252,7 @@
 | 2 — Resume Parser Agent | 9 | ✅ Complete |
 | 3 — File Parsers | 9 | ⬜ Not Started |
 | 4 — Gap Analyzer Agent | 10 | ✅ Complete |
-| 5 — Rewrite Suggester | 8 | ⬜ Not Started |
+| 5 — Rewrite Suggester | 8 | ✅ Complete |
 | 6 — Cover Letter Generator | 9 | ⬜ Not Started |
 | 7 — Pipeline & Aggregator | 10 | ⬜ Not Started |
 | 8 — Backend API | 10 | ⬜ Not Started |
