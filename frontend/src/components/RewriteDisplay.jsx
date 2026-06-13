@@ -2,35 +2,90 @@ export function RewriteDisplay({ rewrites }) {
   if (!rewrites || !rewrites.suggestions || rewrites.suggestions.length === 0) return null
 
   return (
-    <div className="space-y-3">
+    <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
       {rewrites.suggestions.map((suggestion, i) => (
-        <div key={i} className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-500">
-              Impact: {Math.round(suggestion.impact_score * 100)}%
+        <div
+          key={i}
+          style={{
+            background: "var(--surface-sunken)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-md)",
+            padding: "18px 20px",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--color-gold)",
+              marginBottom: "12px",
+              display: "block",
+            }}
+          >
+            Addresses · {suggestion.target_requirement}
+          </span>
+
+          <div style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: "16px", alignItems: "start" }}>
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "11px",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--text-faint)",
+                paddingTop: "3px",
+              }}
+            >
+              Original
             </span>
-            <span className="text-xs text-blue-600">{suggestion.target_requirement}</span>
-          </div>
-
-          <div className="space-y-1">
-            <div className="p-2 bg-red-50 rounded text-sm text-red-800 line-through">
+            <span style={{ fontSize: "13.5px", lineHeight: 1.7, color: "var(--text-soft)" }}>
               {suggestion.original_bullet}
-            </div>
-            <div className="p-2 bg-green-50 rounded text-sm text-green-800">
-              {suggestion.suggested_rewrite}
-            </div>
+            </span>
           </div>
 
-          <p className="text-xs text-gray-500">{suggestion.rationale}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: "16px", alignItems: "start", marginTop: "10px" }}>
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "11px",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--color-gold-light)",
+                paddingTop: "3px",
+              }}
+            >
+              Rewrite
+            </span>
+            <span style={{ fontSize: "13.5px", lineHeight: 1.7, color: "var(--text)" }}>
+              {suggestion.suggested_rewrite}
+            </span>
+          </div>
+
+          {suggestion.rationale && (
+            <p style={{ fontSize: "12px", color: "var(--text-faint)", marginTop: "12px", lineHeight: 1.6 }}>
+              {suggestion.rationale}
+            </p>
+          )}
         </div>
       ))}
 
       {rewrites.hidden_experience && rewrites.hidden_experience.length > 0 && (
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm font-medium text-blue-800 mb-1">Hidden Experience Detected</p>
-          <ul className="text-sm text-blue-700 space-y-1">
+        <div
+          style={{
+            padding: "14px 18px",
+            background: "rgba(201, 169, 98, 0.08)",
+            border: "1px solid rgba(201, 169, 98, 0.2)",
+            borderRadius: "var(--radius-md)",
+          }}
+        >
+          <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-gold-light)", marginBottom: "6px" }}>
+            Hidden Experience Detected
+          </p>
+          <ul style={{ fontSize: "13px", color: "var(--color-gold)", margin: 0, paddingLeft: "16px" }}>
             {rewrites.hidden_experience.map((exp, i) => (
-              <li key={i}>• {exp}</li>
+              <li key={i} style={{ marginBottom: "2px" }}>{exp}</li>
             ))}
           </ul>
         </div>

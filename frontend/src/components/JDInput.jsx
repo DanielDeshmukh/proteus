@@ -4,9 +4,9 @@ import { TextArea } from "./TextArea"
 import { FileUpload } from "./FileUpload"
 
 const tabs = [
-  { id: "paste", label: "Paste Text" },
-  { id: "upload", label: "Upload File" },
-  { id: "url", label: "Job URL" },
+  { id: "paste", label: "Paste" },
+  { id: "upload", label: "Upload" },
+  { id: "url", label: "URL" },
 ]
 
 export function JDInput({ onJDReady }) {
@@ -46,18 +46,18 @@ export function JDInput({ onJDReady }) {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Job Description</h3>
-        <p className="text-sm text-gray-500">Provide the JD via text, file, or URL</p>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", letterSpacing: "0.01em", color: "var(--text)" }}>
+          Job description
+        </h2>
+        <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
 
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-
-      <div className="pt-2">
+      <div style={{ padding: "0" }}>
         {activeTab === "paste" && (
           <TextArea
-            placeholder="Paste the full job description here..."
+            placeholder="Paste the job description..."
             value={jdText}
             onChange={setJdText}
             rows={10}
@@ -75,37 +75,51 @@ export function JDInput({ onJDReady }) {
         )}
 
         {activeTab === "url" && (
-          <div className="space-y-1">
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             <input
               type="url"
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.jdUrl ? "border-red-500" : "border-gray-300"
-              }`}
+              style={{
+                width: "100%",
+                background: "var(--surface-sunken)",
+                border: `1px solid ${errors.jdUrl ? "#dc3545" : "var(--border)"}`,
+                borderRadius: "var(--radius-md)",
+                color: "var(--text)",
+                fontFamily: "var(--font-sans)",
+                fontSize: "13.5px",
+                padding: "12px 16px",
+              }}
               placeholder="https://boards.greenhouse.io/..."
               value={jdUrl}
               onChange={(e) => setJdUrl(e.target.value)}
             />
-            {errors.jdUrl && <p className="text-sm text-red-600">{errors.jdUrl}</p>}
+            {errors.jdUrl && <p style={{ fontSize: "13px", color: "#ff6b6b" }}>{errors.jdUrl}</p>}
           </div>
         )}
       </div>
 
-      <button
-        onClick={handleSubmit}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "0",
+          fontFamily: "var(--font-mono)",
+          fontSize: "11.5px",
+          color: "var(--text-faint)",
+        }}
       >
-        Set Job Description
-      </button>
-
-      {(jdText || jdFile || jdUrl) && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-800 font-medium">
-            {activeTab === "paste" && `JD set: ${jdText.length} characters`}
-            {activeTab === "upload" && `JD set: ${jdFile.name}`}
-            {activeTab === "url" && `JD set: ${jdUrl}`}
-          </p>
-        </div>
-      )}
+        {(jdText || jdFile || jdUrl) && (
+          <>
+            <span>Parsed</span>
+            <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "var(--text-faint)" }} />
+            <span style={{ color: "var(--color-gold-light)" }}>
+              {activeTab === "paste" && `${jdText.length} characters`}
+              {activeTab === "upload" && jdFile?.name}
+              {activeTab === "url" && jdUrl}
+            </span>
+          </>
+        )}
+      </div>
     </div>
   )
 }

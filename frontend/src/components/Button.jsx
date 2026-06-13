@@ -1,14 +1,51 @@
 export function Button({ children, variant = "primary", disabled = false, onClick, className = "" }) {
-  const base = "px-4 py-2 rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+  const base = "font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
   const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
-    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500",
-    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
-    ghost: "bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500",
+    primary: {
+      background: "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))",
+      color: "var(--surface-sunken)",
+      border: "none",
+      borderRadius: "var(--radius-md)",
+      padding: "15px 36px",
+      fontSize: "14.5px",
+      fontWeight: 600,
+      letterSpacing: "0.02em",
+    },
+    secondary: {
+      background: "var(--surface-sunken)",
+      color: "var(--text-soft)",
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-md)",
+      padding: "9px 16px",
+      fontSize: "12.5px",
+      fontWeight: 500,
+    },
+    danger: {
+      background: "rgba(220, 53, 69, 0.15)",
+      color: "#ff6b6b",
+      border: "1px solid rgba(220, 53, 69, 0.3)",
+      borderRadius: "var(--radius-md)",
+      padding: "9px 16px",
+      fontSize: "12.5px",
+      fontWeight: 500,
+    },
+    ghost: {
+      background: "transparent",
+      color: "var(--text-soft)",
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-md)",
+      padding: "9px 16px",
+      fontSize: "12.5px",
+      fontWeight: 500,
+    },
   }
+
+  const style = { ...variants[variant] }
+
   return (
     <button
-      className={`${base} ${variants[variant]} ${className}`}
+      className={`${base} ${className}`}
+      style={style}
       disabled={disabled}
       onClick={onClick}
     >

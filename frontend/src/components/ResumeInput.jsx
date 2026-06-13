@@ -4,8 +4,8 @@ import { TextArea } from "./TextArea"
 import { FileUpload } from "./FileUpload"
 
 const tabs = [
-  { id: "paste", label: "Paste Text" },
-  { id: "upload", label: "Upload File" },
+  { id: "paste", label: "Paste" },
+  { id: "upload", label: "Upload" },
 ]
 
 export function ResumeInput({ onResumeReady }) {
@@ -36,15 +36,15 @@ export function ResumeInput({ onResumeReady }) {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Your Resume</h3>
-        <p className="text-sm text-gray-500">Paste text or upload a PDF/DOCX</p>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", letterSpacing: "0.01em", color: "var(--text)" }}>
+          Resume
+        </h2>
+        <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
 
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-
-      <div className="pt-2">
+      <div style={{ padding: "0" }}>
         {activeTab === "paste" && (
           <TextArea
             placeholder="Paste your resume content here..."
@@ -65,21 +65,28 @@ export function ResumeInput({ onResumeReady }) {
         )}
       </div>
 
-      <button
-        onClick={handleSubmit}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "0",
+          fontFamily: "var(--font-mono)",
+          fontSize: "11.5px",
+          color: "var(--text-faint)",
+        }}
       >
-        Set Resume
-      </button>
-
-      {(resumeText || resumeFile) && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-800 font-medium">
-            {activeTab === "paste" && `Resume set: ${resumeText.length} characters`}
-            {activeTab === "upload" && `Resume set: ${resumeFile.name}`}
-          </p>
-        </div>
-      )}
+        {(resumeText || resumeFile) && (
+          <>
+            <span>Extracted</span>
+            <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "var(--text-faint)" }} />
+            <span style={{ color: "var(--color-gold-light)" }}>
+              {activeTab === "paste" && `${resumeText.length} characters`}
+              {activeTab === "upload" && resumeFile?.name}
+            </span>
+          </>
+        )}
+      </div>
     </div>
   )
 }
