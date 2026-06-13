@@ -15,8 +15,8 @@ from parsers.jd_url_fetcher import fetch_jd_from_url
 from agents.cover_letter_models import Tone
 
 
-ENV = os.environ.get("PROTEUS_ENV", "development")
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+ENV = os.environ.get("PROTEUS_ENV", "production")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://proteus-review.netlify.app")
 
 
 @asynccontextmanager
@@ -34,22 +34,13 @@ app = FastAPI(
     redoc_url="/api/redoc" if ENV == "development" else None,
 )
 
-if ENV == "development":
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://localhost:3000", "http://localhost:8888"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[FRONTEND_URL],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_URL, "http://localhost:5173", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class AnalyzeRequest(BaseModel):
