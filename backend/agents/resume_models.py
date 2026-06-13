@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 class ExperienceBullet(BaseModel):
     role: str = Field(description="Job title / role for this position")
     company: str | None = Field(default=None, description="Company name")
-    duration: str | None = Field(default=None, description="Employment duration (e.g. '2 years', 'Jan 2022 - Present')")
+    duration: str | None = Field(default=None, description="Employment duration")
     bullets: list[str] = Field(description="List of accomplishment/responsibility bullet points")
 
 
