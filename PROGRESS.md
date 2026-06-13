@@ -146,16 +146,16 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 8.1 | `POST /api/analyze` — accepts JD + resume, runs pipeline | ⬜ Pending | |
-| 8.2 | `GET /api/history` — returns list of past runs | ⬜ Pending | |
-| 8.3 | `GET /api/history/{id}` — returns single run details | ⬜ Pending | |
-| 8.4 | `DELETE /api/history/{id}` — deletes a run | ⬜ Pending | |
-| 8.5 | File upload handling — multipart form data | ⬜ Pending | |
-| 8.6 | Request validation — Pydantic models for all endpoints | ⬜ Pending | |
-| 8.7 | Add streaming/SSE endpoint for real-time pipeline progress | ⬜ Pending | |
-| 8.8 | Unit test: all API endpoints with test client | ⬜ Pending | |
-| 8.9 | Unit test: error handling | ⬜ Pending | |
-| 8.10 | **TEST CHECKPOINT** — Full API test suite | ⬜ Pending | |
+| 8.1 | `POST /api/analyze` — accepts JD + resume, runs pipeline | ✅ Done | |
+| 8.2 | `GET /api/history` — returns list of past runs | ✅ Done | |
+| 8.3 | `GET /api/history/{id}` — returns single run details | ✅ Done | |
+| 8.4 | `DELETE /api/history/{id}` — deletes a run | ✅ Done | |
+| 8.5 | File upload handling — multipart form data (PDF/DOCX) | ✅ Done | |
+| 8.6 | Request validation — Pydantic models for all endpoints | ✅ Done | |
+| 8.7 | Add streaming/SSE endpoint (`POST /api/analyze/stream`) | ✅ Done | |
+| 8.8 | Unit test: all API endpoints with test client | ✅ Done | |
+| 8.9 | Unit test: error handling | ✅ Done | |
+| 8.10 | **TEST CHECKPOINT** — Full API test suite | ✅ Done | 56/56 tests pass |
 
 ---
 
@@ -255,7 +255,7 @@
 | 5 — Rewrite Suggester | 8 | ⬜ Not Started |
 | 6 — Cover Letter Generator | 9 | ✅ Complete |
 | 7 — Pipeline & Aggregator | 10 | ⬜ Not Started |
-| 8 — Backend API | 10 | ⬜ Not Started |
+| 8 — Backend API | 10 | ✅ Complete |
 | 9 — Frontend: JD Input | 9 | ⬜ Not Started |
 | 10 — Frontend: Resume Input | 9 | ⬜ Not Started |
 | 11 — Frontend: Results Display | 9 | ⬜ Not Started |
