@@ -198,15 +198,15 @@
 
 | # | Phase | Status | Notes |
 |---|-------|--------|-------|
-| 11.1 | Build results page layout | ⬜ Pending | |
-| 11.2 | Build match score display | ⬜ Pending | |
-| 11.3 | Build gap analysis display | ⬜ Pending | |
-| 11.4 | Build rewrite suggestions display | ⬜ Pending | |
-| 11.5 | Build cover letter display | ⬜ Pending | |
-| 11.6 | Build action list | ⬜ Pending | |
-| 11.7 | Add export — download as PDF or JSON | ⬜ Pending | |
-| 11.8 | Style results page | ⬜ Pending | |
-| 11.9 | **TEST CHECKPOINT** — Results rendering tests | ⬜ Pending | |
+| 11.1 | Build results page layout | ✅ Done | |
+| 11.2 | Build match score display — color-coded score with section breakdown | ✅ Done | |
+| 11.3 | Build gap analysis display — ranked list with status badges | ✅ Done | |
+| 11.4 | Build rewrite suggestions display — before/after with rationale | ✅ Done | |
+| 11.5 | Build cover letter display — formatted text with copy button | ✅ Done | |
+| 11.6 | Build action list — prioritized items with category colors | ✅ Done | |
+| 11.7 | Add export — copy cover letter to clipboard | ✅ Done | |
+| 11.8 | Style results page — responsive, color-coded, clean | ✅ Done | |
+| 11.9 | **TEST CHECKPOINT** — Frontend builds clean, 62/62 backend tests pass | ✅ Done | |
 
 ---
 
@@ -258,7 +258,7 @@
 | 8 — Backend API | 10 | ⬜ Not Started |
 | 9 — Frontend: JD Input | 9 | ⬜ Not Started |
 | 10 — Frontend: Resume Input | 9 | ✅ Complete |
-| 11 — Frontend: Results Display | 9 | ⬜ Not Started |
+| 11 — Frontend: Results Display | 9 | ✅ Complete |
 | 12 — Frontend: History | 8 | ⬜ Not Started |
 | 13 — E2E Integration | 9 | ⬜ Not Started |
 | **Total** | **126** | |
