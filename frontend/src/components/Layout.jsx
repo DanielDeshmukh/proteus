@@ -13,6 +13,7 @@ export function Layout({ children }) {
       <header
         className="sticky top-0 z-10"
         style={{
+          background: "var(--bg)",
           borderBottom: "1px solid var(--border)",
         }}
       >
