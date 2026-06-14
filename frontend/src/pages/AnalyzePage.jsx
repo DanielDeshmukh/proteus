@@ -151,7 +151,7 @@ export function AnalyzePage() {
             fontWeight: 600,
             fontSize: "14.5px",
             letterSpacing: "0.02em",
-            color: "var(--surface-sunken)",
+            color: "var(--color-gold-light)",
             background: canAnalyze && !loading ? "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))" : "var(--surface-raised)",
             border: "none",
             borderRadius: "var(--radius-md)",
