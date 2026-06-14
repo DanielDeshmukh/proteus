@@ -72,6 +72,7 @@ export function ResumeInput({ onResumeReady }) {
             accept=".pdf,.docx,.txt"
             file={resumeFile}
             onFileSelect={setResumeFile}
+            onFileRemove={() => setResumeFile(null)}
             error={errors.resumeFile}
           />
         )}

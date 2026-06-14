@@ -84,6 +84,7 @@ export function JDInput({ onJDReady }) {
             accept=".pdf,.docx,.txt"
             file={jdFile}
             onFileSelect={setJdFile}
+            onFileRemove={() => setJdFile(null)}
             error={errors.jdFile}
           />
         )}
