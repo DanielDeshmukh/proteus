@@ -147,7 +147,6 @@ export function DotBackground() {
         width: "100vw",
         height: "100vh",
         display: "block",
-        cursor: "crosshair",
         zIndex: 0,
         pointerEvents: "auto",
       }}
