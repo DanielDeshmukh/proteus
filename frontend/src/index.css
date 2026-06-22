@@ -36,7 +36,7 @@
 }
 
 html, body {
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 15px;

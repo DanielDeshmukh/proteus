@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
+import { DotBackground } from "./DotBackground"
 
 const navItems = [
   { path: "/", label: "Dashboard" },
@@ -9,12 +10,14 @@ export function Layout({ children }) {
   const location = useLocation()
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+    <div className="min-h-screen" style={{ background: "transparent" }}>
+      <DotBackground />
       <header
         className="sticky top-0 z-10"
         style={{
           background: "var(--bg)",
           borderBottom: "1px solid var(--border)",
+          position: "relative",
         }}
       >
         <div
@@ -98,6 +101,8 @@ export function Layout({ children }) {
         style={{
           maxWidth: "1180px",
           padding: "0 40px 96px",
+          position: "relative",
+          zIndex: 1,
         }}
       >
         {children}
