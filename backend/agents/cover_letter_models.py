@@ -14,6 +14,7 @@ class CoverLetterSection(BaseModel):
 
 
 class CoverLetterOutput(BaseModel):
+    job_title: str = Field(description="The job title this cover letter is addressing")
     full_letter: str = Field(description="The complete cover letter as a single string")
     sections: list[CoverLetterSection] = Field(description="Breakdown of letter into sections")
     tone: Tone = Field(description="Tone used for this letter")
