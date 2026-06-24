@@ -28,6 +28,7 @@ TONE GUIDELINES:
 - "concise": Short, direct, no fluff, gets to the point fast
 
 Return a JSON object with:
+- "job_title": The job title this letter is addressing
 - "full_letter": The complete cover letter text
 - "sections": Array of section objects with "heading" and "content"
 - "tone": The tone used
