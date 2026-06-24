@@ -28,11 +28,30 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="PROTEUS API",
-    description="JD-aware application toolkit — semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD.",
+    description=(
+        "JD-aware application toolkit — semantic match scores, gap analysis, "
+        "rewrite suggestions, and cover letters from a single JD.\n\n"
+        "## Features\n"
+        "- **Analyze**: Submit a job description and resume to get a comprehensive analysis\n"
+        "- **Stream**: Real-time analysis updates via Server-Sent Events\n"
+        "- **History**: View and manage past analysis runs\n\n"
+        "## Input Methods\n"
+        "- **Paste**: Direct text input for JD and resume\n"
+        "- **URL**: Provide a job posting URL (Greenhouse, Lever, etc.)\n"
+        "- **Upload**: Upload PDF, DOCX, or TXT files\n\n"
+        "## Rate Limits\n"
+        "- 30 requests per minute per IP address\n"
+        "- Health check endpoint is exempt"
+    ),
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/api/docs" if ENV == "development" else None,
-    redoc_url="/api/redoc" if ENV == "development" else None,
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_tags=[
+        {"name": "Health", "description": "Service health checks"},
+        {"name": "Analyze", "description": "Job description and resume analysis"},
+        {"name": "History", "description": "Past analysis run management"},
+    ],
 )
 
 app.add_middleware(
@@ -66,12 +85,39 @@ class AnalyzeResponse(BaseModel):
     errors: list | None = None
 
 
-@app.get("/api/health")
+@app.get(
+    "/api/health",
+    tags=["Health"],
+    summary="Health check",
+    description="Returns service status, name, and environment. Exempt from rate limiting.",
+)
 async def health_check():
     return {"status": "ok", "service": "proteus-backend", "env": ENV}
 
 
-@app.post("/api/analyze")
+@app.post(
+    "/api/analyze",
+    tags=["Analyze"],
+    summary="Analyze JD and resume",
+    description=(
+        "Submit a job description and resume for comprehensive analysis.\n\n"
+        "The pipeline will:\n"
+        "1. Parse the JD to extract requirements, seniority, and role details\n"
+        "2. Calibrate semantic match score using embeddings\n"
+        "3. Map gaps between resume and requirements\n"
+        "4. Generate bullet-level rewrite suggestions\n"
+        "5. Draft a tailored cover letter\n\n"
+        "Input methods (provide one JD and one resume):\n"
+        "- JD: `jd_text`, `jd_url`, or `jd_file` (PDF/DOCX/TXT)\n"
+        "- Resume: `resume_text` or `resume_file` (PDF/DOCX/TXT)"
+    ),
+    response_model=AnalyzeResponse,
+    responses={
+        400: {"description": "Missing or invalid input"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Pipeline execution failed"},
+    },
+)
 async def analyze(
     jd_text: str | None = Form(None),
     jd_url: str | None = Form(None),
@@ -158,13 +204,30 @@ async def analyze(
         raise HTTPException(status_code=500, detail=f"Pipeline failed: {e}")
 
 
-@app.get("/api/history")
+@app.get(
+    "/api/history",
+    tags=["History"],
+    summary="List analysis runs",
+    description="Retrieve a paginated list of past analysis runs, ordered by creation date (newest first).",
+    responses={
+        200: {"description": "List of runs with count"},
+    },
+)
 async def get_history(limit: int = 50, offset: int = 0):
     runs = await list_runs(limit=limit, offset=offset)
     return {"runs": runs, "count": len(runs)}
 
 
-@app.get("/api/history/{run_id}")
+@app.get(
+    "/api/history/{run_id}",
+    tags=["History"],
+    summary="Get run details",
+    description="Retrieve full details of a specific analysis run including scores, gaps, rewrites, and cover letter.",
+    responses={
+        200: {"description": "Run details"},
+        404: {"description": "Run not found"},
+    },
+)
 async def get_run_detail(run_id: int):
     run = await get_run(run_id)
     if not run:
@@ -172,7 +235,16 @@ async def get_run_detail(run_id: int):
     return run
 
 
-@app.delete("/api/history/{run_id}")
+@app.delete(
+    "/api/history/{run_id}",
+    tags=["History"],
+    summary="Delete a run",
+    description="Permanently delete an analysis run and all its associated data.",
+    responses={
+        200: {"description": "Run deleted successfully"},
+        404: {"description": "Run not found"},
+    },
+)
 async def delete_run_endpoint(run_id: int):
     deleted = await delete_run(run_id)
     if not deleted:
@@ -219,7 +291,29 @@ async def _stream_pipeline(jd_text: str, resume_text: str, tone: Tone) -> AsyncG
         yield json.dumps({"event": "error", "message": str(e)}) + "\n"
 
 
-@app.post("/api/analyze/stream")
+@app.post(
+    "/api/analyze/stream",
+    tags=["Analyze"],
+    summary="Stream analysis results",
+    description=(
+        "Real-time analysis using Server-Sent Events (NDJSON format).\n\n"
+        "Requires text input for both JD and resume (no file uploads).\n\n"
+        "Events emitted:\n"
+        "- `started`: Run ID assigned\n"
+        "- `jd_parsed`: Parsed JD structure\n"
+        "- `resume_parsed`: Parsed resume structure\n"
+        "- `gap_analysis`: Gap analysis results\n"
+        "- `rewrites`: Rewrite suggestions\n"
+        "- `cover_letter`: Generated cover letter\n"
+        "- `result`: Final scores and action items\n"
+        "- `done`: Pipeline complete\n"
+        "- `error`: Error occurred"
+    ),
+    responses={
+        200: {"description": "NDJSON stream of analysis events"},
+        400: {"description": "Missing jd_text or resume_text"},
+    },
+)
 async def analyze_stream(
     jd_text: str | None = Form(None),
     resume_text: str | None = Form(None),
