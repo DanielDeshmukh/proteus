@@ -10,7 +10,7 @@ import { GapAnalysisDisplay } from "../components/GapAnalysisDisplay"
 import { RewriteDisplay } from "../components/RewriteDisplay"
 import { CoverLetterDisplay } from "../components/CoverLetterDisplay"
 import { ActionList } from "../components/ActionList"
-import { apiPost } from "../api"
+import { apiPost, apiPostStream } from "../api"
 
 const pipelineStages = [
   { num: "01", name: "Parse", desc: "Extracts role, requirements, and seniority signal from the JD" },
@@ -35,25 +35,53 @@ export function AnalyzePage() {
     setError(null)
     setResult(null)
 
+    const useStreaming = jd.type === "text" && resume.type === "text"
+
     try {
-      const formData = new FormData()
-
-      if (jd.type === "text") {
+      if (useStreaming) {
+        const formData = new FormData()
         formData.append("jd_text", jd.value)
-      } else if (jd.type === "url") {
-        formData.append("jd_url", jd.value)
-      } else if (jd.type === "file") {
-        formData.append("jd_file", jd.value)
-      }
-
-      if (resume.type === "text") {
         formData.append("resume_text", resume.value)
-      } else if (resume.type === "file") {
-        formData.append("resume_file", resume.value)
-      }
 
-      const data = await apiPost("/api/analyze", formData)
-      setResult(data)
+        const partial = { run_id: null, timings: {} }
+        await apiPostStream("/api/analyze/stream", formData, (event) => {
+          if (event.event === "started") {
+            partial.run_id = event.run_id
+          } else if (event.event === "gap_analysis") {
+            partial.gap_analysis = event.data
+          } else if (event.event === "rewrites") {
+            partial.rewrite_suggestions = event.data
+          } else if (event.event === "cover_letter") {
+            partial.cover_letter = event.data
+          } else if (event.event === "result") {
+            partial.overall_score = event.data.overall_score
+            partial.section_scores = event.data.section_scores
+            partial.action_list = event.data.action_list
+          } else if (event.event === "done") {
+            partial.run_id = event.run_id
+            partial.timings = { total: 0 }
+            setResult({ ...partial })
+          } else if (event.event === "error") {
+            throw new Error(event.message)
+          }
+        })
+      } else {
+        const formData = new FormData()
+        if (jd.type === "text") {
+          formData.append("jd_text", jd.value)
+        } else if (jd.type === "url") {
+          formData.append("jd_url", jd.value)
+        } else if (jd.type === "file") {
+          formData.append("jd_file", jd.value)
+        }
+        if (resume.type === "text") {
+          formData.append("resume_text", resume.value)
+        } else if (resume.type === "file") {
+          formData.append("resume_file", resume.value)
+        }
+        const data = await apiPost("/api/analyze", formData)
+        setResult(data)
+      }
     } catch (err) {
       setError(err.message)
     } finally {
