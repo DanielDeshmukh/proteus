@@ -43,7 +43,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(RateLimitMiddleware, max_requests=30, window_seconds=60)
+if ENV != "test":
+    app.add_middleware(RateLimitMiddleware, max_requests=30, window_seconds=60)
 
 
 class AnalyzeRequest(BaseModel):
