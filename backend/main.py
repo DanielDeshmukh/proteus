@@ -127,6 +127,8 @@ async def analyze(
     cover_letter_tone: str = Form("professional"),
 ):
     resolved_jd = jd_text
+    if resolved_jd:
+        resolved_jd = resolved_jd.strip()
     if not resolved_jd and jd_url:
         try:
             resolved_jd = fetch_jd_from_url(jd_url)
@@ -146,6 +148,8 @@ async def analyze(
         raise HTTPException(status_code=400, detail="No job description provided (text, URL, or file)")
 
     resolved_resume = resume_text
+    if resolved_resume:
+        resolved_resume = resolved_resume.strip()
     if not resolved_resume and resume_file:
         content = await resume_file.read()
         filename = resume_file.filename or ""
