@@ -1,58 +1,58 @@
-import { useState, useEffect } from "react"
-import { Layout } from "../components/Layout"
-import { Spinner } from "../components/Spinner"
-import { apiGet, apiDelete } from "../api"
+import { useState, useEffect } from "react";
+import { Layout } from "../components/Layout";
+import { Spinner } from "../components/Spinner";
+import { apiGet, apiDelete } from "../api";
 
 export function HistoryPage() {
-  const [runs, setRuns] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [selectedRun, setSelectedRun] = useState(null)
-  const [search, setSearch] = useState("")
+  const [runs, setRuns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedRun, setSelectedRun] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetchHistory()
-  }, [])
+    fetchHistory();
+  }, []);
 
   const fetchHistory = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await apiGet("/api/history?limit=50")
-      setRuns(data.runs || [])
+      const data = await apiGet("/api/history?limit=50");
+      setRuns(data.runs || []);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDelete = async (runId, e) => {
-    e.stopPropagation()
-    if (!confirm("Delete this run?")) return
+    e.stopPropagation();
+    if (!confirm("Delete this run?")) return;
     try {
-      await apiDelete(`/api/history/${runId}`)
-      setRuns(runs.filter((r) => r.id !== runId))
-      if (selectedRun?.id === runId) setSelectedRun(null)
+      await apiDelete(`/api/history/${runId}`);
+      setRuns(runs.filter((r) => r.id !== runId));
+      if (selectedRun?.id === runId) setSelectedRun(null);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
   const filteredRuns = runs.filter((run) => {
-    if (!search) return true
-    const q = search.toLowerCase()
+    if (!search) return true;
+    const q = search.toLowerCase();
     return (
       (run.jd_text && run.jd_text.toLowerCase().includes(q)) ||
       (run.jd_source && run.jd_source.toLowerCase().includes(q))
-    )
-  })
+    );
+  });
 
   const getScoreColor = (score) => {
-    if (score === null || score === undefined) return "var(--text-faint)"
-    if (score >= 0.75) return "var(--color-gold-light)"
-    if (score >= 0.5) return "var(--color-gold)"
-    return "var(--color-silver)"
-  }
+    if (score === null || score === undefined) return "var(--text-faint)";
+    if (score >= 0.75) return "var(--color-gold-light)";
+    if (score >= 0.5) return "var(--color-gold)";
+    return "var(--color-silver)";
+  };
 
   const getStatusBadge = (status) => {
     const styles = {
@@ -81,19 +81,39 @@ export function HistoryPage() {
         color: "var(--text-faint)",
         border: "1px solid var(--border)",
       },
-    }
-    return styles[status] || styles.pending
-  }
+    };
+    return styles[status] || styles.pending;
+  };
 
   return (
     <Layout>
       {/* History header */}
       <section style={{ marginTop: "48px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "22px" }}>
-          <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "22px", color: "var(--text)" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            marginBottom: "22px",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 500,
+              fontSize: "22px",
+              color: "var(--text)",
+            }}
+          >
             Application history
           </h2>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11.5px",
+              color: "var(--text-faint)",
+            }}
+          >
             {runs.length} runs
           </span>
         </div>
@@ -149,7 +169,9 @@ export function HistoryPage() {
           >
             <p style={{ color: "var(--text-soft)", fontSize: "15.5px" }}>No analysis runs yet</p>
             <p style={{ color: "var(--text-faint)", fontSize: "13px", marginTop: "4px" }}>
-              {search ? "No results match your search" : "Run your first analysis to see history here"}
+              {search
+                ? "No results match your search"
+                : "Run your first analysis to see history here"}
             </p>
           </div>
         ) : (
@@ -185,7 +207,15 @@ export function HistoryPage() {
                 >
                   <td style={{ padding: "18px 0", borderBottom: "1px solid var(--border)" }}>
                     <div>
-                      <strong style={{ display: "block", fontWeight: 600, marginBottom: "3px", color: "var(--text)", fontSize: "13.5px" }}>
+                      <strong
+                        style={{
+                          display: "block",
+                          fontWeight: 600,
+                          marginBottom: "3px",
+                          color: "var(--text)",
+                          fontSize: "13.5px",
+                        }}
+                      >
                         {run.jd_text ? run.jd_text.substring(0, 60) + "..." : "No JD text"}
                       </strong>
                       <span style={{ color: "var(--text-faint)", fontSize: "12px" }}>
@@ -206,7 +236,14 @@ export function HistoryPage() {
                   >
                     {run.overall_score !== null ? `${Math.round(run.overall_score * 100)}%` : "—"}
                   </td>
-                  <td style={{ padding: "18px 0", borderBottom: "1px solid var(--border)", fontSize: "13.5px", color: "var(--text-soft)" }}>
+                  <td
+                    style={{
+                      padding: "18px 0",
+                      borderBottom: "1px solid var(--border)",
+                      fontSize: "13.5px",
+                      color: "var(--text-soft)",
+                    }}
+                  >
                     {new Date(run.created_at).toLocaleDateString()}
                   </td>
                   <td style={{ padding: "18px 0", borderBottom: "1px solid var(--border)" }}>
@@ -232,5 +269,5 @@ export function HistoryPage() {
         )}
       </section>
     </Layout>
-  )
+  );
 }

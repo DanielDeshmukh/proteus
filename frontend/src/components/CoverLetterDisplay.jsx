@@ -1,15 +1,15 @@
-import { useState } from "react"
+import { useState } from "react";
 
 export function CoverLetterDisplay({ coverLetter }) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
-  if (!coverLetter) return null
+  if (!coverLetter) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(coverLetter.full_letter)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    navigator.clipboard.writeText(coverLetter.full_letter);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -31,7 +31,14 @@ export function CoverLetterDisplay({ coverLetter }) {
             transition: "all .15s ease",
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          >
             <rect x="9" y="9" width="13" height="13" rx="2" />
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
           </svg>
@@ -96,5 +103,5 @@ export function CoverLetterDisplay({ coverLetter }) {
         </div>
       )}
     </div>
-  )
+  );
 }

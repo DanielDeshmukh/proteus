@@ -1,5 +1,12 @@
-export function Button({ children, variant = "primary", disabled = false, onClick, className = "" }) {
-  const base = "font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+export function Button({
+  children,
+  variant = "primary",
+  disabled = false,
+  onClick,
+  className = "",
+}) {
+  const base =
+    "font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
   const variants = {
     primary: {
       background: "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))",
@@ -38,18 +45,13 @@ export function Button({ children, variant = "primary", disabled = false, onClic
       fontSize: "12.5px",
       fontWeight: 500,
     },
-  }
+  };
 
-  const style = { ...variants[variant] }
+  const style = { ...variants[variant] };
 
   return (
-    <button
-      className={`${base} ${className}`}
-      style={style}
-      disabled={disabled}
-      onClick={onClick}
-    >
+    <button className={`${base} ${className}`} style={style} disabled={disabled} onClick={onClick}>
       {children}
     </button>
-  )
+  );
 }

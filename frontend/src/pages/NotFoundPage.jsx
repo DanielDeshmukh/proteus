@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import { Layout } from "../components/Layout"
+import { Link } from "react-router-dom";
+import { Layout } from "../components/Layout";
 
 export function NotFoundPage() {
   return (
@@ -48,8 +48,8 @@ export function NotFoundPage() {
             lineHeight: 1.7,
           }}
         >
-          The page you're looking for doesn't exist or has been moved.
-          Head back to the dashboard to run an analysis.
+          The page you're looking for doesn't exist or has been moved. Head back to the dashboard to
+          run an analysis.
         </p>
 
         <Link
@@ -70,12 +70,19 @@ export function NotFoundPage() {
             transition: "filter .15s ease",
           }}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
           Back to dashboard
         </Link>
       </div>
     </Layout>
-  )
+  );
 }

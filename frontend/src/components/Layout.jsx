@@ -1,13 +1,13 @@
-import { Link, useLocation } from "react-router-dom"
-import { DotBackground } from "./DotBackground"
+import { Link, useLocation } from "react-router-dom";
+import { DotBackground } from "./DotBackground";
 
 const navItems = [
   { path: "/", label: "Dashboard" },
   { path: "/history", label: "History" },
-]
+];
 
 export function Layout({ children }) {
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <div className="min-h-screen" style={{ background: "transparent" }}>
@@ -70,7 +70,10 @@ export function Layout({ children }) {
                 to={item.path}
                 style={{
                   fontSize: "14px",
-                  color: location.pathname === item.path ? "var(--color-gold-light)" : "var(--text-soft)",
+                  color:
+                    location.pathname === item.path
+                      ? "var(--color-gold-light)"
+                      : "var(--text-soft)",
                   position: "relative",
                   paddingBottom: "4px",
                   transition: "color .15s ease",
@@ -108,5 +111,5 @@ export function Layout({ children }) {
         {children}
       </main>
     </div>
-  )
+  );
 }

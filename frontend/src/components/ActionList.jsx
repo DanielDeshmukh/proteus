@@ -1,5 +1,5 @@
 export function ActionList({ actions }) {
-  if (!actions || actions.length === 0) return null
+  if (!actions || actions.length === 0) return null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -35,7 +35,14 @@ export function ActionList({ actions }) {
             #{action.priority}
           </span>
           <div>
-            <h4 style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text)", marginBottom: "6px" }}>
+            <h4
+              style={{
+                fontSize: "14.5px",
+                fontWeight: 600,
+                color: "var(--text)",
+                marginBottom: "6px",
+              }}
+            >
               {action.action}
             </h4>
             <p style={{ fontSize: "13px", color: "var(--text-soft)", lineHeight: 1.65 }}>
@@ -45,5 +52,5 @@ export function ActionList({ actions }) {
         </div>
       ))}
     </div>
-  )
+  );
 }

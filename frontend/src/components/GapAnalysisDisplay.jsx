@@ -1,5 +1,5 @@
 export function GapAnalysisDisplay({ gaps }) {
-  if (!gaps || !gaps.gaps || gaps.gaps.length === 0) return null
+  if (!gaps || !gaps.gaps || gaps.gaps.length === 0) return null;
 
   const severityStyles = {
     missing: {
@@ -17,13 +17,13 @@ export function GapAnalysisDisplay({ gaps }) {
       color: "var(--color-silver)",
       border: "1px solid rgba(125, 138, 150, 0.22)",
     },
-  }
+  };
 
   const severityLabels = {
     missing: "Critical",
     partial: "Moderate",
     matched: "Minor",
-  }
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -57,18 +57,31 @@ export function GapAnalysisDisplay({ gaps }) {
             {severityLabels[gap.status] || gap.status}
           </span>
           <div>
-            <h4 style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--text)", marginBottom: "6px" }}>
+            <h4
+              style={{
+                fontSize: "14.5px",
+                fontWeight: 600,
+                color: "var(--text)",
+                marginBottom: "6px",
+              }}
+            >
               {gap.requirement}
             </h4>
             <p style={{ fontSize: "13px", color: "var(--text-soft)", lineHeight: 1.65 }}>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--color-gold)" }}>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "12px",
+                  color: "var(--color-gold)",
+                }}
+              >
                 {Math.round(gap.similarity_score * 100)}%
-              </span>
-              {" "}match — {gap.category}
+              </span>{" "}
+              match — {gap.category}
             </p>
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }

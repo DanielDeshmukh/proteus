@@ -1,93 +1,97 @@
-import { useState } from "react"
-import { Layout } from "../components/Layout"
-import { JDInput } from "../components/JDInput"
-import { ResumeInput } from "../components/ResumeInput"
-import { Card } from "../components/Card"
-import { Spinner } from "../components/Spinner"
-import { Toast } from "../components/Toast"
-import { ScoreDisplay } from "../components/ScoreDisplay"
-import { GapAnalysisDisplay } from "../components/GapAnalysisDisplay"
-import { RewriteDisplay } from "../components/RewriteDisplay"
-import { CoverLetterDisplay } from "../components/CoverLetterDisplay"
-import { ActionList } from "../components/ActionList"
-import { apiPost, apiPostStream } from "../api"
+import { useState } from "react";
+import { Layout } from "../components/Layout";
+import { JDInput } from "../components/JDInput";
+import { ResumeInput } from "../components/ResumeInput";
+import { Card } from "../components/Card";
+import { Spinner } from "../components/Spinner";
+import { Toast } from "../components/Toast";
+import { ScoreDisplay } from "../components/ScoreDisplay";
+import { GapAnalysisDisplay } from "../components/GapAnalysisDisplay";
+import { RewriteDisplay } from "../components/RewriteDisplay";
+import { CoverLetterDisplay } from "../components/CoverLetterDisplay";
+import { ActionList } from "../components/ActionList";
+import { apiPost, apiPostStream } from "../api";
 
 const pipelineStages = [
-  { num: "01", name: "Parse", desc: "Extracts role, requirements, and seniority signal from the JD" },
+  {
+    num: "01",
+    name: "Parse",
+    desc: "Extracts role, requirements, and seniority signal from the JD",
+  },
   { num: "02", name: "Calibrate", desc: "Scores semantic match via embedding similarity" },
   { num: "03", name: "Map", desc: "Ranks gaps between resume and requirements" },
   { num: "04", name: "Rewrite", desc: "Drafts JD-aware rewrites for weak bullets" },
   { num: "05", name: "Draft", desc: "Writes a cover letter from the same context" },
-]
+];
 
 export function AnalyzePage() {
-  const [jd, setJd] = useState(null)
-  const [resume, setResume] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [result, setResult] = useState(null)
+  const [jd, setJd] = useState(null);
+  const [resume, setResume] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
 
-  const canAnalyze = jd && resume
+  const canAnalyze = jd && resume;
 
   const handleAnalyze = async () => {
-    if (!canAnalyze) return
-    setLoading(true)
-    setError(null)
-    setResult(null)
+    if (!canAnalyze) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
 
-    const useStreaming = jd.type === "text" && resume.type === "text"
+    const useStreaming = jd.type === "text" && resume.type === "text";
 
     try {
       if (useStreaming) {
-        const formData = new FormData()
-        formData.append("jd_text", jd.value)
-        formData.append("resume_text", resume.value)
+        const formData = new FormData();
+        formData.append("jd_text", jd.value);
+        formData.append("resume_text", resume.value);
 
-        const partial = { run_id: null, timings: {} }
+        const partial = { run_id: null, timings: {} };
         await apiPostStream("/api/analyze/stream", formData, (event) => {
           if (event.event === "started") {
-            partial.run_id = event.run_id
+            partial.run_id = event.run_id;
           } else if (event.event === "gap_analysis") {
-            partial.gap_analysis = event.data
+            partial.gap_analysis = event.data;
           } else if (event.event === "rewrites") {
-            partial.rewrite_suggestions = event.data
+            partial.rewrite_suggestions = event.data;
           } else if (event.event === "cover_letter") {
-            partial.cover_letter = event.data
+            partial.cover_letter = event.data;
           } else if (event.event === "result") {
-            partial.overall_score = event.data.overall_score
-            partial.section_scores = event.data.section_scores
-            partial.action_list = event.data.action_list
+            partial.overall_score = event.data.overall_score;
+            partial.section_scores = event.data.section_scores;
+            partial.action_list = event.data.action_list;
           } else if (event.event === "done") {
-            partial.run_id = event.run_id
-            partial.timings = { total: 0 }
-            setResult({ ...partial })
+            partial.run_id = event.run_id;
+            partial.timings = { total: 0 };
+            setResult({ ...partial });
           } else if (event.event === "error") {
-            throw new Error(event.message)
+            throw new Error(event.message);
           }
-        })
+        });
       } else {
-        const formData = new FormData()
+        const formData = new FormData();
         if (jd.type === "text") {
-          formData.append("jd_text", jd.value)
+          formData.append("jd_text", jd.value);
         } else if (jd.type === "url") {
-          formData.append("jd_url", jd.value)
+          formData.append("jd_url", jd.value);
         } else if (jd.type === "file") {
-          formData.append("jd_file", jd.value)
+          formData.append("jd_file", jd.value);
         }
         if (resume.type === "text") {
-          formData.append("resume_text", resume.value)
+          formData.append("resume_text", resume.value);
         } else if (resume.type === "file") {
-          formData.append("resume_file", resume.value)
+          formData.append("resume_file", resume.value);
         }
-        const data = await apiPost("/api/analyze", formData)
-        setResult(data)
+        const data = await apiPost("/api/analyze", formData);
+        setResult(data);
       }
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Layout>
@@ -117,8 +121,10 @@ export function AnalyzePage() {
             color: "var(--text)",
           }}
         >
-          One pipeline. One JD.<br />
-          Every output stays <em style={{ fontStyle: "italic", color: "var(--color-gold-light)" }}>consistent.</em>
+          One pipeline. One JD.
+          <br />
+          Every output stays{" "}
+          <em style={{ fontStyle: "italic", color: "var(--color-gold-light)" }}>consistent.</em>
         </h1>
         <p
           style={{
@@ -129,15 +135,19 @@ export function AnalyzePage() {
             lineHeight: 1.75,
           }}
         >
-          Paste, upload, or link a job description and your resume. Proteus runs both through a five-agent
-          pipeline and returns a semantic match score, a gap analysis, bullet-level rewrites, and a cover letter.
+          Paste, upload, or link a job description and your resume. Proteus runs both through a
+          five-agent pipeline and returns a semantic match score, a gap analysis, bullet-level
+          rewrites, and a cover letter.
         </p>
       </section>
 
       {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
 
       {/* Workspace */}
-      <section className="workspace-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "48px" }}>
+      <section
+        className="workspace-grid"
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "48px" }}
+      >
         <div
           style={{
             background: "var(--surface)",
@@ -170,7 +180,16 @@ export function AnalyzePage() {
       </section>
 
       {/* Run button */}
-      <div style={{ marginTop: "28px", display: "flex", alignItems: "center", justifyContent: "center", gap: "20px", flexDirection: "column" }}>
+      <div
+        style={{
+          marginTop: "28px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "20px",
+          flexDirection: "column",
+        }}
+      >
         <button
           onClick={handleAnalyze}
           disabled={!canAnalyze || loading}
@@ -180,7 +199,10 @@ export function AnalyzePage() {
             fontSize: "14.5px",
             letterSpacing: "0.02em",
             color: "var(--color-gold-light)",
-            background: canAnalyze && !loading ? "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))" : "var(--surface-raised)",
+            background:
+              canAnalyze && !loading
+                ? "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))"
+                : "var(--surface-raised)",
             border: "none",
             borderRadius: "var(--radius-md)",
             padding: "15px 36px",
@@ -200,13 +222,22 @@ export function AnalyzePage() {
           ) : (
             <>
               Run Proteus pipeline
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
             </>
           )}
         </button>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}>
+        <span
+          style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}
+        >
           {result ? `Completed in ${result.timings?.total?.toFixed(1)}s` : "Ready to analyze"}
         </span>
       </div>
@@ -220,9 +251,31 @@ export function AnalyzePage() {
           borderBottom: "1px solid var(--border)",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "36px" }}>
-          <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)" }}>Pipeline</h3>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            marginBottom: "36px",
+          }}
+        >
+          <h3
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 500,
+              fontSize: "16px",
+              color: "var(--text)",
+            }}
+          >
+            Pipeline
+          </h3>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "11.5px",
+              color: "var(--text-faint)",
+            }}
+          >
             Five agents · shared JD context · NVIDIA NIM
           </span>
         </div>
@@ -279,14 +332,35 @@ export function AnalyzePage() {
                 />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--color-gold)", letterSpacing: "0.1em" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "11px",
+                    color: "var(--color-gold)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
                   {stage.num}
                 </span>
-                <span style={{ fontFamily: "var(--font-display)", fontSize: "15px", fontWeight: 500, color: "var(--text)" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    color: "var(--text)",
+                  }}
+                >
                   {stage.name}
                 </span>
               </div>
-              <p style={{ fontSize: "12px", color: "var(--text-soft)", maxWidth: "160px", lineHeight: 1.5 }}>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "var(--text-soft)",
+                  maxWidth: "160px",
+                  lineHeight: 1.5,
+                }}
+              >
                 {stage.desc}
               </p>
             </div>
@@ -297,7 +371,14 @@ export function AnalyzePage() {
       {/* Results */}
       {result && (
         <section style={{ marginTop: "52px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+              marginBottom: "28px",
+            }}
+          >
             <div>
               <p
                 style={{
@@ -311,11 +392,24 @@ export function AnalyzePage() {
               >
                 Run result
               </p>
-              <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "26px", color: "var(--text)" }}>
+              <h2
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 500,
+                  fontSize: "26px",
+                  color: "var(--text)",
+                }}
+              >
                 Analysis Complete
               </h2>
             </div>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}>
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "11.5px",
+                color: "var(--text-faint)",
+              }}
+            >
               Completed just now
             </span>
           </div>
@@ -327,9 +421,23 @@ export function AnalyzePage() {
 
             {result.gap_analysis && (
               <Card>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
                   <div>
-                    <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)" }}>
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 500,
+                        fontSize: "17px",
+                        color: "var(--text)",
+                      }}
+                    >
                       Gap analysis
                     </h3>
                     <p style={{ fontSize: "12.5px", color: "var(--text-faint)", marginTop: "4px" }}>
@@ -343,9 +451,23 @@ export function AnalyzePage() {
 
             {result.rewrite_suggestions && (
               <Card>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
                   <div>
-                    <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)" }}>
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 500,
+                        fontSize: "17px",
+                        color: "var(--text)",
+                      }}
+                    >
                       Rewrite suggestions
                     </h3>
                     <p style={{ fontSize: "12.5px", color: "var(--text-faint)", marginTop: "4px" }}>
@@ -359,9 +481,23 @@ export function AnalyzePage() {
 
             {result.cover_letter && (
               <Card>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
                   <div>
-                    <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)" }}>
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 500,
+                        fontSize: "17px",
+                        color: "var(--text)",
+                      }}
+                    >
                       Cover letter
                     </h3>
                     <p style={{ fontSize: "12.5px", color: "var(--text-faint)", marginTop: "4px" }}>
@@ -375,9 +511,23 @@ export function AnalyzePage() {
 
             {result.action_list && result.action_list.length > 0 && (
               <Card>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
                   <div>
-                    <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)" }}>
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 500,
+                        fontSize: "17px",
+                        color: "var(--text)",
+                      }}
+                    >
                       Priority actions
                     </h3>
                     <p style={{ fontSize: "12.5px", color: "var(--text-faint)", marginTop: "4px" }}>
@@ -389,12 +539,20 @@ export function AnalyzePage() {
               </Card>
             )}
 
-            <div style={{ textAlign: "center", fontSize: "11.5px", color: "var(--text-faint)", paddingBottom: "16px", fontFamily: "var(--font-mono)" }}>
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "11.5px",
+                color: "var(--text-faint)",
+                paddingBottom: "16px",
+                fontFamily: "var(--font-mono)",
+              }}
+            >
               Run ID: {result.run_id} | {result.timings?.total?.toFixed(1)}s
             </div>
           </div>
         </section>
       )}
     </Layout>
-  )
+  );
 }
