@@ -236,6 +236,7 @@ def test_rewrite_impact_score_boundary():
 def test_all_tones():
     for tone in Tone:
         cl = CoverLetterOutput(
+            job_title="Engineer",
             full_letter="Letter", sections=[CoverLetterSection(heading="Body", content="Text")],
             tone=tone, key_points_addressed=[], word_count=10,
         )
@@ -247,6 +248,7 @@ def test_cover_letter_many_sections():
         CoverLetterSection(heading=f"Section {i}", content=f"Content {i}") for i in range(10)
     ]
     cl = CoverLetterOutput(
+        job_title="Senior Engineer",
         full_letter="Long letter", sections=sections,
         tone=Tone.PROFESSIONAL, key_points_addressed=["A", "B"], word_count=500,
     )
@@ -255,6 +257,7 @@ def test_cover_letter_many_sections():
 
 def test_cover_letter_zero_word_count():
     cl = CoverLetterOutput(
+        job_title="Intern",
         full_letter="", sections=[CoverLetterSection(heading="Empty", content="")],
         tone=Tone.CONCISE, key_points_addressed=[], word_count=0,
     )
@@ -263,6 +266,7 @@ def test_cover_letter_zero_word_count():
 
 def test_cover_letter_many_key_points():
     cl = CoverLetterOutput(
+        job_title="Platform Engineer",
         full_letter="Letter", sections=[CoverLetterSection(heading="Body", content="Text")],
         tone=Tone.ENTHUSIASTIC,
         key_points_addressed=["Python", "Go", "AWS", "Kubernetes", "Docker", "Terraform"],
