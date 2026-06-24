@@ -13,6 +13,7 @@ from parsers.pdf_parser import parse_pdf_bytes
 from parsers.docx_parser import parse_docx_bytes
 from parsers.jd_url_fetcher import fetch_jd_from_url
 from agents.cover_letter_models import Tone
+from rate_limit import RateLimitMiddleware
 
 
 ENV = os.environ.get("PROTEUS_ENV", "production")
@@ -41,6 +42,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_middleware(RateLimitMiddleware, max_requests=30, window_seconds=60)
 
 
 class AnalyzeRequest(BaseModel):
