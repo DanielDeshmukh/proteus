@@ -4,6 +4,7 @@ from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, To
 
 def test_cover_letter_model_valid():
     output = CoverLetterOutput(
+        job_title="Backend Engineer",
         full_letter="Dear Hiring Manager,\n\nI am excited to apply...",
         sections=[
             CoverLetterSection(heading="Opening", content="I am excited to apply..."),
@@ -13,6 +14,7 @@ def test_cover_letter_model_valid():
         key_points_addressed=["Python", "PostgreSQL"],
         word_count=250,
     )
+    assert output.job_title == "Backend Engineer"
     assert output.tone == Tone.PROFESSIONAL
     assert output.word_count == 250
     assert len(output.sections) == 2
@@ -20,12 +22,14 @@ def test_cover_letter_model_valid():
 
 def test_cover_letter_model_minimal():
     output = CoverLetterOutput(
+        job_title="Developer",
         full_letter="Short letter",
         sections=[CoverLetterSection(heading="Body", content="Short letter")],
         tone=Tone.CONCISE,
         key_points_addressed=[],
         word_count=4,
     )
+    assert output.job_title == "Developer"
     assert output.tone == Tone.CONCISE
 
 
@@ -43,6 +47,7 @@ def test_cover_letter_sections():
         CoverLetterSection(heading="Closing", content="I look forward..."),
     ]
     output = CoverLetterOutput(
+        job_title="Software Engineer",
         full_letter="\n\n".join(s.content for s in sections),
         sections=sections,
         tone=Tone.PROFESSIONAL,
@@ -56,6 +61,7 @@ def test_cover_letter_sections():
 
 def test_cover_letter_key_points():
     output = CoverLetterOutput(
+        job_title="Data Scientist",
         full_letter="Letter text",
         sections=[CoverLetterSection(heading="Body", content="Letter text")],
         tone=Tone.ENTHUSIASTIC,

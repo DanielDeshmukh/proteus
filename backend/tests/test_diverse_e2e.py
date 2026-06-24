@@ -79,6 +79,7 @@ def _mock_rewrites(count=2):
 
 def _mock_cover(tone=Tone.PROFESSIONAL):
     return CoverLetterOutput(
+        job_title="Software Engineer",
         full_letter="Dear Hiring Team,\n\nI am excited to apply...",
         sections=[CoverLetterSection(heading="Opening", content="I am excited...")],
         key_points_addressed=["Python"], word_count=200, tone=tone,

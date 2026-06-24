@@ -111,6 +111,7 @@ def _mock_rewrites():
 
 def _mock_cover_letter():
     return CoverLetterOutput(
+        job_title="Senior Backend Engineer",
         full_letter="Dear Hiring Team,\n\nI'm writing to apply for the Senior Backend Engineer role...",
         sections=[
             CoverLetterSection(heading="Opening", content="I'm writing to apply..."),
