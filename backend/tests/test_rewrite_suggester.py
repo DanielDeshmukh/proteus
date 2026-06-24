@@ -1,9 +1,8 @@
-import pytest
-from agents.rewrite_models import RewriteSuggestion, RewriteOutput
-from agents.rewrite_suggester import suggest_rewrites
 from agents.gap_models import GapAnalysis, GapItem, MatchStatus
 from agents.jd_models import JDStructured
 from agents.resume_models import ResumeStructured
+from agents.rewrite_models import RewriteOutput, RewriteSuggestion
+from agents.rewrite_suggester import suggest_rewrites
 
 
 def test_rewrite_model_valid():

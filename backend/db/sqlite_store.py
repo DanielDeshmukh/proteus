@@ -1,6 +1,7 @@
-import aiosqlite
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+
+import aiosqlite
 
 DB_PATH = Path(__file__).parent / "proteus.db"
 
@@ -43,7 +44,7 @@ async def save_run(
                (created_at, jd_text, jd_source, resume_text, resume_source, status)
                VALUES (?, ?, ?, ?, ?, ?)""",
             (
-                datetime.now(timezone.utc).isoformat(),
+                datetime.now(UTC).isoformat(),
                 jd_text,
                 jd_source,
                 resume_text,

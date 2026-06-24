@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+
 from agents.gap_models import GapAnalysis, MatchStatus
 
 
@@ -56,7 +57,7 @@ def aggregate_scores(gap_analysis: GapAnalysis) -> PipelineOutput:
                 ActionItem(
                     priority=priority,
                     action=f"Add or surface experience for: {gap.requirement}",
-                    impact=f"High — currently missing from resume",
+                    impact="High — currently missing from resume",
                     category="add_skill" if gap.category in ("hard_skill", "ats_bait") else "surface_experience",
                 )
             )

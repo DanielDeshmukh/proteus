@@ -1,9 +1,9 @@
 import math
-from nim_client import embed_texts
-from agents.gap_models import GapItem, GapAnalysis, MatchStatus
+
+from agents.gap_models import GapAnalysis, GapItem, MatchStatus
 from agents.jd_models import JDStructured
 from agents.resume_models import ResumeStructured
-
+from nim_client import embed_texts
 
 EMBEDDING_MODEL = "nvidia/nv-embedqa-e5-v5"
 

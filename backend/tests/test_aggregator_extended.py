@@ -2,7 +2,8 @@
 Extended aggregator tests covering diverse gap scenarios and scoring edge cases.
 """
 import pytest
-from agents.aggregator import aggregate_scores, PipelineOutput, ActionItem
+
+from agents.aggregator import aggregate_scores
 from agents.gap_models import GapAnalysis, GapItem, MatchStatus
 
 

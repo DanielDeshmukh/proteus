@@ -1,20 +1,20 @@
-import os
 import json
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+import os
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from contextlib import asynccontextmanager
 from pydantic import BaseModel
-from typing import AsyncGenerator
 
-from db.sqlite_store import init_db, save_run, get_run, list_runs, delete_run, update_run
-from pipeline import run_pipeline
-from parsers.pdf_parser import parse_pdf_bytes
+from agents.cover_letter_models import Tone
+from db.sqlite_store import delete_run, get_run, init_db, list_runs, save_run, update_run
 from parsers.docx_parser import parse_docx_bytes
 from parsers.jd_url_fetcher import fetch_jd_from_url
-from agents.cover_letter_models import Tone
+from parsers.pdf_parser import parse_pdf_bytes
+from pipeline import run_pipeline
 from rate_limit import RateLimitMiddleware
-
 
 ENV = os.environ.get("PROTEUS_ENV", "production")
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "https://proteus-review.netlify.app")
@@ -43,7 +43,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(RateLimitMiddleware, max_requests=30, window_seconds=60)
+if ENV != "test":
+    app.add_middleware(RateLimitMiddleware, max_requests=30, window_seconds=60)
 
 
 class AnalyzeRequest(BaseModel):
