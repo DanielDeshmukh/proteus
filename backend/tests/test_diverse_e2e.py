@@ -2,33 +2,55 @@
 Comprehensive E2E tests for diverse JD + Resume combinations.
 Tests the full pipeline with mocked NIM calls across industries, seniority levels, and match qualities.
 """
-import pytest
 from unittest.mock import patch
-from httpx import AsyncClient, ASGITransport
-from main import app
-from db.sqlite_store import init_db
+
+import pytest
+from httpx import ASGITransport, AsyncClient
+
+from agents.aggregator import ActionItem, PipelineOutput
+from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, Tone
+from agents.gap_models import GapAnalysis, GapItem, MatchStatus
 from agents.jd_models import JDStructured
 from agents.resume_models import ResumeStructured
-from agents.gap_models import GapAnalysis, GapItem, MatchStatus
 from agents.rewrite_models import RewriteOutput, RewriteSuggestion
-from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, Tone
-from agents.aggregator import PipelineOutput, ActionItem
-
+from db.sqlite_store import init_db
+from main import app
 from tests.fixtures.diverse_jds import (
-    HEALTHCARE_DATA_SCIENTIST_JD, GAME_DEVELOPER_JD, DEVOPS_SRE_JD,
-    AI_ML_ENGINEER_JD, PRODUCT_MANAGER_JD, MOBILE_DEV_JD,
-    SECURITY_ENGINEER_JD, UX_DESIGNER_JD, DATA_ENGINEER_JD,
-    VP_ENGINEERING_JD, JUNIOR_FRONTEND_JD, QUANTITATIVE_ANALYST_JD,
+    AI_ML_ENGINEER_JD,
+    DATA_ENGINEER_JD,
+    DEVOPS_SRE_JD,
+    GAME_DEVELOPER_JD,
+    HEALTHCARE_DATA_SCIENTIST_JD,
+    JUNIOR_FRONTEND_JD,
+    MOBILE_DEV_JD,
+    PRODUCT_MANAGER_JD,
+    QUANTITATIVE_ANALYST_JD,
+    SECURITY_ENGINEER_JD,
+    UX_DESIGNER_JD,
+    VP_ENGINEERING_JD,
 )
 from tests.fixtures.diverse_resumes import (
-    HEALTHCARE_DS_RESUME, GAME_DEV_RESUME, SRE_RESUME,
-    AI_ML_JUNIOR_RESUME, PM_CAREER_CHANGER_RESUME, MOBILE_DEV_RESUME,
-    SECURITY_RESUME, UX_DESIGNER_RESUME, DATA_ENG_JUNIOR_RESUME,
-    VP_ENG_RESUME, JUNIOR_FRONTEND_RESUME, QUANT_JUNIOR_RESUME,
+    AI_ML_JUNIOR_RESUME,
+    DATA_ENG_JUNIOR_RESUME,
+    GAME_DEV_RESUME,
+    HEALTHCARE_DS_RESUME,
+    JUNIOR_FRONTEND_RESUME,
+    MOBILE_DEV_RESUME,
+    PM_CAREER_CHANGER_RESUME,
+    QUANT_JUNIOR_RESUME,
+    SECURITY_RESUME,
+    SRE_RESUME,
+    UX_DESIGNER_RESUME,
+    VP_ENG_RESUME,
 )
 from tests.fixtures.edge_cases import (
-    MINIMAL_JD, LONG_JD, MINIMAL_RESUME, OVERQUALIFIED_RESUME,
-    CAREER_CHANGER_RESUME, PARAGRAPH_JD, RESUME_WITH_GAPS,
+    CAREER_CHANGER_RESUME,
+    LONG_JD,
+    MINIMAL_JD,
+    MINIMAL_RESUME,
+    OVERQUALIFIED_RESUME,
+    PARAGRAPH_JD,
+    RESUME_WITH_GAPS,
 )
 
 
@@ -104,6 +126,7 @@ async def setup_db():
     await init_db()
     yield
     import os
+
     from db.sqlite_store import DB_PATH
     if os.path.exists(DB_PATH):
         os.remove(DB_PATH)

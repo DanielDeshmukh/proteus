@@ -2,13 +2,13 @@
 Extended model validation tests covering edge cases for all Pydantic models.
 """
 import pytest
-from agents.jd_models import JDStructured
-from agents.resume_models import ResumeStructured, ExperienceBullet, Project, Education, Certification
-from agents.gap_models import GapItem, GapAnalysis, MatchStatus
-from agents.rewrite_models import RewriteSuggestion, RewriteOutput
-from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, Tone
-from agents.aggregator import PipelineOutput, ActionItem
 
+from agents.aggregator import ActionItem, PipelineOutput
+from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, Tone
+from agents.gap_models import GapAnalysis, GapItem, MatchStatus
+from agents.jd_models import JDStructured
+from agents.resume_models import Certification, Education, ExperienceBullet, Project, ResumeStructured
+from agents.rewrite_models import RewriteOutput, RewriteSuggestion
 
 # --- JD Model Edge Cases ---
 

@@ -1,7 +1,8 @@
-import pytest
 from pathlib import Path
-from parsers.pdf_parser import parse_pdf, parse_pdf_bytes
 
+import pytest
+
+from parsers.pdf_parser import parse_pdf, parse_pdf_bytes
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
@@ -24,8 +25,9 @@ def test_parse_pdf_bytes_invalid():
 
 
 def test_parse_pdf_bytes_valid():
-    from pypdf import PdfWriter
     import io
+
+    from pypdf import PdfWriter
 
     writer = PdfWriter()
     writer.add_blank_page(width=612, height=792)

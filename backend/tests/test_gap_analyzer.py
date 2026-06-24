@@ -1,7 +1,8 @@
+
 import pytest
-import math
-from agents.gap_models import GapItem, GapAnalysis, MatchStatus
-from agents.gap_analyzer import cosine_similarity, _build_resume_evidence, analyze_gaps
+
+from agents.gap_analyzer import _build_resume_evidence, analyze_gaps, cosine_similarity
+from agents.gap_models import GapAnalysis, GapItem, MatchStatus
 from agents.jd_models import JDStructured
 from agents.resume_models import ResumeStructured
 

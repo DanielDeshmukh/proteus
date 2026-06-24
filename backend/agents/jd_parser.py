@@ -1,5 +1,5 @@
-from nim_client import chat_completion
 from agents.jd_models import JDStructured
+from nim_client import chat_completion
 
 JD_PARSER_MODEL = "mistralai/mistral-7b-instruct-v0.3"
 

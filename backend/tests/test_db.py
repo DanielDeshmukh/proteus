@@ -1,7 +1,9 @@
 import os
-import pytest
+
 import aiosqlite
-from db.sqlite_store import init_db, save_run, get_run, list_runs, delete_run, DB_PATH
+import pytest
+
+from db.sqlite_store import DB_PATH, delete_run, get_run, init_db, list_runs, save_run
 
 
 @pytest.fixture

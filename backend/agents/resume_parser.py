@@ -1,5 +1,5 @@
-from nim_client import chat_completion
 from agents.resume_models import ResumeStructured
+from nim_client import chat_completion
 
 RESUME_PARSER_MODEL = "mistralai/mistral-7b-instruct-v0.3"
 

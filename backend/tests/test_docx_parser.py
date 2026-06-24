@@ -1,5 +1,6 @@
+
 import pytest
-from pathlib import Path
+
 from parsers.docx_parser import parse_docx, parse_docx_bytes
 
 
@@ -30,8 +31,9 @@ def test_parse_docx_valid(tmp_path):
 
 
 def test_parse_docx_bytes_valid():
-    from docx import Document
     import io
+
+    from docx import Document
 
     doc = Document()
     doc.add_paragraph("Test content from bytes")

@@ -1,20 +1,19 @@
 import asyncio
-import time
 import logging
+import time
 from dataclasses import dataclass, field
 
-from agents.jd_parser import parse_jd
-from agents.resume_parser import parse_resume
-from agents.gap_analyzer import analyze_gaps
-from agents.rewrite_suggester import suggest_rewrites
+from agents.aggregator import PipelineOutput, aggregate_scores
 from agents.cover_letter import generate_cover_letter
-from agents.cover_letter_models import Tone
-from agents.aggregator import aggregate_scores, PipelineOutput
+from agents.cover_letter_models import CoverLetterOutput, Tone
+from agents.gap_analyzer import analyze_gaps
 from agents.gap_models import GapAnalysis
 from agents.jd_models import JDStructured
+from agents.jd_parser import parse_jd
 from agents.resume_models import ResumeStructured
+from agents.resume_parser import parse_resume
 from agents.rewrite_models import RewriteOutput
-from agents.cover_letter_models import CoverLetterOutput
+from agents.rewrite_suggester import suggest_rewrites
 
 logger = logging.getLogger("proteus.pipeline")
 

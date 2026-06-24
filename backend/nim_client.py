@@ -1,6 +1,6 @@
 import os
-from openai import OpenAI
 
+from openai import OpenAI
 
 NIM_BASE_URL = "https://integrate.api.nvidia.com/v1"
 

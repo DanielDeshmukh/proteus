@@ -1,8 +1,9 @@
+
 import pytest
-import json
-from httpx import AsyncClient, ASGITransport
-from main import app
+from httpx import ASGITransport, AsyncClient
+
 from db.sqlite_store import init_db
+from main import app
 
 
 @pytest.fixture(autouse=True)
@@ -10,6 +11,7 @@ async def setup_db():
     await init_db()
     yield
     import os
+
     from db.sqlite_store import DB_PATH
     if os.path.exists(DB_PATH):
         os.remove(DB_PATH)

@@ -1,10 +1,7 @@
 import pytest
+
 from agents.resume_models import (
     ResumeStructured,
-    ExperienceBullet,
-    Project,
-    Education,
-    Certification,
 )
 
 

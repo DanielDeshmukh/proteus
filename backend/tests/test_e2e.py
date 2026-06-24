@@ -2,20 +2,20 @@
 End-to-end tests for the PROTEUS pipeline.
 Tests full flow through the API: paste JD + resume -> results -> history.
 """
-import pytest
-import json
 import time
 from unittest.mock import patch
-from httpx import AsyncClient, ASGITransport
-from main import app
-from db.sqlite_store import init_db
-from agents.jd_models import JDStructured
-from agents.resume_models import ResumeStructured, ExperienceBullet
-from agents.gap_models import GapAnalysis, GapItem, MatchStatus
-from agents.rewrite_models import RewriteOutput, RewriteSuggestion
-from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, Tone
-from agents.aggregator import PipelineOutput, ActionItem
 
+import pytest
+from httpx import ASGITransport, AsyncClient
+
+from agents.aggregator import ActionItem, PipelineOutput
+from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, Tone
+from agents.gap_models import GapAnalysis, GapItem, MatchStatus
+from agents.jd_models import JDStructured
+from agents.resume_models import ExperienceBullet, ResumeStructured
+from agents.rewrite_models import RewriteOutput, RewriteSuggestion
+from db.sqlite_store import init_db
+from main import app
 
 SAMPLE_JD = """Senior Backend Engineer — Veridian Health
 
@@ -140,6 +140,7 @@ async def setup_db():
     await init_db()
     yield
     import os
+
     from db.sqlite_store import DB_PATH
     if os.path.exists(DB_PATH):
         os.remove(DB_PATH)

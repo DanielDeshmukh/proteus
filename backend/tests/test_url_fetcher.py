@@ -1,4 +1,5 @@
 import pytest
+
 from parsers.jd_url_fetcher import fetch_jd_from_url
 
 

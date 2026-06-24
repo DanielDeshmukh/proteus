@@ -1,9 +1,10 @@
 import json
-from nim_client import chat_completion
-from agents.rewrite_models import RewriteSuggestion, RewriteOutput
-from agents.gap_models import GapAnalysis, GapItem, MatchStatus
+
+from agents.gap_models import GapAnalysis, MatchStatus
 from agents.jd_models import JDStructured
 from agents.resume_models import ResumeStructured
+from agents.rewrite_models import RewriteOutput
+from nim_client import chat_completion
 
 REWRITE_MODEL = "meta/llama-3.3-70b-instruct"
 

@@ -1,4 +1,3 @@
-import pytest
 from agents.cover_letter_models import CoverLetterOutput, CoverLetterSection, Tone
 
 

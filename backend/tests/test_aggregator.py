@@ -1,5 +1,4 @@
-import pytest
-from agents.aggregator import aggregate_scores, PipelineOutput, ActionItem
+from agents.aggregator import ActionItem, PipelineOutput, aggregate_scores
 from agents.gap_models import GapAnalysis, GapItem, MatchStatus
 
 

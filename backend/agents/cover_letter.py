@@ -1,9 +1,10 @@
 import json
-from nim_client import chat_completion
+
 from agents.cover_letter_models import CoverLetterOutput, Tone
+from agents.gap_models import GapAnalysis
 from agents.jd_models import JDStructured
 from agents.resume_models import ResumeStructured
-from agents.gap_models import GapAnalysis
+from nim_client import chat_completion
 
 COVER_LETTER_MODEL = "meta/llama-3.3-70b-instruct"
 
