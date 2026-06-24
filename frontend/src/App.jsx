@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { AnalyzePage } from "./pages/AnalyzePage"
-import { HistoryPage } from "./pages/HistoryPage"
-import { NotFoundPage } from "./pages/NotFoundPage"
-import { ErrorPage } from "./pages/ErrorPage"
-import { ErrorBoundary } from "./components/ErrorBoundary"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AnalyzePage } from "./pages/AnalyzePage";
+import { HistoryPage } from "./pages/HistoryPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { ErrorPage } from "./pages/ErrorPage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>
-  )
+  );
 }
 
-export default App
+export default App;

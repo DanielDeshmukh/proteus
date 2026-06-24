@@ -1,10 +1,10 @@
-import { Link, useRouteError } from "react-router-dom"
-import { Layout } from "../components/Layout"
+import { Link, useRouteError } from "react-router-dom";
+import { Layout } from "../components/Layout";
 
 export function ErrorPage() {
-  const error = useRouteError()
-  const status = error?.status || 500
-  const message = error?.statusText || error?.message || "An unexpected error occurred"
+  const error = useRouteError();
+  const status = error?.status || 500;
+  const message = error?.statusText || error?.message || "An unexpected error occurred";
 
   return (
     <Layout>
@@ -75,7 +75,14 @@ export function ErrorPage() {
               textDecoration: "none",
             }}
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Back to dashboard
@@ -100,5 +107,5 @@ export function ErrorPage() {
         </div>
       </div>
     </Layout>
-  )
+  );
 }

@@ -2,7 +2,9 @@ export function TextArea({ label, placeholder, value, onChange, rows = 8, error 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
       {label && (
-        <label style={{ fontSize: "13.5px", fontWeight: 500, color: "var(--text-soft)" }}>{label}</label>
+        <label style={{ fontSize: "13.5px", fontWeight: 500, color: "var(--text-soft)" }}>
+          {label}
+        </label>
       )}
       <textarea
         style={{
@@ -24,5 +26,5 @@ export function TextArea({ label, placeholder, value, onChange, rows = 8, error 
       />
       {error && <p style={{ fontSize: "13px", color: "#ff6b6b" }}>{error}</p>}
     </div>
-  )
+  );
 }

@@ -1,18 +1,18 @@
-import { Component } from "react"
-import { Link } from "react-router-dom"
+import { Component } from "react";
+import { Link } from "react-router-dom";
 
 export class ErrorBoundary extends Component {
   constructor(props) {
-    super(props)
-    this.state = { hasError: false, error: null }
+    super(props);
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught:", error, errorInfo)
+    console.error("ErrorBoundary caught:", error, errorInfo);
   }
 
   render() {
@@ -85,8 +85,8 @@ export class ErrorBoundary extends Component {
               lineHeight: 1.7,
             }}
           >
-            An unexpected error occurred while rendering this page.
-            Try refreshing or head back to the dashboard.
+            An unexpected error occurred while rendering this page. Try refreshing or head back to
+            the dashboard.
           </p>
 
           <div style={{ display: "flex", gap: "12px" }}>
@@ -107,7 +107,14 @@ export class ErrorBoundary extends Component {
                 textDecoration: "none",
               }}
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
               Back to dashboard
@@ -131,9 +138,9 @@ export class ErrorBoundary extends Component {
             </button>
           </div>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }

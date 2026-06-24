@@ -1,5 +1,5 @@
 export function RewriteDisplay({ rewrites }) {
-  if (!rewrites || !rewrites.suggestions || rewrites.suggestions.length === 0) return null
+  if (!rewrites || !rewrites.suggestions || rewrites.suggestions.length === 0) return null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
@@ -27,7 +27,14 @@ export function RewriteDisplay({ rewrites }) {
             Addresses · {suggestion.target_requirement}
           </span>
 
-          <div style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: "16px", alignItems: "start" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "70px 1fr",
+              gap: "16px",
+              alignItems: "start",
+            }}
+          >
             <span
               style={{
                 fontFamily: "var(--font-mono)",
@@ -45,7 +52,15 @@ export function RewriteDisplay({ rewrites }) {
             </span>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "70px 1fr", gap: "16px", alignItems: "start", marginTop: "10px" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "70px 1fr",
+              gap: "16px",
+              alignItems: "start",
+              marginTop: "10px",
+            }}
+          >
             <span
               style={{
                 fontFamily: "var(--font-mono)",
@@ -64,7 +79,14 @@ export function RewriteDisplay({ rewrites }) {
           </div>
 
           {suggestion.rationale && (
-            <p style={{ fontSize: "12px", color: "var(--text-faint)", marginTop: "12px", lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: "12px",
+                color: "var(--text-faint)",
+                marginTop: "12px",
+                lineHeight: 1.6,
+              }}
+            >
               {suggestion.rationale}
             </p>
           )}
@@ -80,16 +102,27 @@ export function RewriteDisplay({ rewrites }) {
             borderRadius: "var(--radius-md)",
           }}
         >
-          <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-gold-light)", marginBottom: "6px" }}>
+          <p
+            style={{
+              fontSize: "13px",
+              fontWeight: 600,
+              color: "var(--color-gold-light)",
+              marginBottom: "6px",
+            }}
+          >
             Hidden Experience Detected
           </p>
-          <ul style={{ fontSize: "13px", color: "var(--color-gold)", margin: 0, paddingLeft: "16px" }}>
+          <ul
+            style={{ fontSize: "13px", color: "var(--color-gold)", margin: 0, paddingLeft: "16px" }}
+          >
             {rewrites.hidden_experience.map((exp, i) => (
-              <li key={i} style={{ marginBottom: "2px" }}>{exp}</li>
+              <li key={i} style={{ marginBottom: "2px" }}>
+                {exp}
+              </li>
             ))}
           </ul>
         </div>
       )}
     </div>
-  )
+  );
 }

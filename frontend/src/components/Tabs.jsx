@@ -34,5 +34,5 @@ export function Tabs({ tabs, activeTab, onTabChange }) {
         </button>
       ))}
     </div>
-  )
+  );
 }

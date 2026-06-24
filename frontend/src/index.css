@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -15,7 +15,7 @@
   --surface-raised: #20242a;
   --surface-sunken: #0d0f11;
   --border: rgba(125, 138, 150, 0.16);
-  --border-strong: rgba(201, 169, 98, 0.30);
+  --border-strong: rgba(201, 169, 98, 0.3);
   --text: #f4f0e8;
   --text-soft: var(--color-silver);
   --text-faint: rgba(125, 138, 150, 0.55);
@@ -24,9 +24,9 @@
   --radius-md: 10px;
   --radius-lg: 18px;
 
-  --font-display: 'Fraunces', serif;
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: "Fraunces", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 * {
@@ -35,7 +35,8 @@
   padding: 0;
 }
 
-html, body {
+html,
+body {
   background: transparent;
   color: var(--text);
   font-family: var(--font-sans);
