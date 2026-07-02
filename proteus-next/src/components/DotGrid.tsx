@@ -4,12 +4,14 @@ import { useEffect, useRef } from "react";
 
 const SPACING = 32;
 const BASE_RADIUS = 1.2;
-const HOVER_RADIUS = 8;
+const HOVER_RADIUS = 18;
 const DECAY_MS = 1000;
+const LERP_SPEED = 0.08;
 
 export default function DotGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -9999, y: -9999 });
+  const smoothRef = useRef({ x: -9999, y: -9999 });
   const hoverRef = useRef({ gx: -1, gy: -1, time: 0 });
   const lastHoverRef = useRef({ gx: -1, gy: -1, time: 0 });
   const rafRef = useRef(0);
@@ -39,6 +41,10 @@ export default function DotGrid() {
       const my = mouseRef.current.y;
       const now = performance.now();
 
+      const sm = smoothRef.current;
+      sm.x += (mx - sm.x) * LERP_SPEED;
+      sm.y += (my - sm.y) * LERP_SPEED;
+
       const cur = hoverRef.current;
       const prev = lastHoverRef.current;
 
@@ -57,8 +63,8 @@ export default function DotGrid() {
           let boost = 0;
 
           if (cur.gx >= 0) {
-            const dx = mx - cx;
-            const dy = my - cy;
+            const dx = sm.x - cx;
+            const dy = sm.y - cy;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < HOVER_RADIUS) {
               const t = 1 - dist / HOVER_RADIUS;
