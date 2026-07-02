@@ -3,22 +3,22 @@
 import { useEffect, useRef } from "react";
 
 const SPACING = 32;
-const BASE_RADIUS = 1;
-const HOVER_SCALE = 0.005;
-const HOVER_RADIUS = 20;
+const BASE_RADIUS = 1.2;
+const HOVER_RADIUS = 8;
+const DECAY_MS = 1000;
 
 export default function DotGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -9999, y: -9999 });
-  const hoveredRef = useRef({ gx: -1, gy: -1 });
+  const hoverRef = useRef({ gx: -1, gy: -1, time: 0 });
+  const lastHoverRef = useRef({ gx: -1, gy: -1, time: 0 });
+  const rafRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    let raf: number;
 
     function resize() {
       const dpr = window.devicePixelRatio || 1;
@@ -27,7 +27,6 @@ export default function DotGrid() {
       canvas!.style.width = window.innerWidth + "px";
       canvas!.style.height = window.innerHeight + "px";
       ctx!.scale(dpr, dpr);
-      render();
     }
 
     function render() {
@@ -38,8 +37,14 @@ export default function DotGrid() {
 
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-      const hgx = hoveredRef.current.gx;
-      const hgy = hoveredRef.current.gy;
+      const now = performance.now();
+
+      const cur = hoverRef.current;
+      const prev = lastHoverRef.current;
+
+      const elapsed = now - cur.time;
+      const decay = Math.min(elapsed / DECAY_MS, 1);
+      const fade = 1 - decay * decay;
 
       const cols = Math.ceil(w / SPACING) + 1;
       const rows = Math.ceil(h / SPACING) + 1;
@@ -49,29 +54,41 @@ export default function DotGrid() {
           const cx = c * SPACING;
           const cy = r * SPACING;
 
-          let scale = 1;
-          if (c === hgx && r === hgy) {
-            scale = HOVER_SCALE;
-          } else {
+          let boost = 0;
+
+          if (cur.gx >= 0) {
             const dx = mx - cx;
             const dy = my - cy;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < HOVER_RADIUS) {
-              const t = dist / HOVER_RADIUS;
-              scale = HOVER_SCALE + (1 - HOVER_SCALE) * t * t;
+              const t = 1 - dist / HOVER_RADIUS;
+              boost = t * t * (3 - 2 * t) * fade;
             }
           }
 
-          const radius = BASE_RADIUS * scale;
-          if (radius < 0.05) continue;
+          if (boost < 0.01 && prev.gx >= 0 && decay < 1) {
+            const px = prev.gx * SPACING;
+            const py = prev.gy * SPACING;
+            const dx = px - cx;
+            const dy = py - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < HOVER_RADIUS * 2) {
+              const t = 1 - dist / (HOVER_RADIUS * 2);
+              boost = Math.max(boost, t * t * (1 - decay));
+            }
+          }
 
-          const alpha = 0.12 + 0.13 * scale;
+          const radius = BASE_RADIUS + boost * 3;
+          const alpha = 0.18 + boost * 0.6;
+
           ctx.beginPath();
           ctx.arc(cx, cy, radius, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(255,255,255,${alpha})`;
           ctx.fill();
         }
       }
+
+      rafRef.current = requestAnimationFrame(render);
     }
 
     function onMouseMove(e: MouseEvent) {
@@ -81,30 +98,27 @@ export default function DotGrid() {
       const gx = Math.round(e.clientX / SPACING);
       const gy = Math.round(e.clientY / SPACING);
 
-      if (gx !== hoveredRef.current.gx || gy !== hoveredRef.current.gy) {
-        hoveredRef.current.gx = gx;
-        hoveredRef.current.gy = gy;
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(render);
+      if (gx !== hoverRef.current.gx || gy !== hoverRef.current.gy) {
+        lastHoverRef.current = { ...hoverRef.current };
+        hoverRef.current = { gx, gy, time: performance.now() };
       }
     }
 
     function onMouseLeave() {
       mouseRef.current.x = -9999;
       mouseRef.current.y = -9999;
-      hoveredRef.current.gx = -1;
-      hoveredRef.current.gy = -1;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(render);
+      lastHoverRef.current = { ...hoverRef.current };
+      hoverRef.current = { gx: -1, gy: -1, time: performance.now() };
     }
 
     resize();
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseleave", onMouseLeave);
+    rafRef.current = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseleave", onMouseLeave);
