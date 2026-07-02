@@ -2,8 +2,8 @@ import { embedTexts } from "../nim-client";
 import type { JDStructured, ResumeStructured, GapAnalysis, GapItem } from "../../types";
 
 const EMBEDDING_MODEL = "nvidia/nv-embedqa-e5-v5";
-const MATCH_THRESHOLD = 0.70;
-const PARTIAL_THRESHOLD = 0.45;
+const MATCH_THRESHOLD = 0.55;
+const PARTIAL_THRESHOLD = 0.35;
 
 function cosineSimilarity(a: number[], b: number[]): number {
   let dot = 0;
@@ -73,10 +73,8 @@ export async function analyzeGaps(
   }
 
   const allTexts = requirements.map((r) => r[0]).concat(resumeEvidence);
-  const embeddings = await embedTexts(allTexts, EMBEDDING_MODEL);
-
-  const reqEmbeddings = embeddings.slice(0, requirements.length);
-  const resEmbeddings = embeddings.slice(requirements.length);
+  const reqEmbeddings = await embedTexts(requirements.map((r) => r[0]), EMBEDDING_MODEL, "query");
+  const resEmbeddings = await embedTexts(resumeEvidence, EMBEDDING_MODEL, "passage");
 
   const gaps: GapItem[] = [];
   for (let i = 0; i < requirements.length; i++) {

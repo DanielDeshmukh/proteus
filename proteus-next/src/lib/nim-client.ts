@@ -41,15 +41,21 @@ export async function chatCompletion(
   return response.choices[0]?.message?.content ?? "";
 }
 
+export function extractJson(text: string): string {
+  return text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+}
+
 export async function embedTexts(
   texts: string[],
-  model: string = "nvidia/nv-embedqa-e5-v5"
+  model: string = "nvidia/nv-embedqa-e5-v5",
+  inputType: "query" | "passage" = "passage"
 ): Promise<number[][]> {
   const nim = getClient();
 
   const response = await nim.embeddings.create({
     model,
     input: texts,
+    input_type: inputType,
   });
 
   return response.data.map((item) => item.embedding);

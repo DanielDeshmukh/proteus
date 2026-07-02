@@ -1,3 +1,11 @@
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Test artifacts
+test-results.log
+
 # Node
 node_modules/
 proteus-next/.next/

@@ -1,4 +1,4 @@
-import { chatCompletion } from "../nim-client";
+import { chatCompletion, extractJson } from "../nim-client";
 import { CoverLetterOutputSchema, type CoverLetterOutput, type Tone, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
 
 const COVER_LETTER_MODEL = "meta/llama-3.3-70b-instruct";
@@ -84,7 +84,7 @@ Write a ${tone} cover letter for this candidate applying to this role.`;
     temperature: 0.4,
     maxTokens: 3000,
   }).then((response) => {
-    const parsed = JSON.parse(response);
+    const parsed = JSON.parse(extractJson(response));
     return CoverLetterOutputSchema.parse(parsed);
   });
 }

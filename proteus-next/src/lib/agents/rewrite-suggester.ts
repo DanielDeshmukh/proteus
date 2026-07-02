@@ -1,4 +1,4 @@
-import { chatCompletion } from "../nim-client";
+import { chatCompletion, extractJson } from "../nim-client";
 import { RewriteOutputSchema, type RewriteOutput, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
 
 const REWRITE_MODEL = "meta/llama-3.3-70b-instruct";
@@ -84,8 +84,21 @@ Generate rewrite suggestions for the bullets above to better match these gaps.`;
     temperature: 0.3,
     maxTokens: 4096,
   }).then((response) => {
-    const parsed = JSON.parse(response);
-    const output = RewriteOutputSchema.parse(parsed);
+    const cleaned = extractJson(response);
+    console.log("[REWRITE RAW]", cleaned.substring(0, 500));
+    const parsed = JSON.parse(cleaned);
+    console.log("[REWRITE PARSED] type:", typeof parsed, "isArray:", Array.isArray(parsed), "keys:", Array.isArray(parsed) ? "array" : Object.keys(parsed));
+    
+    let normalized = parsed;
+    if (Array.isArray(parsed)) {
+      normalized = { suggestions: parsed, hidden_experience: [] };
+    } else if (parsed.suggestions && !Array.isArray(parsed.suggestions)) {
+      normalized = { ...parsed, suggestions: Object.values(parsed.suggestions) };
+    } else if (parsed.rewrite_suggestions) {
+      normalized = { suggestions: parsed.rewrite_suggestions, hidden_experience: parsed.hidden_experience || [] };
+    }
+    
+    const output = RewriteOutputSchema.parse(normalized);
     output.suggestions.sort((a, b) => b.impact_score - a.impact_score);
     return output;
   });

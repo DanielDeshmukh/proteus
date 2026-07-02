@@ -1,7 +1,7 @@
-import { chatCompletion } from "../nim-client";
+import { chatCompletion, extractJson } from "../nim-client";
 import { ResumeStructuredSchema, type ResumeStructured } from "../../types";
 
-const RESUME_PARSER_MODEL = "mistralai/mistral-7b-instruct-v0.3";
+const RESUME_PARSER_MODEL = "meta/llama-3.1-8b-instruct";
 
 const RESUME_PARSER_SYSTEM_PROMPT = `You are an expert resume analyst. Given a raw resume text, extract structured information from it.
 
@@ -52,7 +52,7 @@ export function parseResume(rawResumeText: string): Promise<ResumeStructured> {
     temperature: 0.1,
     maxTokens: 4096,
   }).then((response) => {
-    const parsed = JSON.parse(response);
+    const parsed = JSON.parse(extractJson(response));
     return ResumeStructuredSchema.parse(parsed);
   });
 }

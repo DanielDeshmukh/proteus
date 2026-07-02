@@ -1,21 +1,35 @@
 import { z } from "zod";
 
+const coerceArray = z.preprocess(
+  (v) => Array.isArray(v) ? v : typeof v === "string" ? v.split(/,\s*/).filter(Boolean) : v != null ? [String(v)] : [],
+  z.array(z.string())
+);
+
+const safeStr = z.preprocess((v) => v ?? "", z.string());
+const safeNum = z.preprocess(
+  (v) => { const n = typeof v === "string" ? parseFloat(v) : v; return typeof n === "number" && !isNaN(n) ? n : 0; },
+  z.number()
+);
+
 // ─────────────────────────────────────────────────────────
 // Job Description Models
 // ─────────────────────────────────────────────────────────
 
 export const JDStructuredSchema = z.object({
-  title: z.string(),
-  company: z.string().nullable().optional(),
-  location: z.string().nullable().optional(),
-  seniority_level: z.enum(["junior", "mid", "senior", "lead", "principal", "executive"]),
-  hard_skills: z.array(z.string()),
-  soft_skills: z.array(z.string()),
-  domain_keywords: z.array(z.string()),
-  ats_bait: z.array(z.string()),
-  requirements_summary: z.string(),
-  nice_to_haves: z.array(z.string()).default([]),
-});
+  title: safeStr,
+  company: safeStr.nullable().optional(),
+  location: safeStr.nullable().optional(),
+  seniority_level: z.preprocess(
+    (v) => v || "mid",
+    z.enum(["junior", "mid", "senior", "lead", "principal", "executive"])
+  ),
+  hard_skills: coerceArray,
+  soft_skills: coerceArray,
+  domain_keywords: coerceArray,
+  ats_bait: coerceArray,
+  requirements_summary: safeStr,
+  nice_to_haves: coerceArray.default([]),
+}).passthrough();
 
 export type JDStructured = z.infer<typeof JDStructuredSchema>;
 
@@ -24,48 +38,60 @@ export type JDStructured = z.infer<typeof JDStructuredSchema>;
 // ─────────────────────────────────────────────────────────
 
 export const ExperienceBulletSchema = z.object({
-  role: z.string(),
-  company: z.string().nullable().optional(),
-  duration: z.string().nullable().optional(),
-  bullets: z.array(z.string()),
-});
+  role: safeStr,
+  company: safeStr.nullable().optional(),
+  duration: safeStr.nullable().optional(),
+  bullets: coerceArray,
+}).passthrough();
 
 export const ProjectSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  technologies: z.array(z.string()).default([]),
-  url: z.string().nullable().optional(),
-});
+  name: safeStr,
+  description: safeStr,
+  technologies: coerceArray.default([]),
+  url: safeStr.nullable().optional(),
+}).passthrough();
 
 export const EducationSchema = z.object({
-  degree: z.string(),
-  institution: z.string(),
-  year: z.string().nullable().optional(),
-  gpa: z.string().nullable().optional(),
-});
+  degree: safeStr,
+  institution: safeStr,
+  year: safeStr.nullable().optional(),
+  gpa: safeStr.nullable().optional(),
+}).passthrough();
 
 export const CertificationSchema = z.object({
-  name: z.string(),
-  issuer: z.string().nullable().optional(),
-  year: z.string().nullable().optional(),
-});
+  name: safeStr,
+  issuer: safeStr.nullable().optional(),
+  year: safeStr.nullable().optional(),
+}).passthrough();
 
 export const ResumeStructuredSchema = z.object({
-  name: z.string(),
-  email: z.string().nullable().optional(),
-  phone: z.string().nullable().optional(),
-  location: z.string().nullable().optional(),
-  linkedin: z.string().nullable().optional(),
-  github: z.string().nullable().optional(),
-  portfolio: z.string().nullable().optional(),
-  summary: z.string().nullable().optional(),
-  skills: z.array(z.string()),
-  experience: z.array(ExperienceBulletSchema).default([]),
-  projects: z.array(ProjectSchema).default([]),
-  education: z.array(EducationSchema).default([]),
-  certifications: z.array(CertificationSchema).default([]),
-  total_years_experience: z.number().nullable().optional(),
-});
+  name: safeStr,
+  email: safeStr.nullable().optional(),
+  phone: safeStr.nullable().optional(),
+  location: safeStr.nullable().optional(),
+  linkedin: safeStr.nullable().optional(),
+  github: safeStr.nullable().optional(),
+  portfolio: safeStr.nullable().optional(),
+  summary: safeStr.nullable().optional(),
+  skills: coerceArray,
+  experience: z.preprocess(
+    (v) => Array.isArray(v) ? v : v && typeof v === "object" ? Object.values(v) : [],
+    z.array(ExperienceBulletSchema)
+  ),
+  projects: z.preprocess(
+    (v) => Array.isArray(v) ? v : v && typeof v === "object" ? Object.values(v) : [],
+    z.array(ProjectSchema)
+  ),
+  education: z.preprocess(
+    (v) => Array.isArray(v) ? v : v && typeof v === "object" ? Object.values(v) : [],
+    z.array(EducationSchema)
+  ),
+  certifications: z.preprocess(
+    (v) => Array.isArray(v) ? v : v && typeof v === "object" ? Object.values(v) : [],
+    z.array(CertificationSchema)
+  ),
+  total_years_experience: safeNum.nullable().optional(),
+}).passthrough();
 
 export type ResumeStructured = z.infer<typeof ResumeStructuredSchema>;
 export type ExperienceBullet = z.infer<typeof ExperienceBulletSchema>;
@@ -81,21 +107,27 @@ export const MatchStatusSchema = z.enum(["matched", "partial", "missing"]);
 export type MatchStatus = z.infer<typeof MatchStatusSchema>;
 
 export const GapItemSchema = z.object({
-  requirement: z.string(),
-  status: MatchStatusSchema,
-  similarity_score: z.number().min(0).max(1),
-  matched_evidence: z.string().nullable().optional(),
-  category: z.enum(["hard_skill", "soft_skill", "domain_keyword", "ats_bait"]),
-});
+  requirement: safeStr,
+  status: z.preprocess(
+    (v) => { const s = String(v || "").toLowerCase(); return (["matched","partial","missing"].includes(s) ? s : "missing") as "matched"|"partial"|"missing"; },
+    MatchStatusSchema
+  ),
+  similarity_score: safeNum,
+  matched_evidence: safeStr.nullable().optional(),
+  category: z.preprocess(
+    (v) => { const s = String(v || "").toLowerCase(); return (["hard_skill","soft_skill","domain_keyword","ats_bait"].includes(s) ? s : "hard_skill") as "hard_skill"|"soft_skill"|"domain_keyword"|"ats_bait"; },
+    z.enum(["hard_skill", "soft_skill", "domain_keyword", "ats_bait"])
+  ),
+}).passthrough();
 
 export const GapAnalysisSchema = z.object({
-  overall_match: z.number().min(0).max(1),
-  matched_count: z.number().int(),
-  partial_count: z.number().int(),
-  missing_count: z.number().int(),
-  total_requirements: z.number().int(),
+  overall_match: safeNum,
+  matched_count: safeNum,
+  partial_count: safeNum,
+  missing_count: safeNum,
+  total_requirements: safeNum,
   gaps: z.array(GapItemSchema),
-});
+}).passthrough();
 
 export type GapItem = z.infer<typeof GapItemSchema>;
 export type GapAnalysis = z.infer<typeof GapAnalysisSchema>;
@@ -105,18 +137,24 @@ export type GapAnalysis = z.infer<typeof GapAnalysisSchema>;
 // ─────────────────────────────────────────────────────────
 
 export const RewriteSuggestionSchema = z.object({
-  original_bullet: z.string(),
-  suggested_rewrite: z.string(),
-  rationale: z.string(),
-  target_requirement: z.string(),
-  impact_score: z.number().min(0).max(1),
-  experience_context: z.string().nullable().optional(),
-});
+  original_bullet: safeStr,
+  suggested_rewrite: safeStr,
+  rationale: safeStr,
+  target_requirement: safeStr,
+  impact_score: safeNum,
+  experience_context: safeStr.nullable().optional(),
+}).passthrough();
 
 export const RewriteOutputSchema = z.object({
-  suggestions: z.array(RewriteSuggestionSchema),
-  hidden_experience: z.array(z.string()).default([]),
-});
+  suggestions: z.preprocess(
+    (v) => Array.isArray(v) ? v : v && typeof v === "object" ? Object.values(v) : [],
+    z.array(RewriteSuggestionSchema)
+  ),
+  hidden_experience: z.preprocess(
+    (v) => Array.isArray(v) ? v.map(x => typeof x === "string" ? x : JSON.stringify(x)) : [],
+    z.array(z.string())
+  ),
+}).passthrough();
 
 export type RewriteSuggestion = z.infer<typeof RewriteSuggestionSchema>;
 export type RewriteOutput = z.infer<typeof RewriteOutputSchema>;
@@ -129,18 +167,18 @@ export const ToneSchema = z.enum(["professional", "enthusiastic", "concise"]);
 export type Tone = z.infer<typeof ToneSchema>;
 
 export const CoverLetterSectionSchema = z.object({
-  heading: z.string(),
-  content: z.string(),
-});
+  heading: safeStr,
+  content: safeStr,
+}).passthrough();
 
 export const CoverLetterOutputSchema = z.object({
-  job_title: z.string(),
-  full_letter: z.string(),
+  job_title: safeStr,
+  full_letter: safeStr,
   sections: z.array(CoverLetterSectionSchema),
   tone: ToneSchema,
-  key_points_addressed: z.array(z.string()),
-  word_count: z.number().int(),
-});
+  key_points_addressed: coerceArray,
+  word_count: safeNum,
+}).passthrough();
 
 export type CoverLetterSection = z.infer<typeof CoverLetterSectionSchema>;
 export type CoverLetterOutput = z.infer<typeof CoverLetterOutputSchema>;
@@ -150,18 +188,21 @@ export type CoverLetterOutput = z.infer<typeof CoverLetterOutputSchema>;
 // ─────────────────────────────────────────────────────────
 
 export const ActionItemSchema = z.object({
-  priority: z.number().int().min(1),
-  action: z.string(),
-  impact: z.string(),
-  category: z.enum(["rewrite", "add_skill", "surface_experience"]),
-});
+  priority: safeNum,
+  action: safeStr,
+  impact: safeStr,
+  category: z.preprocess(
+    (v) => { const s = String(v || "").toLowerCase(); return (["rewrite","add_skill","surface_experience"].includes(s) ? s : "rewrite") as "rewrite"|"add_skill"|"surface_experience"; },
+    z.enum(["rewrite", "add_skill", "surface_experience"])
+  ),
+}).passthrough();
 
 export const PipelineOutputSchema = z.object({
-  overall_score: z.number().min(0).max(1),
-  section_scores: z.record(z.string(), z.number().min(0).max(1)),
+  overall_score: safeNum,
+  section_scores: z.record(z.string(), safeNum),
   action_list: z.array(ActionItemSchema),
-  summary: z.string(),
-});
+  summary: safeStr,
+}).passthrough();
 
 export type ActionItem = z.infer<typeof ActionItemSchema>;
 export type PipelineOutput = z.infer<typeof PipelineOutputSchema>;

@@ -1,7 +1,7 @@
-import { chatCompletion } from "../nim-client";
+import { chatCompletion, extractJson } from "../nim-client";
 import { JDStructuredSchema, type JDStructured } from "../../types";
 
-const JD_PARSER_MODEL = "mistralai/mistral-7b-instruct-v0.3";
+const JD_PARSER_MODEL = "meta/llama-3.1-8b-instruct";
 
 const JD_PARSER_SYSTEM_PROMPT = `You are an expert ATS (Applicant Tracking System) analyst and job description parser.
 Given a raw job description text, extract structured information from it.
@@ -35,7 +35,7 @@ export function parseJd(rawJdText: string): Promise<JDStructured> {
     temperature: 0.1,
     maxTokens: 2048,
   }).then((response) => {
-    const parsed = JSON.parse(response);
+    const parsed = JSON.parse(extractJson(response));
     return JDStructuredSchema.parse(parsed);
   });
 }
