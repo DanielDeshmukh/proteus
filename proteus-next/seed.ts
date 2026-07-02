@@ -69,7 +69,7 @@ async function seed() {
   console.log("Seeding database...");
 
   for (const run of SAMPLE_RUNS) {
-    const runId = saveRun({
+    const runId = await saveRun({
       jd_text: run.jd_text,
       jd_source: run.jd_source,
       resume_text: run.resume_text,
@@ -77,7 +77,7 @@ async function seed() {
       status: "pending",
     });
 
-    updateRun(runId, {
+    await updateRun(runId, {
       overall_score: run.overall_score,
       section_scores: run.section_scores,
       gap_analysis: run.gap_analysis,

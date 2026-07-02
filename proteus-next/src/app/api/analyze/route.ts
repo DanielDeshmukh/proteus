@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     : "professional";
 
   // Save run
-  const runId = saveRun({
+  const runId = await saveRun({
     jd_text: resolvedJd,
     jd_source: jdText ? "paste" : jdUrl ? "url" : "file",
     resume_text: resolvedResume,
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
   try {
     const result = await runPipeline(resolvedJd, resolvedResume, tone);
 
-    updateRun(runId, {
+    await updateRun(runId, {
       overall_score: result.aggregated?.overall_score ?? null,
       section_scores: result.aggregated ? JSON.stringify(result.aggregated.section_scores) : null,
       gap_analysis: result.gap_analysis ? JSON.stringify(result.gap_analysis) : null,
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
       errors: result.errors.length > 0 ? result.errors : null,
     });
   } catch (e) {
-    updateRun(runId, {
+    await updateRun(runId, {
       status: "failed",
       error_message: e instanceof Error ? e.message : String(e),
     });
