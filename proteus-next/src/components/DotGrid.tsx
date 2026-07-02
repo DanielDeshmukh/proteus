@@ -4,12 +4,14 @@ import { useEffect, useRef } from "react";
 
 const SPACING = 32;
 const BASE_RADIUS = 1.2;
-const HOVER_RANGE = 60;
+const HOVER_RADIUS = 8;
 const DECAY_MS = 1000;
 
 export default function DotGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: -9999, y: -9999, time: 0 });
+  const mouseRef = useRef({ x: -9999, y: -9999 });
+  const hoverRef = useRef({ gx: -1, gy: -1, time: 0 });
+  const lastHoverRef = useRef({ gx: -1, gy: -1, time: 0 });
   const rafRef = useRef(0);
 
   useEffect(() => {
@@ -17,8 +19,6 @@ export default function DotGrid() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    let lastMouseTime = 0;
 
     function resize() {
       const dpr = window.devicePixelRatio || 1;
@@ -37,9 +37,14 @@ export default function DotGrid() {
 
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-      const mTime = mouseRef.current.time;
       const now = performance.now();
-      const mouseAge = now - mTime;
+
+      const cur = hoverRef.current;
+      const prev = lastHoverRef.current;
+
+      const elapsed = now - cur.time;
+      const decay = Math.min(elapsed / DECAY_MS, 1);
+      const fade = 1 - decay * decay;
 
       const cols = Math.ceil(w / SPACING) + 1;
       const rows = Math.ceil(h / SPACING) + 1;
@@ -49,33 +54,32 @@ export default function DotGrid() {
           const cx = c * SPACING;
           const cy = r * SPACING;
 
-          const dx = mx - cx;
-          const dy = my - cy;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
           let boost = 0;
 
-          if (dist < HOVER_RANGE) {
-            const proximity = 1 - dist / HOVER_RANGE;
-            boost = proximity * proximity * (3 - 2 * proximity);
-          }
-
-          if (mouseAge > 0 && boost < 0.01) {
-            const decay = Math.min(mouseAge / DECAY_MS, 1);
-            const residual = 1 - decay * decay;
-            if (residual > 0.01) {
-              const prevRange = HOVER_RANGE + mouseAge * 0.15;
-              if (dist < prevRange) {
-                const p = 1 - dist / prevRange;
-                boost = p * p * residual * 0.6;
-              }
+          if (cur.gx >= 0) {
+            const dx = mx - cx;
+            const dy = my - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < HOVER_RADIUS) {
+              const t = 1 - dist / HOVER_RADIUS;
+              boost = t * t * (3 - 2 * t) * fade;
             }
           }
 
-          if (boost < 0.01) continue;
+          if (boost < 0.01 && prev.gx >= 0 && decay < 1) {
+            const px = prev.gx * SPACING;
+            const py = prev.gy * SPACING;
+            const dx = px - cx;
+            const dy = py - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < HOVER_RADIUS * 2) {
+              const t = 1 - dist / (HOVER_RADIUS * 2);
+              boost = Math.max(boost, t * t * (1 - decay));
+            }
+          }
 
-          const radius = BASE_RADIUS + boost * 4;
-          const alpha = 0.18 + boost * 0.65;
+          const radius = BASE_RADIUS + boost * 3;
+          const alpha = 0.18 + boost * 0.6;
 
           ctx.beginPath();
           ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -90,13 +94,21 @@ export default function DotGrid() {
     function onMouseMove(e: MouseEvent) {
       mouseRef.current.x = e.clientX;
       mouseRef.current.y = e.clientY;
-      mouseRef.current.time = performance.now();
+
+      const gx = Math.round(e.clientX / SPACING);
+      const gy = Math.round(e.clientY / SPACING);
+
+      if (gx !== hoverRef.current.gx || gy !== hoverRef.current.gy) {
+        lastHoverRef.current = { ...hoverRef.current };
+        hoverRef.current = { gx, gy, time: performance.now() };
+      }
     }
 
     function onMouseLeave() {
       mouseRef.current.x = -9999;
       mouseRef.current.y = -9999;
-      mouseRef.current.time = performance.now();
+      lastHoverRef.current = { ...hoverRef.current };
+      hoverRef.current = { gx: -1, gy: -1, time: performance.now() };
     }
 
     resize();
