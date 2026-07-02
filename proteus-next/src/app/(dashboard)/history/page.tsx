@@ -166,13 +166,15 @@ export default function HistoryPage() {
                     <button
                       onClick={() => handleDelete(run.id)}
                       style={{
-                        background: "none",
+                        background: "var(--surface-sunken)",
                         border: "1px solid var(--border)",
                         borderRadius: "var(--radius-md)",
                         color: "var(--text-soft)",
-                        padding: "6px 12px",
+                        padding: "6px 14px",
                         fontSize: "12px",
+                        fontFamily: "var(--font-sans)",
                         cursor: "pointer",
+                        transition: "all .15s ease",
                       }}
                     >
                       Delete

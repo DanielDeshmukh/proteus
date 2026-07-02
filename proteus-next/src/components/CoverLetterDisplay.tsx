@@ -30,12 +30,13 @@ export function CoverLetterDisplay({
             fontFamily: "var(--font-sans)",
             fontSize: "12.5px",
             fontWeight: 500,
-            color: "var(--text-soft)",
-            background: "var(--surface-sunken)",
+            color: copied ? "#111315" : "var(--text-soft)",
+            background: copied ? "var(--color-gold)" : "var(--surface-sunken)",
             border: "1px solid var(--border)",
             borderRadius: "var(--radius-md)",
             padding: "6px 13px",
             cursor: "pointer",
+            transition: "all .15s ease",
           }}
         >
           {copied ? "Copied!" : "Copy"}
