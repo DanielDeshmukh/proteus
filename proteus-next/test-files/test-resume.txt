@@ -1,0 +1,4 @@
+John Doe
+6 years Python developer
+Built microservices with Kafka and PostgreSQL
+AWS certified
