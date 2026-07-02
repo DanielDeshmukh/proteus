@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 
 const SPACING = 32;
 const BASE_RADIUS = 1;
-const MAX_RADIUS = 3;
-const TWINKLE_COUNT = 12;
+const MAX_RADIUS = 1.2;
+const TWINKLE_COUNT = 50;
 const TWINKLE_SPEED = 0.015;
 
 interface Star {
@@ -44,7 +44,7 @@ export default function DotGrid() {
         gy: Math.floor(Math.random() * rows),
         phase: 0,
         speed: TWINKLE_SPEED + Math.random() * 0.02,
-        maxScale: 1.5 + Math.random() * 2,
+        maxScale: 1.2 + Math.random() * 1.5,
       };
     }
 
