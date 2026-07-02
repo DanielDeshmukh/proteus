@@ -12,7 +12,7 @@ export async function GET(
     return NextResponse.json({ detail: "Invalid run ID" }, { status: 400 });
   }
 
-  const run = getRun(runId);
+  const run = await getRun(runId);
   if (!run) {
     return NextResponse.json({ detail: `Run ${runId} not found` }, { status: 404 });
   }
@@ -31,7 +31,7 @@ export async function DELETE(
     return NextResponse.json({ detail: "Invalid run ID" }, { status: 400 });
   }
 
-  const deleted = deleteRun(runId);
+  const deleted = await deleteRun(runId);
   if (!deleted) {
     return NextResponse.json({ detail: `Run ${runId} not found` }, { status: 404 });
   }
