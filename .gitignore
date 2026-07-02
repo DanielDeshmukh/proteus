@@ -1,16 +1,7 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.egg-info/
-dist/
-build/
-*.egg
-
-# Virtual environments
-backend/venv/
-venv/
-.venv/
+# Node
+node_modules/
+proteus-next/.next/
+proteus-next/out/
 
 # Environment variables
 .env
@@ -22,18 +13,9 @@ venv/
 *.swp
 *.swo
 
-# Node
-node_modules/
-proteus-next/.next/
-proteus-next/out/
-
 # Database
 *.db
 *.sqlite
-backend/db/proteus.db
-
-# pytest
-.pytest_cache/
 
 # OS
 .DS_Store

@@ -7,36 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  backend-tests:
-    name: Backend Tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        working-directory: backend
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-
-      - name: Run backend tests
-        working-directory: backend
-        run: |
-          source venv/bin/activate
-          python -m pytest tests/ -v --tb=short
-
-  frontend-tests:
-    name: Frontend Tests & Build
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -53,29 +25,10 @@ jobs:
         working-directory: proteus-next
         run: npm ci
 
+      - name: Type check
+        working-directory: proteus-next
+        run: npx tsc --noEmit
+
       - name: Build
         working-directory: proteus-next
         run: npm run build
-
-  lint-backend:
-    name: Lint Backend
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Install ruff
-        run: pip install ruff
-
-      - name: Check formatting
-        working-directory: backend
-        run: ruff format --check .
-
-      - name: Check linting
-        working-directory: backend
-        run: ruff check .
