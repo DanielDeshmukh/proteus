@@ -24,7 +24,8 @@ venv/
 
 # Node
 node_modules/
-frontend/dist/
+proteus-next/.next/
+proteus-next/out/
 
 # Database
 *.db

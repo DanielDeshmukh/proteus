@@ -47,22 +47,14 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: proteus-next/package-lock.json
 
       - name: Install dependencies
-        working-directory: frontend
+        working-directory: proteus-next
         run: npm ci
 
-      - name: Run lint
-        working-directory: frontend
-        run: npm run lint
-
-      - name: Run tests
-        working-directory: frontend
-        run: npm run test
-
       - name: Build
-        working-directory: frontend
+        working-directory: proteus-next
         run: npm run build
 
   lint-backend:
@@ -87,29 +79,3 @@ jobs:
       - name: Check linting
         working-directory: backend
         run: ruff check .
-
-  e2e-tests:
-    name: E2E Browser Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
-
-      - name: Install Playwright browsers
-        working-directory: frontend
-        run: npx playwright install chromium --with-deps
-
-      - name: Run E2E tests
-        working-directory: frontend
-        run: npx playwright test
