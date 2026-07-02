@@ -2,221 +2,138 @@
 
 **One pipeline. One JD. Every output stays consistent.**
 
-PROTEUS is a JD-aware application toolkit that takes a single job description — pasted, uploaded, or linked — and a candidate's resume, then runs both through a five-agent NVIDIA NIM pipeline to produce a semantic match score, a gap analysis, tailored rewrite suggestions, and a cover letter that's consistent with the resume's positioning. Everything is generated from the *same* parsed JD context, instead of being assembled piecemeal across five different AI tabs.
+PROTEUS is a JD-aware application toolkit that takes a single job description and a candidate's resume, then runs both through a five-agent NVIDIA NIM pipeline to produce a semantic match score, a gap analysis, tailored rewrite suggestions, and a cover letter — all generated from the same parsed JD context.
 
 ---
 
 ## Table of Contents
 
 - [The Problem](#the-problem)
-- [Why PROTEUS Exists](#why-proteus-exists)
 - [How It Works](#how-it-works)
 - [The Agent Pipeline](#the-agent-pipeline)
 - [Tech Stack](#tech-stack)
 - [Features](#features)
 - [Project Structure](#project-structure)
 - [Setup](#setup)
-- [Testing](#testing)
-- [Roadmap](#roadmap)
+- [Deployment](#deployment)
 - [License](#license)
 
 ---
 
 ## The Problem
 
-AI-assisted job applications are no longer a niche behavior — they're the default. As of early 2026, the majority of job seekers report having used or planning to use AI somewhere in their job search, and roughly a third are already using AI tools directly to draft resumes, rewrite bullet points, and write cover letters — a sharp jump from just a year prior. On the employer side, ATS software now sits in the pipeline at nearly every large company, and AI-driven recruiting tools are being adopted by employers at an even faster rate than by candidates.
+AI-assisted job applications are the default. The failure mode isn't "I used AI" — it's "I used AI generically, the same way for every application, without grounding it in this specific JD."
 
-So the "AI vs. human" framing is mostly outdated. The real question is: **AI used how?**
-
-A few data points worth sitting with:
-
-- **The viral "75% of resumes get auto-rejected by ATS" stat is not real.** It has no credible primary source — it traces back to a marketing claim from a startup that shut down over a decade ago, and it keeps getting recycled because it's scary and quotable. ATS systems don't silently nuke 3 out of 4 resumes on arrival.
-- **What actually gets resumes rejected isn't "AI wrote this," it's "this is generic."** Surveys converge around roughly half of hiring managers saying they'd dismiss a resume they *believe* is AI-generated — but a notably higher share specifically reject resumes that are AI-generated *and* unpersonalized. The personalization, not the tool, is the deciding factor.
-- **Hiring managers are bad at detecting AI writing.** They claim high confidence (around three-quarters say they can spot it), but blind tests put actual detection accuracy at roughly a third. The thing they're really reacting to is generic phrasing, not some invisible AI fingerprint.
-- **ATS scoring is mostly mechanical.** Keyword match against the job description accounts for a large share (often cited around 40-60%) of an ATS score, with the rest coming from clean formatting/parseability and complete, expected sections. This is a solvable, measurable problem — not a black box.
-
-Put together: the failure mode isn't "I used AI." It's "I used AI generically, the same way for every application, without grounding it in this specific JD."
-
-## Why PROTEUS Exists
-
-The current "smart" way to apply with AI looks something like this:
-
-1. Paste the JD into ChatGPT/Claude, ask it to rewrite your resume
-2. Paste the result into a separate ATS scanner (Jobscan, CVCraft, etc.) to check keyword match
-3. Open a third tool or a fresh prompt to generate a cover letter
-4. Maybe run everything through a "humanizer" to sound less robotic
-5. Manually patch all three outputs back into something coherent
-
-Every handoff between tools loses context. The cover letter tool has no idea what the resume tool emphasized. The ATS scanner doesn't know what got rewritten. Nothing in the chain has the *full picture* — this JD, this candidate, this gap analysis — at the same time. That's structurally why the output ends up generic: generic isn't a property of the AI, it's a property of a workflow where every step starts from a blank slate.
-
-**PROTEUS's core idea is simple: parse the JD once, and let that single structured understanding drive every downstream output.** The match score, the gap analysis, the rewrite suggestions, and the cover letter all read from the same context — so they tell one consistent story about why this candidate fits this role, instead of five disconnected AI outputs stapled together.
+PROTEUS's core idea: **parse the JD once, and let that single structured understanding drive every downstream output.** The match score, gap analysis, rewrite suggestions, and cover letter all read from the same context — one consistent story, not five disconnected AI outputs stapled together.
 
 ## How It Works
 
-1. **Input the JD** — paste text, upload a file, or hand PROTEUS a job posting URL and it fetches and extracts the content.
+1. **Input the JD** — paste text, upload a file, or paste a job posting URL.
 2. **Input your resume** — paste text or upload a PDF/DOCX.
-3. PROTEUS runs both through the agent pipeline (below).
-4. You get back: a semantic match score, a prioritized gap report, specific rewrite suggestions for weak bullets, and a tailored cover letter — all referencing the same underlying JD analysis.
+3. PROTEUS runs both through the agent pipeline.
+4. You get: a semantic match score, a prioritized gap report, bullet-level rewrite suggestions, and a tailored cover letter.
 
 ## The Agent Pipeline
 
-PROTEUS is built as a five-stage pipeline (six including the score aggregation), where each stage has one narrow job and passes structured output to the next.
-
 | # | Agent | Job | NIM Model |
 |---|-------|-----|-----------|
-| 1 | **JD Parser** | Extracts structured requirements from the job description: hard skills, soft skills, seniority signals, domain keywords, and verbatim "ATS-bait" terms | `mistral-7b-instruct-v0.3` |
-| 2 | **Resume Parser** | Breaks the resume into structured, taggable units — skills, project descriptions, certifications, experience bullets | `mistral-7b-instruct-v0.3` |
-| 3 | **Semantic Gap Analyzer** | Embeds both JD requirements and resume bullets, computes cosine similarity. Outputs a ranked list of requirements by gap size | `nvidia/nv-embedqa-e5-v5` (embedding + cosine similarity) |
-| 4 | **Rewrite Suggester** | For high-gap items, generates specific rewrite suggestions for existing bullets, or flags experience that exists but isn't surfaced | `meta/llama-3.3-70b-instruct` |
-| 5 | **Cover Letter Generator** | Drafts a cover letter using the same JD structure, resume structure, and gap analysis as agent 4 | `meta/llama-3.3-70b-instruct` |
-| 6 | **Score Aggregator** | Rolls everything into an overall match score and a prioritized action list. Pure code — weighted scoring, no LLM call needed | — |
-
-Agents run as a plain sequential async chain (no LangGraph) since the pipeline is linear with no branching — JD parse and resume parse run in parallel, then gap analysis → rewrite + cover letter → aggregation.
+| 1 | **JD Parser** | Extracts structured requirements from the JD | `mistral-7b-instruct-v0.3` |
+| 2 | **Resume Parser** | Breaks the resume into structured, taggable units | `mistral-7b-instruct-v0.3` |
+| 3 | **Gap Analyzer** | Embeds both, computes cosine similarity, ranks gaps | `nvidia/nv-embedqa-e5-v5` |
+| 4 | **Rewrite Suggester** | JD-aware bullet rewrites for weak areas | `meta/llama-3.3-70b-instruct` |
+| 5 | **Cover Letter** | Tailored letter from the same context | `meta/llama-3.3-70b-instruct` |
+| 6 | **Aggregator** | Weighted scoring + action list (no LLM) | — |
 
 ## Tech Stack
 
-- **Frontend:** React 19 (Vite) + Tailwind CSS v4 — dark theme with Fraunces, Inter, JetBrains Mono
-- **Backend:** FastAPI + Python 3.11+
+- **Framework:** Next.js 15 (App Router) + TypeScript
+- **Styling:** Tailwind CSS v4 — dark theme with Fraunces, Inter, JetBrains Mono
 - **LLM Inference:** NVIDIA NIM (OpenAI-compatible API)
-- **Embeddings:** `nvidia/nv-embedqa-e5-v5`
-- **File Parsing:** `pypdf` / `pdfplumber` (PDF), `python-docx` (DOCX), `BeautifulSoup` (URL fetch)
-- **Storage:** SQLite via `aiosqlite` (async, local — no external DB dependency)
-- **Testing:** pytest (70 tests) + Vitest
+- **Database:** better-sqlite3 (local) / @libsql (Vercel/Turso)
+- **Validation:** Zod v4
+- **Deployment:** Vercel-ready
 
 ## Features
 
-- **Three ways to input a JD:** paste text, upload a file, or paste a job posting URL
-- **Two ways to input a resume:** paste text or upload PDF/DOCX
-- **Semantic match scoring** — embedding-based similarity, not just keyword matching
-- **Gap analysis report** — ranked by impact, with severity badges (critical/moderate/minor)
-- **Tailored rewrite suggestions** — bullet-level, JD-aware, before/after comparison
-- **Consistent cover letter** — written from the same context as the resume analysis
-- **Application history** — every run logged to SQLite, searchable with score trend tracking
-- **Streaming API** — SSE endpoint for real-time pipeline progress
-- **Dark theme UI** — gold accent design system with responsive layout
+- Three ways to input a JD: paste, upload, or URL
+- Two ways to input a resume: paste or upload PDF/DOCX
+- Semantic match scoring (embedding-based, not keyword matching)
+- Gap analysis ranked by impact with severity badges
+- Bullet-level rewrite suggestions with before/after comparison
+- Consistent cover letter generated from the same context
+- Application history with score tracking
+- Streaming API (NDJSON) for real-time pipeline progress
+- Dark theme UI with gold accent design system
 
 ## Project Structure
 
 ```
 proteus/
-├── backend/
-│   ├── main.py                     # FastAPI app, all API endpoints
-│   ├── pipeline.py                 # Async pipeline orchestrator
-│   ├── nim_client.py               # NIM API wrapper (OpenAI-compatible)
-│   ├── agents/
-│   │   ├── jd_models.py            # JDStructured Pydantic model
-│   │   ├── jd_parser.py            # JD parsing agent
-│   │   ├── resume_models.py        # ResumeStructured Pydantic model
-│   │   ├── resume_parser.py        # Resume parsing agent
-│   │   ├── gap_models.py           # GapItem, GapAnalysis, MatchStatus
-│   │   ├── gap_analyzer.py         # Embedding-based gap analysis
-│   │   ├── rewrite_models.py       # RewriteSuggestion, RewriteOutput
-│   │   ├── rewrite_suggester.py    # LLM rewrite engine
-│   │   ├── cover_letter_models.py  # CoverLetterOutput, Tone
-│   │   ├── cover_letter.py         # Cover letter generator
-│   │   └── aggregator.py           # Weighted scoring, ActionItem
-│   ├── parsers/
-│   │   ├── pdf_parser.py           # PDF text extraction
-│   │   ├── docx_parser.py          # DOCX text extraction
-│   │   └── jd_url_fetcher.py       # URL fetch + HTML parsing
-│   ├── db/
-│   │   └── sqlite_store.py         # SQLite CRUD for application runs
-│   ├── tests/
-│   │   ├── test_api.py             # API endpoint tests
-│   │   ├── test_e2e.py             # End-to-end flow tests (8 tests)
-│   │   ├── test_jd_models.py
-│   │   ├── test_resume_models.py
-│   │   ├── test_gap_analyzer.py
-│   │   ├── test_rewrite_suggester.py
-│   │   ├── test_cover_letter.py
-│   │   ├── test_aggregator.py
-│   │   ├── test_db.py
-│   │   ├── test_health.py
-│   │   ├── test_pdf_parser.py
-│   │   ├── test_docx_parser.py
-│   │   └── test_url_fetcher.py
-│   └── pyproject.toml
-├── frontend/
+├── proteus-next/                   # Next.js fullstack app
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── Layout.jsx          # Topbar, nav, brand
-│   │   │   ├── Button.jsx          # Gold gradient primary
-│   │   │   ├── Card.jsx            # Dark surface cards
-│   │   │   ├── Tabs.jsx            # Pill-style tabs
-│   │   │   ├── TextArea.jsx        # Dark input
-│   │   │   ├── FileUpload.jsx      # Drag & drop
-│   │   │   ├── Spinner.jsx         # Gold spinner
-│   │   │   ├── Toast.jsx           # Notifications
-│   │   │   ├── JDInput.jsx         # JD input panel
-│   │   │   ├── ResumeInput.jsx     # Resume input panel
-│   │   │   ├── ScoreDisplay.jsx    # SVG gauge + breakdown
-│   │   │   ├── GapAnalysisDisplay.jsx
-│   │   │   ├── RewriteDisplay.jsx
-│   │   │   ├── CoverLetterDisplay.jsx
-│   │   │   └── ActionList.jsx
-│   │   ├── pages/
-│   │   │   ├── AnalyzePage.jsx     # Main dashboard
-│   │   │   └── HistoryPage.jsx     # History table
-│   │   ├── App.jsx
-│   │   └── index.css               # Theme variables, fonts
-│   └── vite.config.js
-├── PROGRESS.md                     # Development tracker
-├── proteus-ui-preview.html         # Design reference
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   │   ├── analyze/         # POST /api/analyze
+│   │   │   │   ├── analyze/stream/  # POST /api/analyze/stream (NDJSON)
+│   │   │   │   ├── health/          # GET /api/health
+│   │   │   │   └── history/         # GET /api/history, DELETE /api/history/[id]
+│   │   │   ├── (dashboard)/
+│   │   │   │   ├── analyze/page.tsx
+│   │   │   │   └── history/page.tsx
+│   │   │   └── layout.tsx
+│   │   ├── components/              # 14 React components
+│   │   ├── lib/
+│   │   │   ├── agents/              # 6 agents + pipeline orchestrator
+│   │   │   ├── db.ts                # Dual-backend SQLite (local / Vercel)
+│   │   │   ├── nim-client.ts        # NVIDIA NIM API client
+│   │   │   ├── pdf-parser.ts
+│   │   │   ├── docx-parser.ts
+│   │   │   ├── jd-url-fetcher.ts
+│   │   │   └── api.ts               # Frontend API client
+│   │   └── types/                   # Zod schemas + TypeScript types
+│   ├── vercel.json
+│   └── package.json
+├── PROGRESS.md
 └── README.md
 ```
 
 ## Setup
 
-### Backend
-
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+cd proteus-next
+npm install
 
 # Set your NVIDIA NIM API key
-export NVIDIA_NIM_API_KEY=your_key_here   # Windows: set NVIDIA_NIM_API_KEY=your_key_here
+cp .env.local.example .env.local
+# Edit .env.local and add your NVIDIA_NIM_API_KEY
 
-# Run the server
-uvicorn main:app --reload
-# Backend runs on http://localhost:8000
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
 npm run dev
-# Frontend runs on http://localhost:5173 (proxies /api to :8000)
+# App runs on http://localhost:3000
 ```
 
 ### Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `NVIDIA_NIM_API_KEY` | Yes | Your NVIDIA NIM API key for LLM inference |
+| `NVIDIA_NIM_API_KEY` | Yes | NVIDIA NIM API key for LLM inference |
+| `DATABASE_URL` | No | Turso/libsql URL for Vercel (local SQLite used if unset) |
+| `DATABASE_AUTH_TOKEN` | No | Turso auth token (required with DATABASE_URL) |
 
-## Testing
+## Deployment
+
+### Vercel
+
+1. Push to GitHub
+2. Import repo at [vercel.com/new](https://vercel.com/new)
+3. Set `NVIDIA_NIM_API_KEY` in Vercel environment variables
+4. Deploy
+
+### Docker
 
 ```bash
-cd backend
-python -m pytest tests/ -v          # Run all 70 tests
-python -m pytest tests/test_e2e.py -v  # Run E2E tests only
+docker compose up
+# App runs on http://localhost:3000
 ```
-
-Test coverage:
-- **Unit tests:** Models, gap analyzer, rewrite suggester, cover letter, aggregator, parsers
-- **API tests:** Health, validation, history CRUD, streaming
-- **E2E tests:** Full flow (paste JD + resume → results → history), URL-based JD, error scenarios, file upload, pagination
-
-## Roadmap
-
-- **v1 (current)** — Core pipeline + dark theme web UI + 70 tests
-- **v2** — Browser extension for one-click JD capture from job board pages
-- **v3** — Multi-resume version management for different role tracks
-- **Stretch** — Company/role context enrichment to adjust cover letter tone per target
 
 ## License
 
