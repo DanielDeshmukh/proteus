@@ -76,7 +76,7 @@ export async function embedTexts(
     model,
     input: texts,
     input_type: inputType,
-  });
+  } as any);
 
   return response.data.map((item) => item.embedding);
 }

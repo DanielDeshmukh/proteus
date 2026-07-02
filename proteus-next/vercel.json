@@ -1,6 +1,5 @@
 {
   "buildCommand": "next build",
   "framework": "nextjs",
-  "installCommand": "npm install --ignore-scripts && npm rebuild",
   "regions": ["iad1"]
 }
