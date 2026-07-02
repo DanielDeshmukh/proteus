@@ -42,7 +42,27 @@ export async function chatCompletion(
 }
 
 export function extractJson(text: string): string {
-  return text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+  let cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+
+  const firstBrace = cleaned.indexOf("{");
+  const firstBracket = cleaned.indexOf("[");
+  let start = -1;
+  if (firstBrace >= 0 && firstBracket >= 0) start = Math.min(firstBrace, firstBracket);
+  else if (firstBrace >= 0) start = firstBrace;
+  else if (firstBracket >= 0) start = firstBracket;
+
+  if (start > 0) cleaned = cleaned.substring(start);
+
+  const lastBrace = cleaned.lastIndexOf("}");
+  const lastBracket = cleaned.lastIndexOf("]");
+  let end = -1;
+  if (lastBrace >= 0 && lastBracket >= 0) end = Math.max(lastBrace, lastBracket);
+  else if (lastBrace >= 0) end = lastBrace;
+  else if (lastBracket >= 0) end = lastBracket;
+
+  if (end >= 0 && end < cleaned.length - 1) cleaned = cleaned.substring(0, end + 1);
+
+  return cleaned.trim();
 }
 
 export async function embedTexts(
