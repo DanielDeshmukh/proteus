@@ -22,11 +22,7 @@ export default function HistoryPage() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    fetchHistory();
-  }, []);
-
-  const fetchHistory = async () => {
+  async function fetchHistory() {
     setLoading(true);
     try {
       const data = await apiGet("/api/history?limit=50");
@@ -36,7 +32,11 @@ export default function HistoryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
 
   const handleDelete = async (runId: number) => {
     if (!confirm("Delete this run?")) return;

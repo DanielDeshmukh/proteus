@@ -27,7 +27,17 @@ export default function AnalyzePage() {
   const [resume, setResume] = useState<{ type: string; value: string | File } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<Record<string, unknown> | null>(null);
+  const [result, setResult] = useState<{
+    run_id?: number | null;
+    overall_score?: number | null;
+    section_scores?: Record<string, number> | null;
+    gap_analysis?: unknown;
+    rewrite_suggestions?: unknown;
+    cover_letter?: unknown;
+    action_list?: unknown[] | null;
+    timings?: Record<string, number> | null;
+    errors?: string[] | null;
+  } | null>(null);
 
   const canAnalyze = jd && resume;
 
@@ -45,7 +55,7 @@ export default function AnalyzePage() {
         formData.append("jd_text", jd.value as string);
         formData.append("resume_text", resume.value as string);
 
-        const partial: Record<string, unknown> = { run_id: null, timings: {} };
+        const partial: Record<string, unknown> = { run_id: null, timings: {} } as Record<string, unknown>;
         await apiPostStream("/api/analyze/stream", formData, (event) => {
           const evt = event as { event: string; data?: Record<string, unknown>; run_id?: number; message?: string };
           if (evt.event === "started") {
@@ -197,28 +207,28 @@ export default function AnalyzePage() {
               </Card>
             )}
 
-            {result.gap_analysis && (
+            {result.gap_analysis != null && (
               <Card>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)", marginBottom: "20px" }}>Gap analysis</h3>
                 <GapAnalysisDisplay gaps={result.gap_analysis as never} />
               </Card>
             )}
 
-            {result.rewrite_suggestions && (
+            {result.rewrite_suggestions != null && (
               <Card>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)", marginBottom: "20px" }}>Rewrite suggestions</h3>
                 <RewriteDisplay rewrites={result.rewrite_suggestions as never} />
               </Card>
             )}
 
-            {result.cover_letter && (
+            {result.cover_letter != null && (
               <Card>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)", marginBottom: "20px" }}>Cover letter</h3>
                 <CoverLetterDisplay coverLetter={result.cover_letter as never} />
               </Card>
             )}
 
-            {result.action_list && (result.action_list as unknown[]).length > 0 && (
+            {result.action_list != null && Array.isArray(result.action_list) && result.action_list.length > 0 && (
               <Card>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "17px", color: "var(--text)", marginBottom: "20px" }}>Priority actions</h3>
                 <ActionList actions={result.action_list as never} />

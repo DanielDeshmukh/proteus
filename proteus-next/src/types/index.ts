@@ -158,7 +158,7 @@ export const ActionItemSchema = z.object({
 
 export const PipelineOutputSchema = z.object({
   overall_score: z.number().min(0).max(1),
-  section_scores: z.record(z.number().min(0).max(1)),
+  section_scores: z.record(z.string(), z.number().min(0).max(1)),
   action_list: z.array(ActionItemSchema),
   summary: z.string(),
 });
@@ -173,12 +173,12 @@ export type PipelineOutput = z.infer<typeof PipelineOutputSchema>;
 export const AnalyzeResponseSchema = z.object({
   run_id: z.number(),
   overall_score: z.number().nullable().optional(),
-  section_scores: z.record(z.number()).nullable().optional(),
+  section_scores: z.record(z.string(), z.number()).nullable().optional(),
   gap_analysis: GapAnalysisSchema.nullable().optional(),
   rewrite_suggestions: RewriteOutputSchema.nullable().optional(),
   cover_letter: CoverLetterOutputSchema.nullable().optional(),
   action_list: z.array(ActionItemSchema).nullable().optional(),
-  timings: z.record(z.number()).nullable().optional(),
+  timings: z.record(z.string(), z.number()).nullable().optional(),
   errors: z.array(z.string()).nullable().optional(),
 });
 

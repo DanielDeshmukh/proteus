@@ -79,14 +79,14 @@ export function saveRun(data: {
 export function updateRun(
   runId: number,
   data: {
-    overall_score?: number;
-    section_scores?: string;
-    gap_analysis?: string;
-    rewrite_suggestions?: string;
-    cover_letter?: string;
-    action_list?: string;
+    overall_score?: number | null;
+    section_scores?: string | null;
+    gap_analysis?: string | null;
+    rewrite_suggestions?: string | null;
+    cover_letter?: string | null;
+    action_list?: string | null;
     status?: string;
-    error_message?: string;
+    error_message?: string | null;
   }
 ): void {
   const database = getDb();
