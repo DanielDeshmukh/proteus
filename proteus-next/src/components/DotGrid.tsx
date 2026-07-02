@@ -3,17 +3,22 @@
 import { useEffect, useRef } from "react";
 
 const SPACING = 32;
-const BASE_RADIUS = 1.2;
-const HOVER_RADIUS = 18;
-const DECAY_MS = 1000;
-const LERP_SPEED = 0.08;
+const BASE_RADIUS = 1;
+const MAX_RADIUS = 3;
+const TWINKLE_COUNT = 12;
+const TWINKLE_SPEED = 0.015;
+
+interface Star {
+  gx: number;
+  gy: number;
+  phase: number;
+  speed: number;
+  maxScale: number;
+}
 
 export default function DotGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: -9999, y: -9999 });
-  const smoothRef = useRef({ x: -9999, y: -9999 });
-  const hoverRef = useRef({ gx: -1, gy: -1, time: 0 });
-  const lastHoverRef = useRef({ gx: -1, gy: -1, time: 0 });
+  const starsRef = useRef<Star[]>([]);
   const rafRef = useRef(0);
 
   useEffect(() => {
@@ -31,65 +36,62 @@ export default function DotGrid() {
       ctx!.scale(dpr, dpr);
     }
 
+    function spawnStar(): Star {
+      const cols = Math.ceil(window.innerWidth / SPACING);
+      const rows = Math.ceil(window.innerHeight / SPACING);
+      return {
+        gx: Math.floor(Math.random() * cols),
+        gy: Math.floor(Math.random() * rows),
+        phase: 0,
+        speed: TWINKLE_SPEED + Math.random() * 0.02,
+        maxScale: 1.5 + Math.random() * 2,
+      };
+    }
+
     function render() {
       if (!ctx || !canvas) return;
       const w = window.innerWidth;
       const h = window.innerHeight;
       ctx.clearRect(0, 0, w, h);
 
-      const mx = mouseRef.current.x;
-      const my = mouseRef.current.y;
-      const now = performance.now();
+      const stars = starsRef.current;
 
-      const sm = smoothRef.current;
-      sm.x += (mx - sm.x) * LERP_SPEED;
-      sm.y += (my - sm.y) * LERP_SPEED;
+      while (stars.length < TWINKLE_COUNT) {
+        stars.push(spawnStar());
+      }
 
-      const cur = hoverRef.current;
-      const prev = lastHoverRef.current;
+      for (let i = stars.length - 1; i >= 0; i--) {
+        const s = stars[i];
+        s.phase += s.speed;
 
-      const elapsed = now - cur.time;
-      const decay = Math.min(elapsed / DECAY_MS, 1);
-      const fade = 1 - decay * decay;
+        if (s.phase > Math.PI) {
+          stars.splice(i, 1);
+          continue;
+        }
+
+        const t = Math.sin(s.phase);
+        const scale = 1 + t * s.maxScale;
+        const radius = BASE_RADIUS * scale;
+        const alpha = 0.15 + t * 0.55;
+
+        const cx = s.gx * SPACING;
+        const cy = s.gy * SPACING;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+      }
 
       const cols = Math.ceil(w / SPACING) + 1;
       const rows = Math.ceil(h / SPACING) + 1;
-
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const cx = c * SPACING;
           const cy = r * SPACING;
-
-          let boost = 0;
-
-          if (cur.gx >= 0) {
-            const dx = sm.x - cx;
-            const dy = sm.y - cy;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < HOVER_RADIUS) {
-              const t = 1 - dist / HOVER_RADIUS;
-              boost = t * t * (3 - 2 * t) * fade;
-            }
-          }
-
-          if (boost < 0.01 && prev.gx >= 0 && decay < 1) {
-            const px = prev.gx * SPACING;
-            const py = prev.gy * SPACING;
-            const dx = px - cx;
-            const dy = py - cy;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < HOVER_RADIUS * 2) {
-              const t = 1 - dist / (HOVER_RADIUS * 2);
-              boost = Math.max(boost, t * t * (1 - decay));
-            }
-          }
-
-          const radius = BASE_RADIUS + boost * 3;
-          const alpha = 0.18 + boost * 0.6;
-
           ctx.beginPath();
-          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+          ctx.arc(cx, cy, BASE_RADIUS, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(255,255,255,0.15)";
           ctx.fill();
         }
       }
@@ -97,37 +99,13 @@ export default function DotGrid() {
       rafRef.current = requestAnimationFrame(render);
     }
 
-    function onMouseMove(e: MouseEvent) {
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
-
-      const gx = Math.round(e.clientX / SPACING);
-      const gy = Math.round(e.clientY / SPACING);
-
-      if (gx !== hoverRef.current.gx || gy !== hoverRef.current.gy) {
-        lastHoverRef.current = { ...hoverRef.current };
-        hoverRef.current = { gx, gy, time: performance.now() };
-      }
-    }
-
-    function onMouseLeave() {
-      mouseRef.current.x = -9999;
-      mouseRef.current.y = -9999;
-      lastHoverRef.current = { ...hoverRef.current };
-      hoverRef.current = { gx: -1, gy: -1, time: performance.now() };
-    }
-
     resize();
     window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseleave", onMouseLeave);
     rafRef.current = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseleave", onMouseLeave);
     };
   }, []);
 
