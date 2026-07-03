@@ -6,7 +6,7 @@
       "fallbacks": [
         "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.1-nemotron-70b-instruct"
+        "nvidia/llama-3.1-nemotron-51b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -16,8 +16,8 @@
       "current": "meta/llama-3.1-70b-instruct",
       "fallbacks": [
         "meta/llama-3.1-70b-instruct",
-        "meta/llama-3.3-70b-instruct",
-        "nvidia/llama-3.1-nemotron-70b-instruct"
+        "nvidia/llama-3.1-nemotron-51b-instruct",
+        "meta/llama-3.1-8b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -35,22 +35,22 @@
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "current": "meta/llama-3.3-70b-instruct",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "meta/llama-3.3-70b-instruct",
-        "nvidia/llama-3.1-nemotron-70b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "meta/llama-3.1-70b-instruct",
+        "nvidia/llama-3.1-nemotron-51b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/llama-3.1-nemotron-70b-instruct",
+      "current": "nvidia/llama-3.1-nemotron-51b-instruct",
       "fallbacks": [
-        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "nvidia/llama-3.1-nemotron-51b-instruct",
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-        "meta/llama-3.3-70b-instruct"
+        "meta/llama-3.1-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
