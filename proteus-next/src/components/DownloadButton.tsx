@@ -31,11 +31,10 @@ export function DownloadButton({ content, filename, isCoverLetter = false }: { c
       const { Document: DocxDoc, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = docx;
 
       if (isCoverLetter) {
-        // Professional cover letter DOCX
-        const paragraphs = content.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
+        // LLM content already has greeting, body, closing — render as-is
         const children = [];
 
-        // Header
+        // Header — name + role only
         children.push(
           new Paragraph({
             children: [new TextRun({ text: "Daniel Deshmukh", bold: true, size: 28, font: "Calibri" })],
@@ -58,38 +57,16 @@ export function DownloadButton({ content, filename, isCoverLetter = false }: { c
           })
         );
 
-        // Greeting
-        children.push(
-          new Paragraph({
-            children: [new TextRun({ text: "Dear Hiring Manager,", size: 22, font: "Calibri" })],
-            spacing: { after: 160 },
-          })
-        );
-
-        // Body
+        // Body — raw LLM content (includes greeting, paragraphs, closing)
+        const paragraphs = content.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
         for (const para of paragraphs) {
           children.push(
             new Paragraph({
-              children: [new TextRun({ text: para, size: 22, font: "Calibri" })],
-              spacing: { after: 140 },
-              alignment: AlignmentType.BOTH,
+              children: [new TextRun({ text: para.trim(), size: 22, font: "Calibri" })],
+              spacing: { after: 160 },
             })
           );
         }
-
-        // Closing
-        children.push(
-          new Paragraph({
-            children: [new TextRun({ text: "Thank you for considering my application. I look forward to the opportunity to contribute to your team.", size: 22, font: "Calibri" })],
-            spacing: { before: 200, after: 140 },
-          })
-        );
-        children.push(
-          new Paragraph({
-            children: [new TextRun({ text: "Daniel Deshmukh", bold: true, size: 22, font: "Calibri" })],
-            spacing: { before: 200 },
-          })
-        );
 
         const doc = new DocxDoc({
           sections: [{
