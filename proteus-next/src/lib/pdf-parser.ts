@@ -4,9 +4,9 @@ let pdfjsLib: any = null;
 
 async function getPdfjs() {
   if (!pdfjsLib) {
-    // Dynamic import so webpack doesn't try to bundle this ESM-only package.
-    // pdfjs-dist is listed in serverExternalPackages so Node loads it natively.
-    const mod = await import("pdfjs-dist");
+    // Use legacy build — the main build requires browser APIs (DOMMatrix)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mod: any = await import("pdfjs-dist/legacy/build/pdf.mjs");
     pdfjsLib = mod.default ?? mod;
     pdfjsLib.GlobalWorkerOptions.workerSrc = "";
   }
