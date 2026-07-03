@@ -2,7 +2,7 @@ import { chatCompletion, extractJson } from "../nim-client";
 import { getModelForRole } from "../model-config";
 import { ResumeStructuredSchema, type ResumeStructured } from "../../types";
 
-const RESUME_PARSER_MODEL = getModelForRole("parser");
+const RESUME_PARSER_MODEL = getModelForRole("resume-parser");
 
 const RESUME_PARSER_SYSTEM_PROMPT = `You are an expert resume analyst. Given a raw resume text, extract structured information from it.
 

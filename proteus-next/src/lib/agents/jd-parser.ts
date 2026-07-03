@@ -2,7 +2,7 @@ import { chatCompletion, extractJson } from "../nim-client";
 import { getModelForRole } from "../model-config";
 import { JDStructuredSchema, type JDStructured } from "../../types";
 
-const JD_PARSER_MODEL = getModelForRole("parser");
+const JD_PARSER_MODEL = getModelForRole("jd-parser");
 
 const JD_PARSER_SYSTEM_PROMPT = `You are an expert ATS (Applicant Tracking System) analyst and job description parser.
 Given a raw job description text, extract structured information from it.

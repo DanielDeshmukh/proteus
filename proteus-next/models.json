@@ -1,35 +1,31 @@
 {
   "roles": {
-    "parser": {
-      "description": "Fast JSON parsing from unstructured text",
+    "jd-parser": {
+      "description": "Extract structured requirements from job descriptions",
       "current": "meta/llama-3.1-8b-instruct",
       "fallbacks": [
         "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct",
-        "meta/llama-3.3-70b-instruct",
         "nvidia/llama-3.1-nemotron-70b-instruct",
-        "mistralai/mistral-7b-instruct-v0.3",
-        "mistralai/mistral-large-2-instruct"
+        "meta/llama-3.3-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
-      "testModel": "meta/llama-3.1-8b-instruct"
+      "type": "chat"
     },
-    "rewriter": {
-      "description": "Creative rewrite suggestions and cover letters",
-      "current": "meta/llama-3.1-70b-instruct",
+    "resume-parser": {
+      "description": "Parse resumes into structured candidate data",
+      "current": "meta/llama-3.1-8b-instruct",
       "fallbacks": [
-        "meta/llama-3.1-70b-instruct",
-        "meta/llama-3.3-70b-instruct",
-        "nvidia/llama-3.1-nemotron-70b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "meta/llama-3.1-8b-instruct",
-        "mistralai/mistral-large-2-instruct"
+        "meta/llama-3.1-70b-instruct",
+        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "meta/llama-3.3-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
-      "testModel": "meta/llama-3.1-70b-instruct"
+      "type": "chat"
     },
-    "embedder": {
-      "description": "Text embeddings for semantic similarity",
+    "gap-analyzer": {
+      "description": "Semantic similarity scoring via embeddings",
       "current": "nvidia/nv-embedqa-e5-v5",
       "fallbacks": [
         "nvidia/nv-embedqa-e5-v5",
@@ -38,8 +34,31 @@
         "nvidia/embed-qa-4"
       ],
       "testPrompt": "test",
-      "testModel": "nvidia/nv-embedqa-e5-v5",
       "type": "embedding"
+    },
+    "rewrite-suggester": {
+      "description": "Generate JD-aware bullet point rewrites",
+      "current": "meta/llama-3.1-70b-instruct",
+      "fallbacks": [
+        "meta/llama-3.1-70b-instruct",
+        "meta/llama-3.3-70b-instruct",
+        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+      ],
+      "testPrompt": "Return exactly: {\"ok\":true}",
+      "type": "chat"
+    },
+    "cover-letter": {
+      "description": "Generate tailored cover letters",
+      "current": "meta/llama-3.1-70b-instruct",
+      "fallbacks": [
+        "meta/llama-3.1-70b-instruct",
+        "meta/llama-3.3-70b-instruct",
+        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+      ],
+      "testPrompt": "Return exactly: {\"ok\":true}",
+      "type": "chat"
     }
   },
   "preferredPrefixes": [
@@ -48,10 +67,6 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": "2026-07-03T06:52:50.521Z",
-  "lastHealthyModels": {
-    "parser": "meta/llama-3.1-8b-instruct",
-    "rewriter": "meta/llama-3.1-70b-instruct",
-    "embedder": "nvidia/nv-embedqa-e5-v5"
-  }
+  "lastHealthCheck": null,
+  "lastHealthyModels": {}
 }

@@ -2,7 +2,7 @@ import { chatCompletion, extractJson } from "../nim-client";
 import { getModelForRole } from "../model-config";
 import { CoverLetterOutputSchema, type CoverLetterOutput, type Tone, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
 
-const COVER_LETTER_MODEL = getModelForRole("rewriter");
+const COVER_LETTER_MODEL = getModelForRole("cover-letter");
 
 const COVER_LETTER_SYSTEM_PROMPT = `You are an expert cover letter writer who creates tailored, compelling cover letters.
 

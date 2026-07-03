@@ -5,11 +5,11 @@ import { join } from "path";
 const NIM_BASE_URL = "https://integrate.api.nvidia.com/v1";
 
 const PIPELINE_STEPS = [
-  { step: 1, agent: "JD Parser",       role: "parser",   task: "Extract structured requirements" },
-  { step: 2, agent: "Resume Parser",   role: "parser",   task: "Break resume into structured units" },
-  { step: 3, agent: "Gap Analyzer",    role: "embedder", task: "Score semantic match via embeddings" },
-  { step: 4, agent: "Rewrite Suggester", role: "rewriter", task: "Draft JD-aware bullet rewrites" },
-  { step: 5, agent: "Cover Letter",    role: "rewriter", task: "Write tailored cover letter" },
+  { step: 1, agent: "JD Parser",         role: "jd-parser",        task: "Extract structured requirements" },
+  { step: 2, agent: "Resume Parser",     role: "resume-parser",    task: "Break resume into structured units" },
+  { step: 3, agent: "Gap Analyzer",      role: "gap-analyzer",     task: "Score semantic match via embeddings" },
+  { step: 4, agent: "Rewrite Suggester", role: "rewrite-suggester", task: "Draft JD-aware bullet rewrites" },
+  { step: 5, agent: "Cover Letter",      role: "cover-letter",     task: "Write tailored cover letter" },
 ];
 
 const ERROR_CLASS: Record<string, { name: string; fix: string }> = {

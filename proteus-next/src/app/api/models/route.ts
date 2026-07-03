@@ -7,7 +7,7 @@ const PIPELINE_STEPS = [
   {
     step: 1,
     agent: "JD Parser",
-    role: "parser",
+    role: "jd-parser",
     task: "Extract structured requirements",
     work: "Reads raw JD text and pulls out title, company, hard skills, soft skills, domain keywords, and ATS bait — everything an ATS would scan for.",
     icon: "01",
@@ -15,7 +15,7 @@ const PIPELINE_STEPS = [
   {
     step: 2,
     agent: "Resume Parser",
-    role: "parser",
+    role: "resume-parser",
     task: "Break resume into structured units",
     work: "Parses the candidate resume into name, skills, experience bullets, projects, education, and certifications — normalizing unstructured text into queryable data.",
     icon: "02",
@@ -23,7 +23,7 @@ const PIPELINE_STEPS = [
   {
     step: 3,
     agent: "Gap Analyzer",
-    role: "embedder",
+    role: "gap-analyzer",
     task: "Score semantic match via embeddings",
     work: "Embeds every JD requirement and resume evidence into vectors, computes cosine similarity, then classifies each requirement as matched, partial, or missing.",
     icon: "03",
@@ -31,7 +31,7 @@ const PIPELINE_STEPS = [
   {
     step: 4,
     agent: "Rewrite Suggester",
-    role: "rewriter",
+    role: "rewrite-suggester",
     task: "Draft JD-aware bullet rewrites",
     work: "Takes the weakest gaps and existing resume bullets, then rewrites them to naturally incorporate JD keywords — keeping the candidate's actual experience truthful.",
     icon: "04",
@@ -39,7 +39,7 @@ const PIPELINE_STEPS = [
   {
     step: 5,
     agent: "Cover Letter",
-    role: "rewriter",
+    role: "cover-letter",
     task: "Write tailored cover letter",
     work: "Generates a full cover letter from the same parsed JD context — opening, why-this-role, key qualifications, and closing — matching the selected tone.",
     icon: "05",
