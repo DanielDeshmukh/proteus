@@ -2,21 +2,21 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "current": "meta/llama-3.1-8b-instruct",
+      "current": "meta/llama-3.1-70b-instruct",
       "fallbacks": [
-        "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.1-nemotron-51b-instruct"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "meta/llama-3.1-8b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "meta/llama-3.1-70b-instruct",
+      "current": "nvidia/nemotron-3-super-120b-a12b",
       "fallbacks": [
+        "nvidia/nemotron-3-super-120b-a12b",
         "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.1-nemotron-51b-instruct",
         "meta/llama-3.1-8b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -39,26 +39,26 @@
       "fallbacks": [
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.1-nemotron-51b-instruct"
+        "meta/llama-3.1-8b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/llama-3.1-nemotron-51b-instruct",
+      "current": "meta/llama-3.1-8b-instruct",
       "fallbacks": [
-        "nvidia/llama-3.1-nemotron-51b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-        "meta/llama-3.1-70b-instruct"
+        "meta/llama-3.1-8b-instruct",
+        "meta/llama-3.1-70b-instruct",
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     }
   },
   "preferredPrefixes": [
-    "meta/",
     "nvidia/",
+    "meta/",
     "mistralai/",
     "nv-mistralai/"
   ],
