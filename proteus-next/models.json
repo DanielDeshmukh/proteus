@@ -1,0 +1,57 @@
+{
+  "roles": {
+    "parser": {
+      "description": "Fast JSON parsing from unstructured text",
+      "current": "meta/llama-3.1-8b-instruct",
+      "fallbacks": [
+        "meta/llama-3.1-8b-instruct",
+        "meta/llama-3.1-70b-instruct",
+        "meta/llama-3.3-70b-instruct",
+        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "mistralai/mistral-7b-instruct-v0.3",
+        "mistralai/mistral-large-2-instruct"
+      ],
+      "testPrompt": "Return exactly: {\"ok\":true}",
+      "testModel": "meta/llama-3.1-8b-instruct"
+    },
+    "rewriter": {
+      "description": "Creative rewrite suggestions and cover letters",
+      "current": "meta/llama-3.1-70b-instruct",
+      "fallbacks": [
+        "meta/llama-3.1-70b-instruct",
+        "meta/llama-3.3-70b-instruct",
+        "nvidia/llama-3.1-nemotron-70b-instruct",
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "meta/llama-3.1-8b-instruct",
+        "mistralai/mistral-large-2-instruct"
+      ],
+      "testPrompt": "Return exactly: {\"ok\":true}",
+      "testModel": "meta/llama-3.1-70b-instruct"
+    },
+    "embedder": {
+      "description": "Text embeddings for semantic similarity",
+      "current": "nvidia/nv-embedqa-e5-v5",
+      "fallbacks": [
+        "nvidia/nv-embedqa-e5-v5",
+        "nvidia/nv-embedqa-mistral-7b-v2",
+        "nvidia/nv-embed-v1",
+        "nvidia/embed-qa-4"
+      ],
+      "testPrompt": "test",
+      "testModel": "nvidia/nv-embedqa-e5-v5",
+      "type": "embedding"
+    }
+  },
+  "preferredPrefixes": [
+    "meta/",
+    "nvidia/",
+    "mistralai/",
+    "nv-mistralai/"
+  ],
+  "lastHealthCheck": "2026-07-03T06:52:50.521Z",
+  "lastHealthyModels": {
+    "parser": "meta/llama-3.1-8b-instruct",
+    "rewriter": "meta/llama-3.1-70b-instruct",
+    "embedder": "nvidia/nv-embedqa-e5-v5"
+  }
+}

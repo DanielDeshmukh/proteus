@@ -1,11 +1,11 @@
 import path from "path";
 
 // ─────────────────────────────────────────────────────────
-// Database abstraction: better-sqlite3 (local) or libsql (Vercel)
+// Database abstraction: better-sqlite3 (local) or libsql (Turso)
 // ─────────────────────────────────────────────────────────
 
 const DB_URL = process.env.DATABASE_URL;
-const isVercel = !!DB_URL;
+const useLibsql = !!DB_URL;
 
 export interface DbRun {
   id: number;
@@ -23,10 +23,6 @@ export interface DbRun {
   status: string;
   error_message: string | null;
 }
-
-// ─────────────────────────────────────────────────────────
-// SQLite schema (shared between backends)
-// ─────────────────────────────────────────────────────────
 
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS application_runs (
@@ -48,11 +44,12 @@ const SCHEMA = `
 `;
 
 // ─────────────────────────────────────────────────────────
-// LibSQL backend (Vercel / Turso)
+// LibSQL backend (Turso)
 // ─────────────────────────────────────────────────────────
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let libsqlClient: any = null;
+let libsqlReady = false;
 
 function getLibsql(): any {
   if (!libsqlClient) {
@@ -66,9 +63,12 @@ function getLibsql(): any {
   return libsqlClient;
 }
 
-async function initLibsql() {
-  const client = getLibsql();
-  await client.execute(SCHEMA);
+async function ensureLibsql() {
+  if (!libsqlReady) {
+    const client = getLibsql();
+    await client.execute(SCHEMA);
+    libsqlReady = true;
+  }
 }
 
 // ─────────────────────────────────────────────────────────
@@ -105,7 +105,8 @@ export async function saveRun(data: {
 }): Promise<number> {
   const now = new Date().toISOString();
 
-  if (isVercel) {
+  if (useLibsql) {
+    await ensureLibsql();
     const client = getLibsql();
     const result = await client.execute({
       sql: `INSERT INTO application_runs (created_at, jd_text, jd_source, resume_text, resume_source, status)
@@ -174,7 +175,8 @@ export async function updateRun(
 
   if (updates.length === 0) return;
 
-  if (isVercel) {
+  if (useLibsql) {
+    await ensureLibsql();
     const client = getLibsql();
     values.push(runId);
     await client.execute({
@@ -190,7 +192,8 @@ export async function updateRun(
 }
 
 export async function getRun(runId: number): Promise<DbRun | null> {
-  if (isVercel) {
+  if (useLibsql) {
+    await ensureLibsql();
     const client = getLibsql();
     const result = await client.execute({
       sql: "SELECT * FROM application_runs WHERE id = ?",
@@ -204,7 +207,8 @@ export async function getRun(runId: number): Promise<DbRun | null> {
 }
 
 export async function listRuns(limit: number = 50, offset: number = 0): Promise<DbRun[]> {
-  if (isVercel) {
+  if (useLibsql) {
+    await ensureLibsql();
     const client = getLibsql();
     const result = await client.execute({
       sql: "SELECT * FROM application_runs ORDER BY created_at DESC LIMIT ? OFFSET ?",
@@ -220,7 +224,8 @@ export async function listRuns(limit: number = 50, offset: number = 0): Promise<
 }
 
 export async function deleteRun(runId: number): Promise<boolean> {
-  if (isVercel) {
+  if (useLibsql) {
+    await ensureLibsql();
     const client = getLibsql();
     const result = await client.execute({
       sql: "DELETE FROM application_runs WHERE id = ?",

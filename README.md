@@ -36,12 +36,24 @@ PROTEUS's core idea: **parse the JD once, and let that single structured underst
 
 | # | Agent | Job | NIM Model |
 |---|-------|-----|-----------|
-| 1 | **JD Parser** | Extracts structured requirements from the JD | `meta/llama-3.1-8b-instruct` |
-| 2 | **Resume Parser** | Breaks the resume into structured, taggable units | `meta/llama-3.1-8b-instruct` |
-| 3 | **Gap Analyzer** | Embeds both, computes cosine similarity, ranks gaps | `nvidia/nv-embedqa-e5-v5` |
-| 4 | **Rewrite Suggester** | JD-aware bullet rewrites for weak areas | `meta/llama-3.3-70b-instruct` |
-| 5 | **Cover Letter** | Tailored letter from the same context | `meta/llama-3.3-70b-instruct` |
+| 1 | **JD Parser** | Extracts structured requirements from the JD | `parser` |
+| 2 | **Resume Parser** | Breaks the resume into structured, taggable units | `parser` |
+| 3 | **Gap Analyzer** | Embeds both, computes cosine similarity, ranks gaps | `embedder` |
+| 4 | **Rewrite Suggester** | JD-aware bullet rewrites for weak areas | `rewriter` |
+| 5 | **Cover Letter** | Tailored letter from the same context | `rewriter` |
 | 6 | **Aggregator** | Weighted scoring + action list (no LLM) | — |
+
+> Model names are resolved at runtime from `models.json`. The health check bot keeps them updated.
+
+<!-- MODELS AUTO-GENERATED START -->
+### Active Models (auto-updated by health check bot)
+
+| Role | Model | Last Checked |
+|------|-------|--------------|
+| parser | `meta/llama-3.1-8b-instruct` | 2026-07-03T06:52:50.521Z |
+| rewriter | `meta/llama-3.1-70b-instruct` | 2026-07-03T06:52:50.521Z |
+| embedder | `nvidia/nv-embedqa-e5-v5` | 2026-07-03T06:52:50.521Z |
+<!-- END MODELS AUTO-GENERATED -->
 
 ## Tech Stack
 

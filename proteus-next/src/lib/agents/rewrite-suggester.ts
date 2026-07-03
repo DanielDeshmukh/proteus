@@ -1,7 +1,8 @@
 import { chatCompletion, extractJson } from "../nim-client";
+import { getModelForRole } from "../model-config";
 import { RewriteOutputSchema, type RewriteOutput, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
 
-const REWRITE_MODEL = "meta/llama-3.3-70b-instruct";
+const REWRITE_MODEL = getModelForRole("rewriter");
 
 const REWRITE_SYSTEM_PROMPT = `You are an expert resume writer who specializes in tailoring resumes to specific job descriptions.
 

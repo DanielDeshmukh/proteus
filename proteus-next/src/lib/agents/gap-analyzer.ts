@@ -1,7 +1,8 @@
 import { embedTexts } from "../nim-client";
+import { getEmbeddingModel } from "../model-config";
 import type { JDStructured, ResumeStructured, GapAnalysis, GapItem } from "../../types";
 
-const EMBEDDING_MODEL = "nvidia/nv-embedqa-e5-v5";
+const EMBEDDING_MODEL = getEmbeddingModel();
 const MATCH_THRESHOLD = 0.55;
 const PARTIAL_THRESHOLD = 0.35;
 

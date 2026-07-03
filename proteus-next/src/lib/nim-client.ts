@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { getEmbeddingModel } from "./model-config";
 
 const NIM_BASE_URL = "https://integrate.api.nvidia.com/v1";
 
@@ -13,6 +14,7 @@ function getClient(): OpenAI {
     client = new OpenAI({
       apiKey,
       baseURL: NIM_BASE_URL,
+      timeout: 120000,
     });
   }
   return client;
@@ -67,13 +69,13 @@ export function extractJson(text: string): string {
 
 export async function embedTexts(
   texts: string[],
-  model: string = "nvidia/nv-embedqa-e5-v5",
+  model?: string,
   inputType: "query" | "passage" = "passage"
 ): Promise<number[][]> {
   const nim = getClient();
 
   const response = await nim.embeddings.create({
-    model,
+    model: model || getEmbeddingModel(),
     input: texts,
     input_type: inputType,
   } as any);
