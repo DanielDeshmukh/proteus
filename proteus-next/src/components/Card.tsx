@@ -14,7 +14,7 @@ export function Card({
         background: "var(--surface)",
         border: "1px solid var(--border)",
         borderRadius: "var(--radius-lg)",
-        padding: "26px",
+        padding: "28px",
       }}
     >
       {children}

@@ -100,7 +100,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         className="mx-auto"
         style={{
           maxWidth: "1180px",
-          padding: "0 40px 96px",
+          padding: "8px 48px 120px",
           position: "relative",
           zIndex: 1,
         }}

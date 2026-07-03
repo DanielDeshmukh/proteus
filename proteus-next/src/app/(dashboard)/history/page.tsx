@@ -5,6 +5,7 @@ import { Layout } from "@/components/Layout";
 import { Card } from "@/components/Card";
 import { Spinner } from "@/components/Spinner";
 import { Toast } from "@/components/Toast";
+import { HistoryDetail } from "@/components/HistoryDetail";
 import { apiGet, apiDelete } from "@/lib/api";
 
 interface Run {
@@ -21,6 +22,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   async function fetchHistory() {
     setLoading(true);
@@ -38,11 +40,13 @@ export default function HistoryPage() {
     fetchHistory();
   }, []);
 
-  const handleDelete = async (runId: number) => {
+  const handleDelete = async (e: React.MouseEvent, runId: number) => {
+    e.stopPropagation();
     if (!confirm("Delete this run?")) return;
     try {
       await apiDelete(`/api/history/${runId}`);
       setRuns((prev) => prev.filter((r) => r.id !== runId));
+      if (selectedId === runId) setSelectedId(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete");
     }
@@ -74,6 +78,16 @@ export default function HistoryPage() {
     return badges[status] || badges.pending;
   };
 
+  // Detail view
+  if (selectedId !== null) {
+    return (
+      <Layout>
+        <HistoryDetail runId={selectedId} onClose={() => setSelectedId(null)} />
+      </Layout>
+    );
+  }
+
+  // List view
   return (
     <Layout>
       <section style={{ padding: "48px 0 32px" }}>
@@ -81,7 +95,7 @@ export default function HistoryPage() {
           History
         </h1>
         <p style={{ fontSize: "14px", color: "var(--text-soft)" }}>
-          View and manage your past analysis runs
+          Click any run to view full results
         </p>
       </section>
 
@@ -122,7 +136,10 @@ export default function HistoryPage() {
             const badge = getStatusBadge(run.status);
             return (
               <Card key={run.id}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div
+                  onClick={() => setSelectedId(run.id)}
+                  style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
+                >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "6px" }}>
                       <span
@@ -164,7 +181,7 @@ export default function HistoryPage() {
                       </span>
                     )}
                     <button
-                      onClick={() => handleDelete(run.id)}
+                      onClick={(e) => handleDelete(e, run.id)}
                       style={{
                         background: "var(--surface-sunken)",
                         border: "1px solid var(--border)",

@@ -85,7 +85,9 @@ Write a ${tone} cover letter for this candidate applying to this role.`;
     temperature: 0.4,
     maxTokens: 3000,
   }).then((response) => {
-    const parsed = JSON.parse(extractJson(response));
+    let jsonStr = extractJson(response);
+    jsonStr = jsonStr.replace(/[\x00-\x1f\x7f]/g, (ch) => ch === "\n" ? "\\n" : ch === "\r" ? "" : ch === "\t" ? "\\t" : "");
+    const parsed = JSON.parse(jsonStr);
     return CoverLetterOutputSchema.parse(parsed);
   });
 }
