@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 let pdfjsLib: any = null;
 
 async function getPdfjs() {
   if (!pdfjsLib) {
-    pdfjsLib = await import("pdfjs-dist");
+    // Dynamic import so webpack doesn't try to bundle this ESM-only package.
+    // pdfjs-dist is listed in serverExternalPackages so Node loads it natively.
+    const mod = await import("pdfjs-dist");
+    pdfjsLib = mod.default ?? mod;
     pdfjsLib.GlobalWorkerOptions.workerSrc = "";
   }
   return pdfjsLib;
@@ -13,9 +18,14 @@ export async function parsePdfBuffer(data: Buffer): Promise<string> {
   const uint8 = new Uint8Array(buffer);
 
   const pdfjs = await getPdfjs();
-  const doc = await pdfjs.getDocument({ data: uint8, useWorkerFetch: false, isEvalSupported: false, useSystemFonts: true }).promise;
-  const textParts: string[] = [];
+  const doc = await pdfjs.getDocument({
+    data: uint8,
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    useSystemFonts: true,
+  }).promise;
 
+  const textParts: string[] = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
     const content = await page.getTextContent();
