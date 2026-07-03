@@ -1,17 +1,19 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.mjs");
+let pdfjsLib: any = null;
 
-// Set worker source to the bundled file
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+async function getPdfjs() {
+  if (!pdfjsLib) {
+    pdfjsLib = await import("pdfjs-dist");
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+  }
+  return pdfjsLib;
+}
 
 export async function parsePdfBuffer(data: Buffer): Promise<string> {
   const buffer = Buffer.isBuffer(data) ? data : Buffer.from(data);
   const uint8 = new Uint8Array(buffer);
 
-  const doc = await pdfjsLib.getDocument({ data: uint8 }).promise;
+  const pdfjs = await getPdfjs();
+  const doc = await pdfjs.getDocument({ data: uint8, useWorkerFetch: false, isEvalSupported: false, useSystemFonts: true }).promise;
   const textParts: string[] = [];
 
   for (let i = 1; i <= doc.numPages; i++) {
