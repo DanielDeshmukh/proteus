@@ -20,11 +20,7 @@ export function DownloadButton({ content, filename, isCoverLetter = false }: { c
       const { generateCoverLetterPDF, generateTextPDF, downloadBlob } = await import("@/lib/pdf/generate");
 
       if (isCoverLetter) {
-        const paragraphs = content
-          .split(/\n\s*\n|\n(?=[A-Z])/)
-          .map((p) => p.trim())
-          .filter((p) => p.length > 10);
-        const blob = await generateCoverLetterPDF({ paragraphs });
+        const blob = await generateCoverLetterPDF({ content });
         downloadBlob(blob, `${filename}.pdf`);
       } else {
         const blob = await generateTextPDF({ title: filename, content });

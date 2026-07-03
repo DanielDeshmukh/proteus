@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#1a1a1a",
-    marginBottom: 6,
+    marginBottom: 10,
     letterSpacing: 0.5,
   },
   role: {
@@ -30,42 +30,16 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 2,
   },
-  contact: {
-    fontSize: 9,
-    color: "#666",
-    lineHeight: 1.5,
-  },
-  contactLine: {
-    marginBottom: 2,
-  },
   date: {
     fontSize: 10,
     color: "#888",
     marginBottom: 28,
     textAlign: "right",
   },
-  greeting: {
-    fontSize: 11,
-    marginBottom: 18,
-    color: "#333",
-  },
-  paragraph: {
+  body: {
     fontSize: 11,
     lineHeight: 1.7,
     color: "#333",
-    marginBottom: 16,
-  },
-  closing: {
-    fontSize: 11,
-    marginTop: 28,
-    marginBottom: 6,
-    color: "#333",
-  },
-  signature: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#1a1a1a",
-    marginTop: 32,
   },
   footer: {
     position: "absolute",
@@ -82,7 +56,7 @@ const styles = StyleSheet.create({
 });
 
 export interface CoverLetterData {
-  paragraphs: string[];
+  content: string;
   candidateName?: string;
   role?: string;
   date?: string;
@@ -97,41 +71,29 @@ export function CoverLetterPDF({ data }: { data: CoverLetterData }) {
     day: "numeric",
   });
 
+  // The LLM content already contains greeting, body, and closing.
+  // We just render it as-is with proper spacing.
+  const paragraphs = data.content
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 5);
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
+        {/* Header — name + role only, no email */}
         <View style={styles.header}>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.role}>{role}</Text>
-          <View style={styles.contactLine}>
-            <Text style={styles.contact}>danieldeshmukh.dev@gmail.com</Text>
-          </View>
-          <View style={styles.contactLine}>
-            <Text style={styles.contact}>github.com/DanielDeshmukh</Text>
-          </View>
         </View>
 
         {/* Date */}
         <Text style={styles.date}>{date}</Text>
 
-        {/* Greeting */}
-        <Text style={styles.greeting}>Dear Hiring Manager,</Text>
-
-        {/* Body paragraphs */}
-        {data.paragraphs.map((para, i) => (
-          <Text key={i} style={styles.paragraph}>
-            {para}
-          </Text>
-        ))}
-
-        {/* Closing */}
-        <Text style={styles.closing}>
-          Thank you for considering my application. I look forward to the
-          opportunity to contribute to your team.
+        {/* Body — LLM content (greeting, paragraphs, closing) */}
+        <Text style={styles.body}>
+          {paragraphs.join("\n\n")}
         </Text>
-
-        <Text style={styles.signature}>{name}</Text>
 
         {/* Footer */}
         <Text style={styles.footer}>
