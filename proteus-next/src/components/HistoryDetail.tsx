@@ -295,7 +295,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
             actions={
               <div style={{ display: "flex", gap: "8px" }}>
                 <CopyButton text={coverLetter.full_letter} label="Copy" />
-                <DownloadButton content={coverLetter.full_letter} filename={`cover-letter-run-${run.id}`} />
+                <DownloadButton content={coverLetter.full_letter} filename={`cover-letter-run-${run.id}`} isCoverLetter />
               </div>
             }
           >

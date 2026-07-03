@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FiDownload } from "react-icons/fi";
 
-export function DownloadButton({ content, filename }: { content: string; filename: string }) {
+export function DownloadButton({ content, filename, isCoverLetter = false }: { content: string; filename: string; isCoverLetter?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -17,35 +17,119 @@ export function DownloadButton({ content, filename }: { content: string; filenam
 
   const download = async (fmt: "pdf" | "docx") => {
     if (fmt === "pdf") {
-      const { default: jsPDF } = await import("jspdf");
-      const doc = new jsPDF();
-      const lines = doc.splitTextToSize(content, 180);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      let y = 20;
-      for (const line of lines) {
-        if (y > 270) { doc.addPage(); y = 20; }
-        doc.text(line, 15, y);
-        y += 6;
+      const { generateCoverLetterPDF, generateTextPDF, downloadBlob } = await import("@/lib/pdf/generate");
+
+      if (isCoverLetter) {
+        const paragraphs = content
+          .split(/\n\s*\n/)
+          .map((p) => p.trim())
+          .filter((p) => p.length > 0);
+        const blob = await generateCoverLetterPDF({ paragraphs });
+        downloadBlob(blob, `${filename}.pdf`);
+      } else {
+        const blob = await generateTextPDF({ title: filename, content });
+        downloadBlob(blob, `${filename}.pdf`);
       }
-      doc.save(`${filename}.pdf`);
     } else {
       const docx = await import("docx");
-      const { Document, Packer, Paragraph, TextRun } = docx;
-      const paragraphs = content.split("\n").map(
-        (line) => new Paragraph({
-          children: [new TextRun({ text: line, font: "Arial", size: 24 })],
-          spacing: { after: 120 },
-        })
-      );
-      const doc = new Document({ sections: [{ children: paragraphs }] });
-      const blob = await Packer.toBlob(doc);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${filename}.docx`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const { Document: DocxDoc, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = docx;
+
+      if (isCoverLetter) {
+        // Professional cover letter DOCX
+        const paragraphs = content.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
+        const children = [];
+
+        // Header
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: "Daniel Deshmukh", bold: true, size: 28, font: "Calibri" })],
+            spacing: { after: 40 },
+          })
+        );
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: "SOFTWARE ENGINEER", bold: true, size: 18, font: "Calibri", color: "C9A962" })],
+            spacing: { after: 80 },
+          })
+        );
+
+        // Date
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }), size: 18, font: "Calibri", color: "666666" })],
+            alignment: AlignmentType.RIGHT,
+            spacing: { after: 200 },
+          })
+        );
+
+        // Greeting
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: "Dear Hiring Manager,", size: 22, font: "Calibri" })],
+            spacing: { after: 160 },
+          })
+        );
+
+        // Body
+        for (const para of paragraphs) {
+          children.push(
+            new Paragraph({
+              children: [new TextRun({ text: para, size: 22, font: "Calibri" })],
+              spacing: { after: 140 },
+              alignment: AlignmentType.BOTH,
+            })
+          );
+        }
+
+        // Closing
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: "Thank you for considering my application. I look forward to the opportunity to contribute to your team.", size: 22, font: "Calibri" })],
+            spacing: { before: 200, after: 140 },
+          })
+        );
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: "Daniel Deshmukh", bold: true, size: 22, font: "Calibri" })],
+            spacing: { before: 200 },
+          })
+        );
+
+        const doc = new DocxDoc({
+          sections: [{
+            children,
+            properties: {
+              page: {
+                margin: { top: 1200, right: 1200, bottom: 1200, left: 1200 },
+              },
+            },
+          }],
+        });
+
+        const blob = await Packer.toBlob(doc);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${filename}.docx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        // Generic text DOCX
+        const paragraphs = content.split("\n").map(
+          (line) => new Paragraph({
+            children: [new TextRun({ text: line, font: "Calibri", size: 22 })],
+            spacing: { after: 80 },
+          })
+        );
+        const doc = new DocxDoc({ sections: [{ children: paragraphs }] });
+        const blob = await Packer.toBlob(doc);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${filename}.docx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
     }
     setOpen(false);
   };
