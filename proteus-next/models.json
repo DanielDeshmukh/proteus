@@ -6,20 +6,18 @@
       "fallbacks": [
         "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.1-nemotron-70b-instruct",
-        "meta/llama-3.3-70b-instruct"
+        "nvidia/llama-3.1-nemotron-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "meta/llama-3.1-8b-instruct",
+      "current": "meta/llama-3.1-70b-instruct",
       "fallbacks": [
-        "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.1-nemotron-70b-instruct",
-        "meta/llama-3.3-70b-instruct"
+        "meta/llama-3.3-70b-instruct",
+        "nvidia/llama-3.1-nemotron-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -30,17 +28,15 @@
       "fallbacks": [
         "nvidia/nv-embedqa-e5-v5",
         "nvidia/nv-embedqa-mistral-7b-v2",
-        "nvidia/nv-embed-v1",
-        "nvidia/embed-qa-4"
+        "nvidia/nv-embed-v1"
       ],
       "testPrompt": "test",
       "type": "embedding"
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "current": "meta/llama-3.1-70b-instruct",
+      "current": "meta/llama-3.3-70b-instruct",
       "fallbacks": [
-        "meta/llama-3.1-70b-instruct",
         "meta/llama-3.3-70b-instruct",
         "nvidia/llama-3.1-nemotron-70b-instruct",
         "nvidia/llama-3.3-nemotron-super-49b-v1.5"
@@ -50,12 +46,11 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "meta/llama-3.1-70b-instruct",
+      "current": "nvidia/llama-3.1-nemotron-70b-instruct",
       "fallbacks": [
-        "meta/llama-3.1-70b-instruct",
-        "meta/llama-3.3-70b-instruct",
         "nvidia/llama-3.1-nemotron-70b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "meta/llama-3.3-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
