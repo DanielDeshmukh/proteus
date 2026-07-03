@@ -4,26 +4,36 @@ import { join } from "path";
 
 const NIM_BASE_URL = "https://integrate.api.nvidia.com/v1";
 
+const PIPELINE_STEPS = [
+  { step: 1, agent: "JD Parser",       role: "parser",   task: "Extract structured requirements" },
+  { step: 2, agent: "Resume Parser",   role: "parser",   task: "Break resume into structured units" },
+  { step: 3, agent: "Gap Analyzer",    role: "embedder", task: "Score semantic match via embeddings" },
+  { step: 4, agent: "Rewrite Suggester", role: "rewriter", task: "Draft JD-aware bullet rewrites" },
+  { step: 5, agent: "Cover Letter",    role: "rewriter", task: "Write tailored cover letter" },
+];
+
 const ERROR_CLASS: Record<string, { name: string; fix: string }> = {
-  "502": { name: "BAD_GATEWAY", fix: "NIM upstream timeout. Retry after 5-10s or switch model." },
+  "502": { name: "BAD_GATEWAY",     fix: "NIM upstream timeout. Retry after 5-10s or switch model." },
   "503": { name: "SERVICE_UNAVAIL", fix: "NIM temporarily down. Wait 30s and retry." },
-  "429": { name: "RATE_LIMITED", fix: "Rate limit hit. Wait 60s or reduce frequency." },
-  "401": { name: "AUTH_FAILED", fix: "Invalid API key. Regenerate at build.nvidia.com." },
-  "403": { name: "FORBIDDEN", fix: "Key lacks access to this model." },
+  "429": { name: "RATE_LIMITED",    fix: "Rate limit hit. Wait 60s or reduce frequency." },
+  "401": { name: "AUTH_FAILED",     fix: "Invalid API key. Regenerate at build.nvidia.com." },
+  "403": { name: "FORBIDDEN",       fix: "Key lacks access to this model." },
   "404": { name: "MODEL_NOT_FOUND", fix: "Model removed or unavailable." },
 };
 
 interface TestResult {
+  step: number;
+  agent: string;
+  task: string;
   model: string;
   ok: boolean;
   latency: number;
   error?: string;
   errorClass?: string;
   fix?: string;
-  dims?: number;
 }
 
-async function testChat(model: string, apiKey: string, timeout = 30000): Promise<TestResult> {
+async function testChat(model: string, apiKey: string, timeout = 30000): Promise<Omit<TestResult, "step" | "agent" | "task">> {
   const start = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
@@ -55,7 +65,7 @@ async function testChat(model: string, apiKey: string, timeout = 30000): Promise
   }
 }
 
-async function testEmbed(model: string, apiKey: string, timeout = 15000): Promise<TestResult> {
+async function testEmbed(model: string, apiKey: string, timeout = 15000): Promise<Omit<TestResult, "step" | "agent" | "task">> {
   const start = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
@@ -73,9 +83,7 @@ async function testEmbed(model: string, apiKey: string, timeout = 15000): Promis
       const cls = ERROR_CLASS[String(res.status)] || { name: "UNKNOWN", fix: "Check NIM status." };
       return { model, ok: false, latency, error: `HTTP ${res.status}`, errorClass: cls.name, fix: cls.fix };
     }
-    const data = JSON.parse(body);
-    const dims = data.data?.[0]?.embedding?.length || 0;
-    return { model, ok: true, latency, dims };
+    return { model, ok: true, latency };
   } catch (e: any) {
     clearTimeout(timer);
     const latency = Date.now() - start;
@@ -98,22 +106,27 @@ export async function GET() {
     return NextResponse.json({ status: "error", message: "models.json not found" }, { status: 500 });
   }
 
-  const results: Record<string, TestResult> = {};
+  const results: TestResult[] = [];
 
-  for (const [role, cfg] of Object.entries(config.roles) as any[]) {
+  // Test each pipeline step (not just unique roles)
+  for (const step of PIPELINE_STEPS) {
+    const cfg = config.roles[step.role];
+    if (!cfg) continue;
+
     const isEmbed = cfg.type === "embedding";
-    results[role] = isEmbed
+    const base = isEmbed
       ? await testEmbed(cfg.current, apiKey)
       : await testChat(cfg.current, apiKey);
+
+    results.push({ ...step, ...base });
   }
 
-  const healthy = Object.values(results).filter(r => r.ok).length;
-  const total = Object.keys(results).length;
+  const healthy = results.filter(r => r.ok).length;
 
   return NextResponse.json({
-    status: healthy === total ? "healthy" : "degraded",
+    status: healthy === results.length ? "healthy" : "degraded",
     healthy,
-    total,
+    total: results.length,
     results,
     checkedAt: new Date().toISOString(),
   });

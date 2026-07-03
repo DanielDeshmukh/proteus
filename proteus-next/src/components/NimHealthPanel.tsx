@@ -4,20 +4,22 @@ import { useState } from "react";
 import { Card } from "@/components/Card";
 
 interface HealthResult {
+  step: number;
+  agent: string;
+  task: string;
   model: string;
   ok: boolean;
   latency: number;
   error?: string;
   errorClass?: string;
   fix?: string;
-  dims?: number;
 }
 
 interface HealthResponse {
   status: string;
   healthy: number;
   total: number;
-  results: Record<string, HealthResult>;
+  results: HealthResult[];
   checkedAt: string;
 }
 
@@ -49,7 +51,7 @@ export function NimHealthPanel() {
             NIM Connectivity Check
           </h3>
           <p style={{ fontSize: "12px", color: "var(--text-faint)", margin: "4px 0 0" }}>
-            Live test of each model endpoint against NVIDIA NIM API
+            Live test of each pipeline step against NVIDIA NIM API
           </p>
         </div>
         <button
@@ -77,7 +79,7 @@ export function NimHealthPanel() {
       )}
 
       {data && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {/* Summary bar */}
           <div
             style={{
@@ -90,77 +92,72 @@ export function NimHealthPanel() {
               border: `1px solid ${data.status === "healthy" ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"}`,
             }}
           >
-            <span style={{ fontSize: "12px", fontWeight: 600, color: data.status === "healthy" ? "#22c55e" : "#ef4444", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "12px", fontWeight: 600, color: data.status === "healthy" ? "#22c55e" : "#ef4444", textTransform: "uppercase" as const }}>
               {data.status}
             </span>
             <span style={{ fontSize: "12px", color: "var(--text-faint)" }}>
-              {data.healthy}/{data.total} models responding
+              {data.healthy}/{data.total} pipeline steps responding
             </span>
             <span style={{ fontSize: "11px", color: "var(--text-faint)", marginLeft: "auto", fontFamily: "var(--font-mono)" }}>
               {new Date(data.checkedAt).toLocaleTimeString()}
             </span>
           </div>
 
-          {/* Per-model results */}
-          {Object.entries(data.results).map(([role, r]) => (
+          {/* Per-step results */}
+          {data.results.map((r) => (
             <div
-              key={role}
+              key={r.step}
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
+                gap: "10px",
                 padding: "10px 14px",
                 borderRadius: "var(--radius-md)",
                 border: `1px solid ${r.ok ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)"}`,
                 background: r.ok ? "transparent" : "rgba(239, 68, 68, 0.03)",
               }}
             >
-              {/* Status dot */}
-              <div
-                style={{
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "50%",
-                  background: r.ok ? "#22c55e" : "#ef4444",
-                  flexShrink: 0,
-                }}
-              />
+              {/* Step number */}
+              <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-faint)", minWidth: "18px" }}>
+                {String(r.step).padStart(2, "0")}
+              </span>
 
-              {/* Role */}
-              <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)", minWidth: "70px" }}>
-                {role}
+              {/* Status dot */}
+              <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: r.ok ? "#22c55e" : "#ef4444", flexShrink: 0 }} />
+
+              {/* Agent name */}
+              <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)", minWidth: "130px" }}>
+                {r.agent}
               </span>
 
               {/* Model */}
-              <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--text-soft)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-soft)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {r.model}
               </span>
 
               {/* Latency */}
-              <span style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: r.latency < 5000 ? "var(--text-faint)" : "var(--color-gold)", flexShrink: 0 }}>
+              <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: r.latency < 5000 ? "var(--text-faint)" : "var(--color-gold)", flexShrink: 0, minWidth: "55px", textAlign: "right" as const }}>
                 {r.latency}ms
               </span>
 
-              {/* Error info */}
-              {!r.ok && (
-                <div style={{ flexShrink: 0 }}>
-                  <span style={{ fontSize: "11px", padding: "2px 8px", borderRadius: "100px", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", fontWeight: 500 }}>
-                    {r.errorClass}
-                  </span>
-                </div>
+              {/* Error badge */}
+              {!r.ok && r.errorClass && (
+                <span style={{ fontSize: "10px", padding: "2px 6px", borderRadius: "100px", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", fontWeight: 500, flexShrink: 0 }}>
+                  {r.errorClass}
+                </span>
               )}
             </div>
           ))}
 
-          {/* Error details + fixes */}
-          {Object.entries(data.results).filter(([, r]) => !r.ok).length > 0 && (
+          {/* Troubleshooting */}
+          {data.results.filter(r => !r.ok).length > 0 && (
             <div style={{ marginTop: "4px" }}>
-              <h4 style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-soft)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <h4 style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-soft)", margin: "0 0 6px", textTransform: "uppercase" as const, letterSpacing: "0.05em" }}>
                 Troubleshooting
               </h4>
-              {Object.entries(data.results).filter(([, r]) => !r.ok).map(([role, r]) => (
-                <div key={role} style={{ fontSize: "12px", color: "var(--text-faint)", marginBottom: "6px", lineHeight: "1.5" }}>
-                  <strong style={{ color: "var(--text-soft)" }}>{role}</strong>: {r.fix}
+              {data.results.filter(r => !r.ok).map((r) => (
+                <div key={r.step} style={{ fontSize: "12px", color: "var(--text-faint)", marginBottom: "6px", lineHeight: "1.5" }}>
+                  <strong style={{ color: "var(--text-soft)" }}>Step {r.step} ({r.agent})</strong>: {r.fix}
                   {r.error && <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", display: "block", marginTop: "2px", opacity: 0.7 }}>{r.error}</span>}
                 </div>
               ))}
