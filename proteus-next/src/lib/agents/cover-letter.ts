@@ -1,6 +1,6 @@
-import { chatCompletion, extractJson } from "../nim-client";
 import { getModelForRole } from "../model-config";
 import { CoverLetterOutputSchema, type CoverLetterOutput, type Tone, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
+import { callWithJsonRetry } from "./json-retry";
 
 const COVER_LETTER_MODEL = getModelForRole("cover-letter");
 
@@ -32,7 +32,7 @@ Return a JSON object with:
 - "key_points_addressed": Which JD requirements were highlighted
 - "word_count": Approximate word count
 
-Return ONLY valid JSON, no markdown or explanation.`;
+Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
 
 export function generateCoverLetter(
   jd: JDStructured,
@@ -76,18 +76,10 @@ Missing Requirements: ${gapAnalysis.gaps
 
 Write a ${tone} cover letter for this candidate applying to this role.`;
 
-  const messages = [
-    { role: "system" as const, content: COVER_LETTER_SYSTEM_PROMPT },
-    { role: "user" as const, content: userPrompt },
-  ];
-
-  return chatCompletion(COVER_LETTER_MODEL, messages, {
+  return callWithJsonRetry(COVER_LETTER_MODEL, COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema, {
     temperature: 0.4,
     maxTokens: 3000,
-  }).then((response) => {
-    let jsonStr = extractJson(response);
-    jsonStr = jsonStr.replace(/[\x00-\x1f\x7f]/g, (ch) => ch === "\n" ? "\\n" : ch === "\r" ? "" : ch === "\t" ? "\\t" : "");
-    const parsed = JSON.parse(jsonStr);
-    return CoverLetterOutputSchema.parse(parsed);
+    cleanControlChars: true,
+    role: "cover-letter",
   });
 }

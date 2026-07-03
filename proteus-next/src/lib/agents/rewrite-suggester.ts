@@ -1,6 +1,6 @@
-import { chatCompletion, extractJson } from "../nim-client";
 import { getModelForRole } from "../model-config";
 import { RewriteOutputSchema, type RewriteOutput, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
+import { callWithJsonRetry } from "./json-retry";
 
 const REWRITE_MODEL = getModelForRole("rewrite-suggester");
 
@@ -25,7 +25,11 @@ Rules:
 4. Quantify achievements where possible
 5. Prioritize high-impact rewrites (biggest gaps first)
 
-Return ONLY valid JSON, no markdown or explanation.`;
+Return a JSON object with:
+- "suggestions": Array of rewrite suggestion objects
+- "hidden_experience": Array of hidden experience strings
+
+Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
 
 export function suggestRewrites(
   jd: JDStructured,
@@ -76,30 +80,15 @@ ${JSON.stringify(gapsContext, null, 2)}
 
 Generate rewrite suggestions for the bullets above to better match these gaps.`;
 
-  const messages = [
-    { role: "system" as const, content: REWRITE_SYSTEM_PROMPT },
-    { role: "user" as const, content: userPrompt },
-  ];
-
-  return chatCompletion(REWRITE_MODEL, messages, {
+  return callWithJsonRetry(REWRITE_MODEL, REWRITE_SYSTEM_PROMPT, userPrompt, RewriteOutputSchema, {
     temperature: 0.3,
     maxTokens: 4096,
-  }).then((response) => {
-    const cleaned = extractJson(response);
-    console.log("[REWRITE RAW]", cleaned.substring(0, 500));
-    const parsed = JSON.parse(cleaned);
-    console.log("[REWRITE PARSED] type:", typeof parsed, "isArray:", Array.isArray(parsed), "keys:", Array.isArray(parsed) ? "array" : Object.keys(parsed));
-    
-    let normalized = parsed;
-    if (Array.isArray(parsed)) {
-      normalized = { suggestions: parsed, hidden_experience: [] };
-    } else if (parsed.suggestions && !Array.isArray(parsed.suggestions)) {
-      normalized = { ...parsed, suggestions: Object.values(parsed.suggestions) };
-    } else if (parsed.rewrite_suggestions) {
-      normalized = { suggestions: parsed.rewrite_suggestions, hidden_experience: parsed.hidden_experience || [] };
+    role: "rewrite-suggester",
+  }).then((output) => {
+    // Normalize various response formats
+    if (output.suggestions && !Array.isArray(output.suggestions)) {
+      output.suggestions = Object.values(output.suggestions as any);
     }
-    
-    const output = RewriteOutputSchema.parse(normalized);
     output.suggestions.sort((a, b) => b.impact_score - a.impact_score);
     return output;
   });

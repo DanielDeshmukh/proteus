@@ -1,11 +1,12 @@
-import { chatCompletion, extractJson } from "../nim-client";
 import { getModelForRole } from "../model-config";
 import { ResumeStructuredSchema, type ResumeStructured } from "../../types";
+import { callWithJsonRetry } from "./json-retry";
 
 const RESUME_PARSER_MODEL = getModelForRole("resume-parser");
 
 const RESUME_PARSER_SYSTEM_PROMPT = `You are an expert resume analyst. Given a raw resume text, extract structured information from it.
 
+## Output Format
 Return a JSON object with these fields:
 - "name": Candidate's full name
 - "email": Email address (null if not found)
@@ -37,23 +38,19 @@ Return a JSON object with these fields:
   - "year": Year obtained (null if not found)
 - "total_years_experience": Estimated total years of professional experience (null if cannot determine)
 
-Be thorough. Extract every skill, every bullet point, every project. Return ONLY valid JSON, no markdown or explanation.`;
+Be thorough. Extract every skill, every bullet point, every project.
+Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
 
 export function parseResume(rawResumeText: string): Promise<ResumeStructured> {
   if (!rawResumeText || !rawResumeText.trim()) {
     throw new Error("Resume text cannot be empty");
   }
 
-  const messages = [
-    { role: "system" as const, content: RESUME_PARSER_SYSTEM_PROMPT },
-    { role: "user" as const, content: `Parse this resume:\n\n${rawResumeText}` },
-  ];
+  const userContent = `Parse this resume:\n\n${rawResumeText}`;
 
-  return chatCompletion(RESUME_PARSER_MODEL, messages, {
+  return callWithJsonRetry(RESUME_PARSER_MODEL, RESUME_PARSER_SYSTEM_PROMPT, userContent, ResumeStructuredSchema, {
     temperature: 0.1,
     maxTokens: 4096,
-  }).then((response) => {
-    const parsed = JSON.parse(extractJson(response));
-    return ResumeStructuredSchema.parse(parsed);
+    role: "resume-parser",
   });
 }

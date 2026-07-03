@@ -1,12 +1,22 @@
-import { chatCompletion, extractJson } from "../nim-client";
 import { getModelForRole } from "../model-config";
 import { JDStructuredSchema, type JDStructured } from "../../types";
+import { callWithJsonRetry } from "./json-retry";
 
 const JD_PARSER_MODEL = getModelForRole("jd-parser");
 
 const JD_PARSER_SYSTEM_PROMPT = `You are an expert ATS (Applicant Tracking System) analyst and job description parser.
-Given a raw job description text, extract structured information from it.
 
+## CRITICAL RULE — NOISY INPUT HANDLING
+The input text may come from a web scrape and contain MULTIPLE job listings, navigation bars, sidebars, footers, ads, cookie notices, and other noise. You MUST:
+
+1. SCAN the entire text for all job descriptions present
+2. PICK the SINGLE job description that has the MOST detail — the one with the longest responsibilities, requirements, qualifications, and company description
+3. IGNORE all other shorter/less-detailed listings, navigation links, footer text, sidebar content, ads, and any non-job-description text
+4. Extract structured information ONLY from that one best job description
+
+If the text contains multiple jobs of similar detail, pick the one that appears FIRST with a full description (title + company + detailed responsibilities).
+
+## Output Format
 Return a JSON object with these fields:
 - "title": The job title
 - "company": Company name (null if not found)
@@ -20,23 +30,20 @@ Return a JSON object with these fields:
 - "nice_to_haves": Array of preferred but not required qualifications
 
 Be thorough but precise. Extract only what is explicitly stated or strongly implied.
-Return ONLY valid JSON, no markdown or explanation.`;
+Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
 
 export function parseJd(rawJdText: string): Promise<JDStructured> {
   if (!rawJdText || !rawJdText.trim()) {
     throw new Error("Job description text cannot be empty");
   }
 
-  const messages = [
-    { role: "system" as const, content: JD_PARSER_SYSTEM_PROMPT },
-    { role: "user" as const, content: `Parse this job description:\n\n${rawJdText}` },
-  ];
+  const userContent = `Parse this job description. The text may be a noisy web scrape with multiple job listings and navigation elements. Find the SINGLE most detailed job description and extract from it only:
 
-  return chatCompletion(JD_PARSER_MODEL, messages, {
+${rawJdText}`;
+
+  return callWithJsonRetry(JD_PARSER_MODEL, JD_PARSER_SYSTEM_PROMPT, userContent, JDStructuredSchema, {
     temperature: 0.1,
     maxTokens: 2048,
-  }).then((response) => {
-    const parsed = JSON.parse(extractJson(response));
-    return JDStructuredSchema.parse(parsed);
+    role: "jd-parser",
   });
 }
