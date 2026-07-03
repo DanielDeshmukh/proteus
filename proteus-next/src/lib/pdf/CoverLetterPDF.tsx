@@ -10,59 +10,62 @@ const styles = StyleSheet.create({
     color: "#1a1a1a",
   },
   header: {
-    marginBottom: 30,
+    marginBottom: 32,
     borderBottomWidth: 1,
     borderBottomColor: "#c9a962",
-    paddingBottom: 20,
+    paddingBottom: 22,
   },
   name: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#1a1a1a",
-    marginBottom: 4,
+    marginBottom: 6,
     letterSpacing: 0.5,
   },
   role: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#c9a962",
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: 12,
     textTransform: "uppercase",
-    letterSpacing: 1.5,
+    letterSpacing: 2,
   },
   contact: {
     fontSize: 9,
     color: "#666",
-    lineHeight: 1.4,
+    lineHeight: 1.5,
+  },
+  contactLine: {
+    marginBottom: 2,
   },
   date: {
     fontSize: 10,
     color: "#888",
-    marginBottom: 24,
+    marginBottom: 28,
     textAlign: "right",
   },
   greeting: {
     fontSize: 11,
-    marginBottom: 14,
+    marginBottom: 18,
     color: "#333",
   },
   paragraph: {
     fontSize: 11,
-    lineHeight: 1.65,
+    lineHeight: 1.7,
     color: "#333",
-    marginBottom: 12,
-    textAlign: "justify",
+    marginBottom: 16,
   },
   closing: {
     fontSize: 11,
-    marginTop: 24,
+    marginTop: 28,
+    marginBottom: 6,
     color: "#333",
   },
   signature: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#1a1a1a",
-    marginTop: 30,
+    marginTop: 32,
   },
   footer: {
     position: "absolute",
@@ -101,9 +104,12 @@ export function CoverLetterPDF({ data }: { data: CoverLetterData }) {
         <View style={styles.header}>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.role}>{role}</Text>
-          <Text style={styles.contact}>
-            danieldeshmukh.dev@gmail.com | github.com/DanielDeshmukh
-          </Text>
+          <View style={styles.contactLine}>
+            <Text style={styles.contact}>danieldeshmukh.dev@gmail.com</Text>
+          </View>
+          <View style={styles.contactLine}>
+            <Text style={styles.contact}>github.com/DanielDeshmukh</Text>
+          </View>
         </View>
 
         {/* Date */}

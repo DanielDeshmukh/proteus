@@ -21,9 +21,9 @@ export function DownloadButton({ content, filename, isCoverLetter = false }: { c
 
       if (isCoverLetter) {
         const paragraphs = content
-          .split(/\n\s*\n/)
+          .split(/\n\s*\n|\n(?=[A-Z])/)
           .map((p) => p.trim())
-          .filter((p) => p.length > 0);
+          .filter((p) => p.length > 10);
         const blob = await generateCoverLetterPDF({ paragraphs });
         downloadBlob(blob, `${filename}.pdf`);
       } else {
