@@ -13,7 +13,6 @@ PROTEUS is a JD-aware application toolkit that takes a single job description an
 - [The Agent Pipeline](#the-agent-pipeline)
 - [Tech Stack](#tech-stack)
 - [Features](#features)
-- [Project Structure](#project-structure)
 - [Setup](#setup)
 - [Deployment](#deployment)
 - [License](#license)
@@ -37,8 +36,8 @@ PROTEUS's core idea: **parse the JD once, and let that single structured underst
 
 | # | Agent | Job | NIM Model |
 |---|-------|-----|-----------|
-| 1 | **JD Parser** | Extracts structured requirements from the JD | `mistral-7b-instruct-v0.3` |
-| 2 | **Resume Parser** | Breaks the resume into structured, taggable units | `mistral-7b-instruct-v0.3` |
+| 1 | **JD Parser** | Extracts structured requirements from the JD | `meta/llama-3.1-8b-instruct` |
+| 2 | **Resume Parser** | Breaks the resume into structured, taggable units | `meta/llama-3.1-8b-instruct` |
 | 3 | **Gap Analyzer** | Embeds both, computes cosine similarity, ranks gaps | `nvidia/nv-embedqa-e5-v5` |
 | 4 | **Rewrite Suggester** | JD-aware bullet rewrites for weak areas | `meta/llama-3.3-70b-instruct` |
 | 5 | **Cover Letter** | Tailored letter from the same context | `meta/llama-3.3-70b-instruct` |
@@ -47,7 +46,7 @@ PROTEUS's core idea: **parse the JD once, and let that single structured underst
 ## Tech Stack
 
 - **Framework:** Next.js 15 (App Router) + TypeScript
-- **Styling:** Tailwind CSS v4 — dark theme with Fraunces, Inter, JetBrains Mono
+- **Styling:** Tailwind CSS v4 — dark theme with Geist fonts
 - **LLM Inference:** NVIDIA NIM (OpenAI-compatible API)
 - **Database:** better-sqlite3 (local) / @libsql (Vercel/Turso)
 - **Validation:** Zod v4
@@ -64,38 +63,7 @@ PROTEUS's core idea: **parse the JD once, and let that single structured underst
 - Application history with score tracking
 - Streaming API (NDJSON) for real-time pipeline progress
 - Dark theme UI with gold accent design system
-
-## Project Structure
-
-```
-proteus/
-├── proteus-next/                   # Next.js fullstack app
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── api/
-│   │   │   │   ├── analyze/         # POST /api/analyze
-│   │   │   │   ├── analyze/stream/  # POST /api/analyze/stream (NDJSON)
-│   │   │   │   ├── health/          # GET /api/health
-│   │   │   │   └── history/         # GET /api/history, DELETE /api/history/[id]
-│   │   │   ├── (dashboard)/
-│   │   │   │   ├── analyze/page.tsx
-│   │   │   │   └── history/page.tsx
-│   │   │   └── layout.tsx
-│   │   ├── components/              # 14 React components
-│   │   ├── lib/
-│   │   │   ├── agents/              # 6 agents + pipeline orchestrator
-│   │   │   ├── db.ts                # Dual-backend SQLite (local / Vercel)
-│   │   │   ├── nim-client.ts        # NVIDIA NIM API client
-│   │   │   ├── pdf-parser.ts
-│   │   │   ├── docx-parser.ts
-│   │   │   ├── jd-url-fetcher.ts
-│   │   │   └── api.ts               # Frontend API client
-│   │   └── types/                   # Zod schemas + TypeScript types
-│   ├── vercel.json
-│   └── package.json
-├── PROGRESS.md
-└── README.md
-```
+- Interactive twinkling dot grid background
 
 ## Setup
 
@@ -104,8 +72,8 @@ cd proteus-next
 npm install
 
 # Set your NVIDIA NIM API key
-cp .env.local.example .env.local
-# Edit .env.local and add your NVIDIA_NIM_API_KEY
+cp .env.example .env
+# Edit .env and add your NVIDIA_NIM_API_KEY
 
 npm run dev
 # App runs on http://localhost:3000
@@ -116,8 +84,8 @@ npm run dev
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `NVIDIA_NIM_API_KEY` | Yes | NVIDIA NIM API key for LLM inference |
-| `DATABASE_URL` | No | Turso/libsql URL for Vercel (local SQLite used if unset) |
-| `DATABASE_AUTH_TOKEN` | No | Turso auth token (required with DATABASE_URL) |
+| `DATABASE_URL` | Vercel only | Turso/libsql URL (local SQLite used if unset) |
+| `DATABASE_AUTH_TOKEN` | Vercel only | Turso auth token (required with DATABASE_URL) |
 
 ## Deployment
 
@@ -125,19 +93,12 @@ npm run dev
 
 1. Push to GitHub
 2. Import repo at [vercel.com/new](https://vercel.com/new)
-3. Set `NVIDIA_NIM_API_KEY` in Vercel environment variables
-4. Deploy
-
-### Docker
-
-```bash
-docker compose up
-# App runs on http://localhost:3000
-```
-
-## License
-
-MIT
+3. Set root directory to `proteus-next`
+4. Set environment variables:
+   - `NVIDIA_NIM_API_KEY` — your NVIDIA NIM key
+   - `DATABASE_URL` — your Turso database URL (sign up free at [turso.tech](https://turso.tech))
+   - `DATABASE_AUTH_TOKEN` — your Turso auth token
+5. Deploy
 
 ---
 
