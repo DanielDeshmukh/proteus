@@ -1,37 +1,11 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-
-let pdfjsLib: any = null;
-
-async function getPdfjs() {
-  if (!pdfjsLib) {
-    // Use legacy build — the main build requires browser APIs (DOMMatrix)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mod: any = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    pdfjsLib = mod.default ?? mod;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "";
-  }
-  return pdfjsLib;
-}
+import { extractText } from "unpdf";
 
 export async function parsePdfBuffer(data: Buffer): Promise<string> {
   const buffer = Buffer.isBuffer(data) ? data : Buffer.from(data);
   const uint8 = new Uint8Array(buffer);
 
-  const pdfjs = await getPdfjs();
-  const doc = await pdfjs.getDocument({
-    data: uint8,
-    useWorkerFetch: false,
-    isEvalSupported: false,
-    useSystemFonts: true,
-  }).promise;
-
-  const textParts: string[] = [];
-  for (let i = 1; i <= doc.numPages; i++) {
-    const page = await doc.getPage(i);
-    const content = await page.getTextContent();
-    const pageText = content.items.map((item: any) => item.str).join(" ");
-    textParts.push(pageText);
-  }
-
-  return textParts.join("\n\n").trim();
+  const result = await extractText(uint8);
+  const pages = result.text as unknown;
+  if (Array.isArray(pages)) return pages.join("\n\n").trim();
+  return String(pages).trim();
 }
