@@ -2,6 +2,7 @@
 
 import { Layout } from "@/components/Layout";
 import { ModelsShowcase } from "@/components/ModelsShowcase";
+import { NimHealthPanel } from "@/components/NimHealthPanel";
 
 export default function ModelsPage() {
   return (
@@ -24,7 +25,10 @@ export default function ModelsPage() {
         </p>
       </section>
 
-      <ModelsShowcase />
+      <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+        <NimHealthPanel />
+        <ModelsShowcase />
+      </div>
     </Layout>
   );
 }
