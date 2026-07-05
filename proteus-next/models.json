@@ -2,7 +2,7 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "current": "meta/llama-3.1-70b-instruct",
+      "current": "nvidia/gliner-pii",
       "fallbacks": [
         "meta/llama-3.1-70b-instruct",
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
@@ -62,6 +62,12 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": null,
-  "lastHealthyModels": {}
+  "lastHealthCheck": "2026-07-05T16:12:38.680Z",
+  "lastHealthyModels": {
+    "jd-parser": "nvidia/gliner-pii",
+    "resume-parser": "nvidia/nemotron-3-super-120b-a12b",
+    "gap-analyzer": "nvidia/nv-embedqa-e5-v5",
+    "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "cover-letter": "meta/llama-3.1-8b-instruct"
+  }
 }
