@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import DotGrid from "@/components/DotGrid";
+import { Providers } from "@/components/Providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -89,8 +90,10 @@ export default function RootLayout({
         <meta name="theme-color" content="#111315" />
       </head>
       <body className="min-h-full flex flex-col bg-[#111315] text-white">
-        <DotGrid />
-        {children}
+        <Providers>
+          <DotGrid />
+          {children}
+        </Providers>
       </body>
     </html>
   );
