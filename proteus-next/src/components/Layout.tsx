@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { path: "/", label: "Dashboard" },
+  { path: "/analyze", label: "Analyze" },
   { path: "/models", label: "Models" },
   { path: "/history", label: "History" },
 ];
@@ -68,7 +68,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 style={{
                   fontSize: "14px",
                   color:
-                    pathname === item.path
+                    pathname === item.path || (item.path === "/analyze" && pathname === "/")
                       ? "var(--color-gold-light)"
                       : "var(--text-soft)",
                   position: "relative",
@@ -77,7 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 }}
               >
                 {item.label}
-                {pathname === item.path && (
+                {(pathname === item.path || (item.path === "/analyze" && pathname === "/")) && (
                   <span
                     style={{
                       position: "absolute",

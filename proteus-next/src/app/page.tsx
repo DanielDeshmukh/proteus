@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import AnalyzePage from "./(dashboard)/analyze/page";
 
 export default function Home() {
-  redirect("/analyze");
+  return <AnalyzePage />;
 }
