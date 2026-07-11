@@ -51,7 +51,7 @@ function RadarChart({
   });
 
   return (
-    <svg ref={svgRef} width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <svg ref={svgRef} width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
       {/* Grid */}
       {gridPolygons.map((points, i) => (
         <polygon key={`grid-${i}`} points={points} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
@@ -232,7 +232,7 @@ export function ScoreDisplay({
         }}
       >
         {/* Radar */}
-        <div style={{ flexShrink: 0 }}>
+        <div style={{ flexShrink: 0, paddingLeft: "16px", paddingRight: "8px" }}>
           {sectionScores ? (
             <RadarChart labels={labels} datasets={datasets} size={280} />
           ) : (
@@ -253,7 +253,7 @@ export function ScoreDisplay({
         </div>
 
         {/* Legend + bars */}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <h4
             style={{
               fontFamily: "var(--font-display)",
@@ -285,8 +285,8 @@ export function ScoreDisplay({
                   key={key}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "140px 1fr 48px",
-                    gap: "12px",
+                    gridTemplateColumns: "100px 1fr 40px",
+                    gap: "10px",
                     alignItems: "center",
                   }}
                 >

@@ -13,10 +13,10 @@
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "nvidia/nemotron-3-super-120b-a12b",
+      "current": "meta/llama-3.1-70b-instruct",
       "fallbacks": [
-        "nvidia/nemotron-3-super-120b-a12b",
         "meta/llama-3.1-70b-instruct",
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "meta/llama-3.1-8b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -46,11 +46,11 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "meta/llama-3.1-8b-instruct",
+      "current": "meta/llama-3.1-70b-instruct",
       "fallbacks": [
-        "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "meta/llama-3.1-8b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"

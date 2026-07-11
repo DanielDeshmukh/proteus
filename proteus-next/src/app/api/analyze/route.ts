@@ -3,6 +3,8 @@ import { runPipeline } from "@/lib/agents";
 import { saveRun, updateRun } from "@/lib/db";
 import type { Tone } from "@/types";
 
+export const maxDuration = 300;
+
 export async function POST(request: Request) {
   const formData = await request.formData();
 

@@ -21,16 +21,19 @@ export default function HistoryPage() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fetchFailed, setFetchFailed] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   async function fetchHistory() {
     setLoading(true);
+    setFetchFailed(false);
     try {
       const data = await apiGet("/api/history?limit=50");
       setRuns(data.runs || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load history");
+      setFetchFailed(true);
     } finally {
       setLoading(false);
     }
@@ -126,9 +129,29 @@ export default function HistoryPage() {
         </div>
       ) : filteredRuns.length === 0 ? (
         <Card>
-          <p style={{ textAlign: "center", color: "var(--text-faint)", padding: "32px" }}>
-            {search ? "No runs match your search" : "No analysis runs yet"}
-          </p>
+          <div style={{ textAlign: "center", padding: "32px" }}>
+            <p style={{ color: "var(--text-faint)" }}>
+              {fetchFailed ? "Failed to load history" : search ? "No runs match your search" : "No analysis runs yet"}
+            </p>
+            {fetchFailed && (
+              <button
+                onClick={() => { setFetchFailed(false); fetchHistory(); }}
+                style={{
+                  marginTop: "12px",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: "13px",
+                  color: "var(--color-gold)",
+                  background: "none",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-md)",
+                  padding: "8px 20px",
+                  cursor: "pointer",
+                }}
+              >
+                Retry
+              </button>
+            )}
+          </div>
         </Card>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>

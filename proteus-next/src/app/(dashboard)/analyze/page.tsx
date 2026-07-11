@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { JDInput } from "@/components/JDInput";
 import { ResumeInput } from "@/components/ResumeInput";
@@ -27,6 +27,7 @@ export default function AnalyzePage() {
   const [resume, setResume] = useState<{ type: string; value: string | File } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<{
     run_id?: number | null;
     overall_score?: number | null;
@@ -40,6 +41,12 @@ export default function AnalyzePage() {
   } | null>(null);
 
   const canAnalyze = jd && resume;
+
+  useEffect(() => {
+    if (result && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [result]);
 
   const handleAnalyze = async () => {
     if (!canAnalyze) return;
@@ -116,7 +123,7 @@ export default function AnalyzePage() {
 
       {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
 
-      <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "48px" }}>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "24px", marginTop: "48px" }}>
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
           <div style={{ padding: "20px 24px 22px" }}>
             <JDInput onJDReady={setJd} />
@@ -174,7 +181,7 @@ export default function AnalyzePage() {
           <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)" }}>Pipeline</h3>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}>Five agents &middot; shared JD context &middot; NVIDIA NIM</span>
         </div>
-        <div style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(5, 1fr)", paddingBottom: "36px" }}>
+        <div style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", paddingBottom: "36px" }}>
           <div style={{ position: "absolute", top: "9px", left: "5%", right: "5%", height: "1px", background: "var(--color-gold)", opacity: 0.35 }} />
           {pipelineStages.map((stage) => (
             <div key={stage.num} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "14px" }}>
@@ -191,8 +198,8 @@ export default function AnalyzePage() {
         </div>
       </section>
 
-      {result && (
-        <section style={{ marginTop: "52px" }}>
+      {result ? (
+        <section ref={resultsRef} style={{ marginTop: "52px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "28px" }}>
             <div>
               <p style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--color-gold)", marginBottom: "6px" }}>Run result</p>
@@ -240,7 +247,7 @@ export default function AnalyzePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
     </Layout>
   );
 }

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "PROTEUS — AI Resume Analyzer & Cover Letter Generator",
+    default: "PROTEUS ",
     template: "%s | PROTEUS",
   },
   description:

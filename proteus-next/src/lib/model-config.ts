@@ -35,7 +35,7 @@ export function getModelForRole(role: string): string {
 }
 
 export function getEmbeddingModel(): string {
-  return getModelForRole("embedder");
+  return getModelForRole("gap-analyzer");
 }
 
 export function updateModelForRole(role: string, newModel: string): void {

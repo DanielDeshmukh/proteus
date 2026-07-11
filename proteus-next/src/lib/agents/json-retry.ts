@@ -17,6 +17,40 @@ function getFallbackModels(role: string): string[] {
   return [];
 }
 
+function repairJson(raw: string): string {
+  let s = raw;
+  // Strip markdown fences
+  s = s.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+  // Replace control chars inside string values
+  s = s.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, (ch) =>
+    ch === "\n" ? "\\n" : ch === "\r" ? "" : ch === "\t" ? "\\t" : ""
+  );
+  // Fix trailing commas before } or ]
+  s = s.replace(/,\s*([}\]])/g, "$1");
+  return s;
+}
+
+async function callAndParse<T>(
+  model: string,
+  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
+  schema: ZodSchema<T>,
+  maxTokens: number,
+  cleanControlChars: boolean
+): Promise<T> {
+  const response = await chatCompletion(model, messages, {
+    temperature: 0.0,
+    maxTokens,
+  });
+
+  let jsonStr = extractJson(response);
+  if (cleanControlChars) {
+    jsonStr = repairJson(jsonStr);
+  }
+
+  const parsed = JSON.parse(jsonStr);
+  return schema.parse(parsed);
+}
+
 export async function callWithJsonRetry<T>(
   model: string,
   systemPrompt: string,
@@ -39,7 +73,6 @@ export async function callWithJsonRetry<T>(
 
   let lastError: Error | null = null;
 
-  // Try primary model with retries
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await chatCompletion(model, messages, {
@@ -49,9 +82,7 @@ export async function callWithJsonRetry<T>(
 
       let jsonStr = extractJson(response);
       if (cleanControlChars) {
-        jsonStr = jsonStr.replace(/[\x00-\x1f\x7f]/g, (ch) =>
-          ch === "\n" ? "\\n" : ch === "\r" ? "" : ch === "\t" ? "\\t" : ""
-        );
+        jsonStr = repairJson(jsonStr);
       }
 
       const parsed = JSON.parse(jsonStr);
@@ -70,23 +101,10 @@ export async function callWithJsonRetry<T>(
     const fallbacks = getFallbackModels(role);
     for (const fallback of fallbacks) {
       try {
-        const response = await chatCompletion(fallback, [
+        return await callAndParse(fallback, [
           { role: "system" as const, content: systemPrompt },
           { role: "user" as const, content: userContent },
-        ], {
-          temperature: 0.0,
-          maxTokens,
-        });
-
-        let jsonStr = extractJson(response);
-        if (cleanControlChars) {
-          jsonStr = jsonStr.replace(/[\x00-\x1f\x7f]/g, (ch) =>
-            ch === "\n" ? "\\n" : ch === "\r" ? "" : ch === "\t" ? "\\t" : ""
-          );
-        }
-
-        const parsed = JSON.parse(jsonStr);
-        return schema.parse(parsed);
+        ], schema, maxTokens, cleanControlChars);
       } catch {
         // Fallback also failed, try next
       }
