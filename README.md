@@ -50,11 +50,11 @@ PROTEUS's core idea: **parse the JD once, and let that single structured underst
 
 | Role | Model | Last Checked |
 |------|-------|--------------|
-| jd-parser | `nvidia/gliner-pii` | 2026-07-05T16:12:38.680Z |
-| resume-parser | `nvidia/nemotron-3-super-120b-a12b` | 2026-07-05T16:12:38.680Z |
-| gap-analyzer | `nvidia/nv-embedqa-e5-v5` | 2026-07-05T16:12:38.680Z |
-| rewrite-suggester | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-05T16:12:38.680Z |
-| cover-letter | `meta/llama-3.1-8b-instruct` | 2026-07-05T16:12:38.680Z |
+| jd-parser | `nvidia/gliner-pii` | 2026-07-11T15:59:16.055Z |
+| resume-parser | `nvidia/gliner-pii` | 2026-07-11T15:59:16.055Z |
+| gap-analyzer | `nvidia/nv-embedqa-e5-v5` | 2026-07-11T15:59:16.055Z |
+| rewrite-suggester | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-11T15:59:16.055Z |
+| cover-letter | `meta/llama-3.1-70b-instruct` | 2026-07-11T15:59:16.055Z |
 <!-- END MODELS AUTO-GENERATED -->
 
 ## Tech Stack
