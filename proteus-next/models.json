@@ -46,7 +46,7 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "meta/llama-3.1-70b-instruct",
+      "current": "nvidia/gliner-pii",
       "fallbacks": [
         "meta/llama-3.1-70b-instruct",
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
@@ -62,12 +62,12 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": "2026-07-11T15:59:16.055Z",
+  "lastHealthCheck": "2026-07-11T19:09:29.093Z",
   "lastHealthyModels": {
     "jd-parser": "nvidia/gliner-pii",
     "resume-parser": "nvidia/gliner-pii",
     "gap-analyzer": "nvidia/nv-embedqa-e5-v5",
     "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "cover-letter": "meta/llama-3.1-70b-instruct"
+    "cover-letter": "nvidia/gliner-pii"
   }
 }
