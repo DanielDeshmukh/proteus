@@ -4,6 +4,8 @@ import { callWithJsonRetry } from "./json-retry";
 
 const RESUME_PARSER_MODEL = getModelForRole("resume-parser");
 
+const MAX_RESUME_CHARS = 12000;
+
 const RESUME_PARSER_SYSTEM_PROMPT = `You are an expert resume analyst. Given a raw resume text, extract structured information from it.
 
 ## Output Format
@@ -46,7 +48,12 @@ export function parseResume(rawResumeText: string): Promise<ResumeStructured> {
     throw new Error("Resume text cannot be empty");
   }
 
-  const userContent = `Parse this resume:\n\n${rawResumeText}`;
+  let text = rawResumeText.trim();
+  if (text.length > MAX_RESUME_CHARS) {
+    text = text.substring(0, MAX_RESUME_CHARS);
+  }
+
+  const userContent = `Parse this resume:\n\n${text}`;
 
   return callWithJsonRetry(RESUME_PARSER_MODEL, RESUME_PARSER_SYSTEM_PROMPT, userContent, ResumeStructuredSchema, {
     temperature: 0.1,

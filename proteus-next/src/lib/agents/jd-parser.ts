@@ -4,6 +4,8 @@ import { callWithJsonRetry } from "./json-retry";
 
 const JD_PARSER_MODEL = getModelForRole("jd-parser");
 
+const MAX_JD_CHARS = 15000;
+
 const JD_PARSER_SYSTEM_PROMPT = `You are an expert ATS (Applicant Tracking System) analyst and job description parser.
 
 ## CRITICAL RULE — NOISY INPUT HANDLING
@@ -37,9 +39,14 @@ export function parseJd(rawJdText: string): Promise<JDStructured> {
     throw new Error("Job description text cannot be empty");
   }
 
+  let text = rawJdText.trim();
+  if (text.length > MAX_JD_CHARS) {
+    text = text.substring(0, MAX_JD_CHARS);
+  }
+
   const userContent = `Parse this job description. The text may be a noisy web scrape with multiple job listings and navigation elements. Find the SINGLE most detailed job description and extract from it only:
 
-${rawJdText}`;
+${text}`;
 
   return callWithJsonRetry(JD_PARSER_MODEL, JD_PARSER_SYSTEM_PROMPT, userContent, JDStructuredSchema, {
     temperature: 0.1,

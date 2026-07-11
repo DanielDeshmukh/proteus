@@ -45,3 +45,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# logs
+*.log
+
+# dataset results
+dataset-results.*

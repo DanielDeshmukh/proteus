@@ -50,7 +50,7 @@ function getClient(): OpenAI {
     client = new OpenAI({
       apiKey,
       baseURL: NIM_BASE_URL,
-      timeout: 120000,
+      timeout: 180000,
     });
   }
   return client;
@@ -102,7 +102,7 @@ async function withRetry<T>(
         const fallbackClient = new OpenAI({
           apiKey: process.env.NVIDIA_NIM_API_KEY,
           baseURL: NIM_BASE_URL,
-          timeout: 120000,
+          timeout: 180000,
         });
         try {
           const response = await fallbackClient.chat.completions.create({
