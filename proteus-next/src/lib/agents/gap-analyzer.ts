@@ -39,10 +39,23 @@ export async function analyzeGaps(
   resume: ResumeStructured
 ): Promise<GapAnalysis> {
   const requirements: Array<[string, string]> = [];
-  for (const skill of jd.hard_skills) requirements.push([skill, "hard_skill"]);
-  for (const skill of jd.soft_skills) requirements.push([skill, "soft_skill"]);
-  for (const kw of jd.domain_keywords) requirements.push([kw, "domain_keyword"]);
-  for (const bait of jd.ats_bait) requirements.push([bait, "ats_bait"]);
+  const seen = new Set<string>();
+  for (const skill of jd.hard_skills) {
+    const key = skill.toLowerCase().trim();
+    if (!seen.has(key)) { seen.add(key); requirements.push([skill, "hard_skill"]); }
+  }
+  for (const skill of jd.soft_skills) {
+    const key = skill.toLowerCase().trim();
+    if (!seen.has(key)) { seen.add(key); requirements.push([skill, "soft_skill"]); }
+  }
+  for (const kw of jd.domain_keywords) {
+    const key = kw.toLowerCase().trim();
+    if (!seen.has(key)) { seen.add(key); requirements.push([kw, "domain_keyword"]); }
+  }
+  for (const bait of jd.ats_bait) {
+    const key = bait.toLowerCase().trim();
+    if (!seen.has(key)) { seen.add(key); requirements.push([bait, "ats_bait"]); }
+  }
 
   if (requirements.length === 0) {
     return {
