@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd proteus-next && npm run build",
-  "outputDirectory": "proteus-next/.next",
-  "installCommand": "cd proteus-next && npm install",
-  "regions": ["iad1"]
-}
