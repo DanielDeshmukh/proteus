@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import Email from "next-auth/providers/email";
 import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
 import { createTursoAdapter } from "./adapter";
@@ -26,6 +27,20 @@ export const {
   ...authConfig,
   adapter,
   session: { strategy: "jwt" },
+  providers: [
+    ...authConfig.providers,
+    Email({
+      server: {
+        host: process.env.SMTP_HOST || "smtp.resend.com",
+        port: Number(process.env.SMTP_PORT) || 587,
+        auth: {
+          user: process.env.SMTP_USER || "resend",
+          pass: process.env.SMTP_PASS,
+        },
+      },
+      from: process.env.EMAIL_FROM || "PROTEUS <onboarding@resend.dev>",
+    }),
+  ],
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: { id?: string } }) {
       if (user?.id) {
