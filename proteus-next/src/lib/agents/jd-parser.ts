@@ -4,7 +4,7 @@ import { callWithJsonRetry } from "./json-retry";
 
 const JD_PARSER_MODEL = getModelForRole("jd-parser");
 
-const MAX_JD_CHARS = 15000;
+const MAX_JD_CHARS = 12000;
 
 const JD_PARSER_SYSTEM_PROMPT = `You are an expert ATS (Applicant Tracking System) analyst and job description parser.
 
@@ -41,7 +41,7 @@ export function parseJd(rawJdText: string): Promise<JDStructured> {
 
   let text = rawJdText.trim();
   if (text.length > MAX_JD_CHARS) {
-    text = text.substring(0, MAX_JD_CHARS);
+    text = text.substring(0, MAX_JD_CHARS).trimEnd();
   }
 
   const userContent = `Parse this job description. The text may be a noisy web scrape with multiple job listings and navigation elements. Find the SINGLE most detailed job description and extract from it only:
