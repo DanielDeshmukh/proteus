@@ -1,5 +1,59 @@
 import type { Adapter, AdapterUser, AdapterAccount, AdapterSession, VerificationToken } from "next-auth/adapters";
 
+const AUTH_SCHEMA = `
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    name TEXT,
+    email TEXT UNIQUE,
+    email_verified INTEGER,
+    image TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE TABLE IF NOT EXISTS accounts (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    provider TEXT NOT NULL,
+    provider_account_id TEXT NOT NULL,
+    refresh_token TEXT,
+    access_token TEXT,
+    expires_at INTEGER,
+    token_type TEXT,
+    scope TEXT,
+    id_token TEXT,
+    session_state TEXT,
+    UNIQUE(provider, provider_account_id)
+  );
+  CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    session_token TEXT UNIQUE NOT NULL,
+    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires INTEGER NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS verification_tokens (
+    identifier TEXT NOT NULL,
+    token TEXT NOT NULL,
+    expires INTEGER NOT NULL,
+    UNIQUE(identifier, token)
+  );
+  CREATE INDEX IF NOT EXISTS idx_accounts_user_id ON accounts(user_id);
+  CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+  CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(session_token);
+  CREATE INDEX IF NOT EXISTS idx_verification_identifier ON verification_tokens(identifier);
+  CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+`;
+
+let authSchemaReady = false;
+
+async function ensureAuthSchema(client: any) {
+  if (authSchemaReady) return;
+  const stmts = AUTH_SCHEMA.split(";").filter((s) => s.trim());
+  for (const stmt of stmts) {
+    await client.execute(stmt.trim());
+  }
+  authSchemaReady = true;
+}
+
 function getDb() {
   const DB_URL = process.env.DATABASE_URL;
   if (DB_URL) {
@@ -15,6 +69,7 @@ function getDb() {
   const db = new Database(path.join(process.cwd(), "proteus.db"));
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
+  db.exec(AUTH_SCHEMA);
   return { type: "sqlite" as const, db };
 }
 
@@ -50,6 +105,7 @@ export function createTursoAdapter(): Adapter {
     async createUser(user: Omit<AdapterUser, "id">) {
       const id = generateId();
       const db = getDb();
+      if (db.type === "libsql") await ensureAuthSchema(db.client);
       await execRun(db,
         `INSERT INTO users (id, name, email, email_verified, image) VALUES (?, ?, ?, ?, ?)`,
         [id, user.name ?? null, user.email ?? null, user.emailVerified ? Math.floor(user.emailVerified.getTime() / 1000) : null, user.image ?? null]
