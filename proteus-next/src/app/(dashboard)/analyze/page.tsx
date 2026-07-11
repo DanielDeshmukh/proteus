@@ -26,6 +26,8 @@ export default function AnalyzePage() {
   const [jd, setJd] = useState<{ type: string; value: string | File } | null>(null);
   const [resume, setResume] = useState<{ type: string; value: string | File } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [currentStage, setCurrentStage] = useState<number | null>(null);
+  const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<{
@@ -48,6 +50,13 @@ export default function AnalyzePage() {
     }
   }, [result]);
 
+  useEffect(() => {
+    if (!loading) { setElapsed(0); setCurrentStage(null); return; }
+    const start = Date.now();
+    const timer = setInterval(() => setElapsed((Date.now() - start) / 1000), 100);
+    return () => clearInterval(timer);
+  }, [loading]);
+
   const handleAnalyze = async () => {
     if (!canAnalyze) return;
     setLoading(true);
@@ -67,16 +76,21 @@ export default function AnalyzePage() {
           const evt = event as { event: string; data?: Record<string, unknown>; run_id?: number; message?: string };
           if (evt.event === "started") {
             partial.run_id = evt.run_id;
+            setCurrentStage(0);
           } else if (evt.event === "gap_analysis") {
             partial.gap_analysis = evt.data;
+            setCurrentStage(2);
           } else if (evt.event === "rewrites") {
             partial.rewrite_suggestions = evt.data;
+            setCurrentStage(3);
           } else if (evt.event === "cover_letter") {
             partial.cover_letter = evt.data;
+            setCurrentStage(4);
           } else if (evt.event === "result") {
             partial.overall_score = (evt.data as Record<string, unknown>)?.overall_score;
             partial.section_scores = (evt.data as Record<string, unknown>)?.section_scores;
             partial.action_list = (evt.data as Record<string, unknown>)?.action_list;
+            setCurrentStage(4);
           } else if (evt.event === "done") {
             partial.run_id = evt.run_id;
             partial.timings = { total: 0 };
@@ -172,7 +186,11 @@ export default function AnalyzePage() {
           )}
         </button>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}>
-          {result ? `Completed in ${(result.timings as Record<string, number>)?.total?.toFixed(1)}s` : "Ready to analyze"}
+          {loading
+            ? `Analyzing... ${elapsed.toFixed(1)}s`
+            : result
+              ? `Completed in ${(result.timings as Record<string, number>)?.total?.toFixed(1)}s`
+              : "Ready to analyze"}
         </span>
       </div>
 
@@ -183,18 +201,29 @@ export default function AnalyzePage() {
         </div>
         <div style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", paddingBottom: "36px" }}>
           <div style={{ position: "absolute", top: "9px", left: "5%", right: "5%", height: "1px", background: "var(--color-gold)", opacity: 0.35 }} />
-          {pipelineStages.map((stage) => (
-            <div key={stage.num} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "14px" }}>
-              <div style={{ width: "18px", height: "18px", borderRadius: "50%", background: "var(--surface)", border: "2px solid var(--color-gold)", position: "relative", zIndex: 1 }}>
-                <div style={{ position: "absolute", inset: "3px", borderRadius: "50%", background: "var(--color-gold)" }} />
-              </div>
+          {pipelineStages.map((stage, i) => {
+            const isActive = loading && currentStage === i;
+            const isDone = loading && currentStage !== null && currentStage > i;
+            return (
+              <div key={stage.num} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "14px" }}>
+                <div style={{
+                  width: "18px", height: "18px", borderRadius: "50%",
+                  background: isDone ? "var(--color-gold)" : "var(--surface)",
+                  border: `2px solid ${isActive ? "var(--color-gold-light)" : "var(--color-gold)"}`,
+                  position: "relative", zIndex: 1,
+                  transition: "all 0.4s ease",
+                  boxShadow: isActive ? "0 0 12px rgba(201,169,98,0.4)" : "none",
+                }}>
+                  {!isDone && <div style={{ position: "absolute", inset: "3px", borderRadius: "50%", background: "var(--color-gold)" }} />}
+                </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--color-gold)", letterSpacing: "0.1em" }}>{stage.num}</span>
                 <span style={{ fontFamily: "var(--font-display)", fontSize: "15px", fontWeight: 500, color: "var(--text)" }}>{stage.name}</span>
               </div>
               <p style={{ fontSize: "12px", color: "var(--text-soft)", maxWidth: "160px", lineHeight: 1.5 }}>{stage.desc}</p>
             </div>
-          ))}
+          );
+          })}
         </div>
       </section>
 
