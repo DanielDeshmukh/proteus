@@ -68,6 +68,16 @@ function setFont(doc: jsPDF, style: "normal" | "bold" | "italic" = "normal", siz
   doc.setFontSize(size);
 }
 
+function ensurePage(doc: jsPDF, currentY: number, needed: number = 20): number {
+  if (currentY > 297 - needed - 17) {
+    doc.addPage();
+    doc.setFillColor(...THEME.bg);
+    doc.rect(0, 0, 210, 297, "F");
+    return 20;
+  }
+  return currentY;
+}
+
 function drawHeader(doc: jsPDF, y: number): number {
   // Gold accent line
   doc.setFillColor(...THEME.gold);
@@ -146,6 +156,8 @@ function wrapText(doc: jsPDF, text: string, x: number, y: number, maxWidth: numb
   for (const line of lines) {
     if (currentY > 270) {
       doc.addPage();
+      doc.setFillColor(...THEME.bg);
+      doc.rect(0, 0, 210, 297, "F");
       currentY = 20;
     }
     doc.text(line, x, currentY);
@@ -223,12 +235,7 @@ export function generateReport(data: ReportData): jsPDF {
     const topGaps = sortedGaps.slice(0, 10);
 
     for (const gap of topGaps) {
-      if (y > 265) {
-        doc.addPage();
-        doc.setFillColor(...THEME.bg);
-        doc.rect(0, 0, 210, 297, "F");
-        y = 20;
-      }
+      y = ensurePage(doc, y, 15);
 
       const statusColor = gap.status === "matched" ? THEME.green : gap.status === "partial" ? THEME.gold : THEME.red;
 
@@ -260,12 +267,7 @@ export function generateReport(data: ReportData): jsPDF {
     const topRewrites = data.rewriteSuggestions.suggestions.slice(0, 5);
 
     for (const rewrite of topRewrites) {
-      if (y > 240) {
-        doc.addPage();
-        doc.setFillColor(...THEME.bg);
-        doc.rect(0, 0, 210, 297, "F");
-        y = 20;
-      }
+      y = ensurePage(doc, y, 35);
 
       // Impact badge
       const impactPercent = Math.round(rewrite.impact_score * 100);
@@ -311,12 +313,7 @@ export function generateReport(data: ReportData): jsPDF {
 
   // ─── Cover Letter ─────────────────────────────────────
   if (data.coverLetter) {
-    if (y > 200) {
-      doc.addPage();
-      doc.setFillColor(...THEME.bg);
-      doc.rect(0, 0, 210, 297, "F");
-      y = 20;
-    }
+    y = ensurePage(doc, y, 100);
 
     y = drawSectionTitle(doc, y, "COVER LETTER");
 
@@ -327,49 +324,44 @@ export function generateReport(data: ReportData): jsPDF {
 
     // Letter content in a card
     const letterLines = doc.splitTextToSize(data.coverLetter.full_letter, 155);
-    const cardHeight = Math.min(letterLines.length * 3.5, 80);
+    const maxLinesPerPage = 40;
+    let lineIndex = 0;
 
-    doc.setFillColor(...THEME.surface);
-    doc.setDrawColor(...THEME.gold);
-    doc.setLineWidth(0.2);
-    doc.roundedRect(20, y - 2, 170, cardHeight + 4, 2, 2, "FD");
+    while (lineIndex < letterLines.length) {
+      const remainingLines = letterLines.slice(lineIndex, lineIndex + maxLinesPerPage);
+      const cardHeight = Math.min(remainingLines.length * 3.5, 140);
 
-    setFont(doc, "normal", 8);
-    doc.setTextColor(...THEME.textSoft);
+      doc.setFillColor(...THEME.surface);
+      doc.setDrawColor(...THEME.gold);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(20, y - 2, 170, cardHeight + 4, 2, 2, "FD");
 
-    let ly = y + 2;
-    for (const line of letterLines.slice(0, 22)) {
-      doc.text(line, 24, ly);
-      ly += 3.5;
+      setFont(doc, "normal", 8);
+      doc.setTextColor(...THEME.textSoft);
+
+      let ly = y + 2;
+      for (const line of remainingLines) {
+        doc.text(line, 24, ly);
+        ly += 3.5;
+      }
+
+      y += cardHeight + 8;
+      lineIndex += maxLinesPerPage;
+
+      if (lineIndex < letterLines.length) {
+        y = ensurePage(doc, y, 60);
+      }
     }
-
-    if (letterLines.length > 22) {
-      setFont(doc, "italic", 7);
-      doc.setTextColor(...THEME.textFaint);
-      doc.text("... (see full letter in app)", 24, ly + 2);
-    }
-
-    y += cardHeight + 12;
   }
 
   // ─── Priority Actions ─────────────────────────────────
   if (data.actionList && data.actionList.length > 0) {
-    if (y > 230) {
-      doc.addPage();
-      doc.setFillColor(...THEME.bg);
-      doc.rect(0, 0, 210, 297, "F");
-      y = 20;
-    }
+    y = ensurePage(doc, y, 60);
 
     y = drawSectionTitle(doc, y, "PRIORITY ACTIONS");
 
     for (const action of data.actionList.slice(0, 6)) {
-      if (y > 265) {
-        doc.addPage();
-        doc.setFillColor(...THEME.bg);
-        doc.rect(0, 0, 210, 297, "F");
-        y = 20;
-      }
+      y = ensurePage(doc, y, 15);
 
       // Priority badge
       doc.setFillColor(...THEME.gold);
