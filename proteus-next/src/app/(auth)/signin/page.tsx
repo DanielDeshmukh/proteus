@@ -57,15 +57,22 @@ function SignInForm() {
       </div>
 
       {error && (
-        <div style={{ background: "rgba(220,53,69,0.08)", border: "1px solid rgba(220,53,69,0.2)", borderRadius: "var(--radius-md)", padding: "12px 16px", marginBottom: "24px", fontSize: "13px", color: "#ff6b6b" }}>
+        <div style={{ background: "rgba(201,169,98,0.08)", border: "1px solid rgba(201,169,98,0.25)", borderRadius: "var(--radius-md)", padding: "14px 16px", marginBottom: "24px", fontSize: "13px", color: "var(--color-gold-light)", lineHeight: 1.6 }}>
           {error === "OAuthSignin" && "Error starting sign-in. Please try again."}
           {error === "OAuthCallback" && "Error during sign-in. Please try again."}
           {error === "OAuthCreateAccount" && "Could not create account. Please try again."}
           {error === "EmailCreateAccount" && "Could not create account. Please try again."}
           {error === "Callback" && "Sign-in callback error. Please try again."}
-          {error === "OAuthAccountNotLinked" && "This email is already linked to another provider. Sign in with the original provider."}
+          {error === "OAuthAccountNotLinked" && (
+            <>
+              This email is already associated with another sign-in method.
+              <br />
+              Try signing in with <strong>Google</strong> or <strong>GitHub</strong> instead — whichever you used first.
+            </>
+          )}
           {error === "SessionRequired" && "Please sign in to continue."}
-          {!["OAuthSignin", "OAuthCallback", "OAuthCreateAccount", "EmailCreateAccount", "Callback", "OAuthAccountNotLinked", "SessionRequired"].includes(error) && "An error occurred. Please try again."}
+          {error === "Verification" && "The sign-in link has expired or was already used. Please request a new one."}
+          {!["OAuthSignin", "OAuthCallback", "OAuthCreateAccount", "EmailCreateAccount", "Callback", "OAuthAccountNotLinked", "SessionRequired", "Verification"].includes(error) && "An error occurred. Please try again."}
         </div>
       )}
 

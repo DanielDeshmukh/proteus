@@ -1,10 +1,12 @@
 import { runPipeline } from "@/lib/agents";
 import { saveRun, updateRun } from "@/lib/db";
+import { auth } from "@/lib/auth/config";
 import type { Tone } from "@/types";
 
 export const maxDuration = 300;
 
 export async function POST(request: Request) {
+  const session = await auth();
   const formData = await request.formData();
 
   const jdText = formData.get("jd_text") as string | null;
@@ -30,6 +32,7 @@ export async function POST(request: Request) {
     : "professional";
 
   const runId = await saveRun({
+    user_id: session?.user?.id || null,
     jd_text: jdText.trim(),
     jd_source: "paste",
     resume_text: resumeText.trim(),

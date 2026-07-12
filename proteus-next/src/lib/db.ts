@@ -9,6 +9,7 @@ const useLibsql = !!DB_URL;
 
 export interface DbRun {
   id: number;
+  user_id: string | null;
   created_at: string;
   jd_text: string | null;
   jd_source: string | null;
@@ -27,6 +28,7 @@ export interface DbRun {
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS application_runs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,
     created_at TEXT NOT NULL,
     jd_text TEXT,
     jd_source TEXT,
@@ -42,6 +44,8 @@ const SCHEMA = `
     error_message TEXT
   )
 `;
+
+const MIGRATE_USER_ID = `ALTER TABLE application_runs ADD COLUMN user_id TEXT`;
 
 // ─────────────────────────────────────────────────────────
 // LibSQL backend (Turso)
@@ -67,6 +71,9 @@ async function ensureLibsql() {
   if (!libsqlReady) {
     const client = getLibsql();
     await client.execute(SCHEMA);
+    try {
+      await client.execute(MIGRATE_USER_ID);
+    } catch { /* column already exists */ }
     libsqlReady = true;
   }
 }
@@ -87,6 +94,7 @@ function getSqlite(): any {
     d.pragma("journal_mode = WAL");
     d.pragma("foreign_keys = ON");
     d.exec(SCHEMA);
+    try { d.exec(MIGRATE_USER_ID); } catch { /* column already exists */ }
     sqliteDb = d;
   }
   return sqliteDb;
@@ -97,6 +105,7 @@ function getSqlite(): any {
 // ─────────────────────────────────────────────────────────
 
 export async function saveRun(data: {
+  user_id?: string;
   jd_text?: string;
   jd_source?: string;
   resume_text?: string;
@@ -109,9 +118,10 @@ export async function saveRun(data: {
     await ensureLibsql();
     const client = getLibsql();
     const result = await client.execute({
-      sql: `INSERT INTO application_runs (created_at, jd_text, jd_source, resume_text, resume_source, status)
-            VALUES (?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO application_runs (user_id, created_at, jd_text, jd_source, resume_text, resume_source, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
       args: [
+        data.user_id || null,
         now,
         data.jd_text || null,
         data.jd_source || null,
@@ -125,10 +135,11 @@ export async function saveRun(data: {
 
   const db = getSqlite();
   const stmt = db.prepare(`
-    INSERT INTO application_runs (created_at, jd_text, jd_source, resume_text, resume_source, status)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO application_runs (user_id, created_at, jd_text, jd_source, resume_text, resume_source, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
   const result = stmt.run(
+    data.user_id || null,
     now,
     data.jd_text || null,
     data.jd_source || null,
@@ -206,10 +217,17 @@ export async function getRun(runId: number): Promise<DbRun | null> {
   return db.prepare("SELECT * FROM application_runs WHERE id = ?").get(runId) as DbRun | null;
 }
 
-export async function listRuns(limit: number = 50, offset: number = 0): Promise<DbRun[]> {
+export async function listRuns(limit: number = 50, offset: number = 0, userId?: string): Promise<DbRun[]> {
   if (useLibsql) {
     await ensureLibsql();
     const client = getLibsql();
+    if (userId) {
+      const result = await client.execute({
+        sql: "SELECT * FROM application_runs WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        args: [userId, limit, offset],
+      });
+      return result.rows as unknown as DbRun[];
+    }
     const result = await client.execute({
       sql: "SELECT * FROM application_runs ORDER BY created_at DESC LIMIT ? OFFSET ?",
       args: [limit, offset],
@@ -218,6 +236,11 @@ export async function listRuns(limit: number = 50, offset: number = 0): Promise<
   }
 
   const db = getSqlite();
+  if (userId) {
+    return db
+      .prepare("SELECT * FROM application_runs WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
+      .all(userId, limit, offset) as DbRun[];
+  }
   return db
     .prepare("SELECT * FROM application_runs ORDER BY created_at DESC LIMIT ? OFFSET ?")
     .all(limit, offset) as DbRun[];
