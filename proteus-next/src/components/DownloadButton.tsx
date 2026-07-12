@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FiDownload } from "react-icons/fi";
 
-export function DownloadButton({ content, filename, isCoverLetter = false }: { content: string; filename: string; isCoverLetter?: boolean }) {
+export function DownloadButton({ content, filename, isCoverLetter = false, candidateName, jobTitle }: { content: string; filename: string; isCoverLetter?: boolean; candidateName?: string; jobTitle?: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,19 +34,23 @@ export function DownloadButton({ content, filename, isCoverLetter = false }: { c
         // LLM content already has greeting, body, closing — render as-is
         const children = [];
 
-        // Header — name + role only
+        // Header — dynamic name + role
+        const displayName = candidateName || "Candidate";
+        const displayRole = jobTitle || "";
         children.push(
           new Paragraph({
-            children: [new TextRun({ text: "Daniel Deshmukh", bold: true, size: 28, font: "Calibri" })],
+            children: [new TextRun({ text: displayName, bold: true, size: 28, font: "Calibri" })],
             spacing: { after: 40 },
           })
         );
-        children.push(
-          new Paragraph({
-            children: [new TextRun({ text: "SOFTWARE ENGINEER", bold: true, size: 18, font: "Calibri", color: "C9A962" })],
-            spacing: { after: 80 },
-          })
-        );
+        if (displayRole) {
+          children.push(
+            new Paragraph({
+              children: [new TextRun({ text: displayRole.toUpperCase(), bold: true, size: 18, font: "Calibri", color: "C9A962" })],
+              spacing: { after: 80 },
+            })
+          );
+        }
 
         // Date
         children.push(

@@ -303,7 +303,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
             actions={
               <div style={{ display: "flex", gap: "8px" }}>
                 <CopyButton text={coverLetter.full_letter} label="Copy" />
-                <DownloadButton content={coverLetter.full_letter} filename={coverFilename} isCoverLetter />
+                <DownloadButton content={coverLetter.full_letter} filename={coverFilename} isCoverLetter candidateName={candidateName} jobTitle={coverLetter.job_title} />
               </div>
             }
           >
