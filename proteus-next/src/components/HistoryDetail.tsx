@@ -175,7 +175,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
   let sectionScores: Record<string, number> | null = null;
   let gapAnalysis: { gaps: Array<{ status: string; requirement: string; similarity_score: number; category: string; matched_evidence: string | null }>; matched_count: number; partial_count: number; missing_count: number; total_requirements: number } | null = null;
   let rewriteSuggestions: { suggestions: Array<{ original_bullet: string; suggested_rewrite: string; rationale: string; target_requirement: string; impact_score: number; experience_context: string }>; hidden_experience: string[] } | null = null;
-  let coverLetter: { full_letter: string; sections: Array<{ heading: string; content: string }>; word_count: number; tone: string; job_title?: string } | null = null;
+  let coverLetter: { full_letter: string; sections: Array<{ heading: string; content: string }>; word_count: number; tone: string } | null = null;
   let actionList: Array<{ priority: number; action: string; impact: string; category: string }> | null = null;
 
   try { if (run.section_scores) sectionScores = JSON.parse(run.section_scores); } catch {}
@@ -183,14 +183,6 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
   try { if (run.rewrite_suggestions) rewriteSuggestions = JSON.parse(run.rewrite_suggestions); } catch {}
   try { if (run.cover_letter) coverLetter = JSON.parse(run.cover_letter); } catch {}
   try { if (run.action_list) actionList = JSON.parse(run.action_list); } catch {}
-
-  // Build cover letter filename: {username}_{applied_role}
-  function sanitizeForFilename(s: string): string {
-    return s.replace(/[^a-zA-Z0-9\s-]/g, "").replace(/\s+/g, "_").substring(0, 50).replace(/_+$/, "");
-  }
-  const candidateName = run.resume_text?.split("\n").find((l: string) => l.trim().length > 2)?.trim() || "Candidate";
-  const appliedRole = coverLetter?.job_title || "CoverLetter";
-  const coverFilename = `${sanitizeForFilename(candidateName)}_${sanitizeForFilename(appliedRole)}`;
 
   // Dedupe gaps
   const dedupedGaps = gapAnalysis ? { ...gapAnalysis, gaps: dedupeGaps(gapAnalysis.gaps) } : null;
@@ -217,16 +209,16 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
 
       {/* Header */}
       <Card>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(17px, 3vw, 20px)", color: "var(--text)", margin: 0 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "20px", color: "var(--text)", margin: 0 }}>
               Run #{run.id}
             </h2>
-            <p style={{ fontSize: "12px", color: "var(--text-faint)", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <p style={{ fontSize: "13px", color: "var(--text-faint)", marginTop: "4px" }}>
               {new Date(run.created_at).toLocaleString()} · {run.jd_source} JD · {run.resume_source} resume
             </p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             {run.overall_score != null && (
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "24px", fontWeight: 600, color: "var(--color-gold-light)" }}>
                 {Math.round(run.overall_score * 100)}%
@@ -261,7 +253,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
       {dedupedGaps && (
         <Card>
           <SectionLabel>Gap Analysis</SectionLabel>
-          <div style={{ display: "flex", gap: "14px", marginBottom: "18px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "20px", marginBottom: "18px" }}>
             <span style={{ fontSize: "13px", color: "var(--text-soft)" }}>
               Matched: <strong style={{ color: "var(--color-gold-light)" }}>{dedupedGaps.matched_count}</strong>
             </span>
@@ -303,7 +295,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
             actions={
               <div style={{ display: "flex", gap: "8px" }}>
                 <CopyButton text={coverLetter.full_letter} label="Copy" />
-                <DownloadButton content={coverLetter.full_letter} filename={coverFilename} isCoverLetter />
+                <DownloadButton content={coverLetter.full_letter} filename={`cover-letter-run-${run.id}`} />
               </div>
             }
           >
