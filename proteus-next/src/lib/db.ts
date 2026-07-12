@@ -170,9 +170,13 @@ async function ensureLibsql() {
   if (!libsqlReady) {
     const client = getLibsql();
     await client.batch([
-      SCHEMA,
-      MIGRATE_USER_ID,
+      "CREATE TABLE IF NOT EXISTS application_runs (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, created_at TEXT NOT NULL, jd_text TEXT, jd_source TEXT, resume_text TEXT, resume_source TEXT, overall_score REAL, section_scores TEXT, gap_analysis TEXT, rewrite_suggestions TEXT, cover_letter TEXT, action_list TEXT, status TEXT NOT NULL DEFAULT 'pending', error_message TEXT)",
+      "CREATE TABLE IF NOT EXISTS rate_limits (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, action TEXT NOT NULL, window_start TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0)",
+      "CREATE INDEX IF NOT EXISTS idx_rate_limits_lookup ON rate_limits(user_id, action, window_start)",
     ]);
+    try {
+      await client.execute(MIGRATE_USER_ID);
+    } catch { /* column already exists */ }
     libsqlReady = true;
   }
 }
