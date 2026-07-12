@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { SiNvidia } from "react-icons/si";
 
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+function Section({ id, title, icon, children }: { id: string; title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section id={id} style={{ marginBottom: "56px", scrollMarginTop: "32px" }}>
-      <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "24px", color: "var(--text)", marginBottom: "20px", paddingBottom: "12px", borderBottom: "1px solid var(--border)" }}>
+      <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "24px", color: "var(--text)", marginBottom: "20px", paddingBottom: "12px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "10px" }}>
+        {icon && <span style={{ color: "#76b900", display: "flex", alignItems: "center" }}>{icon}</span>}
         {title}
       </h2>
       <div style={{ fontSize: "14.5px", color: "var(--text-soft)", lineHeight: 1.8 }}>
@@ -254,7 +256,7 @@ export default function DocsPage() {
       </Section>
 
       {/* ─── NVIDIA NIM Models ────────────────────────── */}
-      <Section id="models" title="NVIDIA NIM Models">
+      <Section id="models" title="NVIDIA NIM Models" icon={<SiNvidia size={24} />}>
         <P>
           PROTEUS uses NVIDIA NIM (NVIDIA Inference Microservices) for all AI operations. Each pipeline step uses a dedicated model.
         </P>
