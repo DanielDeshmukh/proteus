@@ -45,7 +45,7 @@ export function NimHealthPanel() {
 
   return (
     <Card>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: data ? "20px" : "0" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: data ? "20px" : "0", flexWrap: "wrap" }}>
         <div>
           <h3 style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 600, color: "var(--text)", margin: 0 }}>
             NIM Connectivity Check
@@ -108,13 +108,14 @@ export function NimHealthPanel() {
             <div
               key={r.step}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "10px 14px",
-                borderRadius: "var(--radius-md)",
-                border: `1px solid ${r.ok ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)"}`,
-                background: r.ok ? "transparent" : "rgba(239, 68, 68, 0.03)",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "10px 12px",
+              borderRadius: "var(--radius-md)",
+              border: `1px solid ${r.ok ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)"}`,
+              background: r.ok ? "transparent" : "rgba(239, 68, 68, 0.03)",
+              flexWrap: "wrap" as const,
               }}
             >
               {/* Step number */}
@@ -126,17 +127,17 @@ export function NimHealthPanel() {
               <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: r.ok ? "#22c55e" : "#ef4444", flexShrink: 0 }} />
 
               {/* Agent name */}
-              <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)", minWidth: "130px" }}>
+              <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text)", minWidth: "100px" }}>
                 {r.agent}
               </span>
 
               {/* Model */}
-              <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-soft)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: "10px", fontFamily: "var(--font-mono)", color: "var(--text-soft)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {r.model}
               </span>
 
               {/* Latency */}
-              <span style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: r.latency < 5000 ? "var(--text-faint)" : "var(--color-gold)", flexShrink: 0, minWidth: "55px", textAlign: "right" as const }}>
+              <span style={{ fontSize: "10px", fontFamily: "var(--font-mono)", color: r.latency < 5000 ? "var(--text-faint)" : "var(--color-gold)", flexShrink: 0, textAlign: "right" as const }}>
                 {r.latency}ms
               </span>
 

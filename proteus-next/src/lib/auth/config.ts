@@ -4,7 +4,6 @@ import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
 import { createTursoAdapter } from "./adapter";
 import { authConfig } from "./auth.config";
-import { sendMagicLinkEmail } from "./email";
 
 const adapter = createTursoAdapter();
 
@@ -31,9 +30,15 @@ export const {
   providers: [
     ...authConfig.providers,
     Email({
-      sendVerificationRequest: async ({ identifier: email, url }) => {
-        await sendMagicLinkEmail({ to: email, url, token: "" });
+      server: {
+        host: process.env.SMTP_HOST || "smtp.resend.com",
+        port: Number(process.env.SMTP_PORT) || 587,
+        auth: {
+          user: process.env.SMTP_USER || "resend",
+          pass: process.env.SMTP_PASS,
+        },
       },
+      from: process.env.EMAIL_FROM || "PROTEUS <onboarding@resend.dev>",
     }),
   ],
   callbacks: {

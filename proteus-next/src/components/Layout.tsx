@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { path: "/analyze", label: "Analyze" },
@@ -15,21 +15,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [showMenu, setShowMenu] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
+
+  useEffect(() => {
+    setShowMobileNav(false);
+  }, [pathname]);
 
   return (
-    <div className="min-h-screen" style={{ background: "transparent" }}>
+    <div style={{ minHeight: "100vh", background: "transparent" }}>
       <header
-        className="sticky top-0 z-10"
         style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
           background: "var(--bg)",
           borderBottom: "1px solid var(--border)",
         }}
       >
         <div
-          className="mx-auto flex items-center justify-between"
-          style={{ maxWidth: "1180px", padding: "20px 40px" }}
+          style={{
+            maxWidth: "1180px",
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px 24px",
+          }}
+          className="sm:!px-10"
         >
-          <Link href="/" className="flex items-center" style={{ gap: "12px" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none" }}>
             <span
               style={{
                 width: "28px",
@@ -39,6 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 transform: "rotate(45deg)",
                 display: "inline-block",
                 position: "relative",
+                flexShrink: 0,
               }}
             >
               <span
@@ -64,7 +79,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          <nav className="flex" style={{ gap: "36px" }}>
+          {/* Desktop nav */}
+          <nav style={{ display: "flex", gap: "36px" }} className="hide-mobile">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -78,6 +94,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   position: "relative",
                   paddingBottom: "4px",
                   transition: "color .15s ease",
+                  textDecoration: "none",
                 }}
               >
                 {item.label}
@@ -98,65 +115,196 @@ export function Layout({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          {session?.user && (
-            <div style={{ position: "relative", marginLeft: "24px" }}>
-              <button
-                onClick={() => setShowMenu(!showMenu)}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            {/* User avatar (desktop) */}
+            {session?.user && (
+              <div style={{ position: "relative" }} className="hide-mobile">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  style={{
+                    width: "34px",
+                    height: "34px",
+                    borderRadius: "50%",
+                    background: "var(--surface-sunken)",
+                    border: "1px solid var(--border)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    overflow: "hidden",
+                  }}
+                >
+                  {session.user.image ? (
+                    <img src={session.user.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-gold)" }}>
+                      {(session.user.name || session.user.email || "?")[0].toUpperCase()}
+                    </span>
+                  )}
+                </button>
+                {showMenu && (
+                  <>
+                    <div style={{ position: "fixed", inset: 0, zIndex: 49 }} onClick={() => setShowMenu(false)} />
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: "42px",
+                        zIndex: 50,
+                        background: "var(--surface)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "var(--radius-md)",
+                        minWidth: "200px",
+                        padding: "8px 0",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                      }}
+                    >
+                      <div style={{ padding: "10px 16px", borderBottom: "1px solid var(--border)" }}>
+                        <p style={{ fontSize: "13px", fontWeight: 500, color: "var(--text)", margin: 0 }}>{session.user.name || "User"}</p>
+                        <p
+                          style={{
+                            fontSize: "11px",
+                            color: "var(--text-faint)",
+                            margin: 0,
+                            marginTop: "2px",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            maxWidth: "180px",
+                          }}
+                        >
+                          {session.user.email}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => signOut({ callbackUrl: "/signin" })}
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          textAlign: "left",
+                          padding: "10px 16px",
+                          fontSize: "13px",
+                          color: "var(--text-soft)",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontFamily: "var(--font-sans)",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-sunken)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setShowMobileNav(!showMobileNav)}
+              style={{
+                display: "none",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px",
+                color: "var(--text)",
+              }}
+              className="!flex md:!hidden"
+              aria-label="Toggle navigation"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                {showMobileNav ? (
+                  <>
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </>
+                ) : (
+                  <>
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile nav dropdown */}
+        {showMobileNav && (
+          <div
+            style={{
+              borderTop: "1px solid var(--border)",
+              padding: "8px 24px 16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px",
+            }}
+            className="md:!hidden"
+          >
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
                 style={{
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  background: "var(--surface-sunken)", border: "1px solid var(--border)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: "pointer", overflow: "hidden",
+                  fontSize: "14px",
+                  padding: "10px 12px",
+                  borderRadius: "var(--radius-md)",
+                  color:
+                    pathname === item.path || (item.path === "/analyze" && pathname === "/")
+                      ? "var(--color-gold-light)"
+                      : "var(--text-soft)",
+                  background:
+                    pathname === item.path || (item.path === "/analyze" && pathname === "/")
+                      ? "rgba(201,169,98,0.08)"
+                      : "transparent",
+                  textDecoration: "none",
+                  transition: "background .15s ease",
                 }}
               >
-                {session.user.image ? (
-                  <img src={session.user.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                ) : (
-                  <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-gold)" }}>
-                    {(session.user.name || session.user.email || "?")[0].toUpperCase()}
-                  </span>
-                )}
-              </button>
-              {showMenu && (
-                <>
-                  <div style={{ position: "fixed", inset: 0, zIndex: 49 }} onClick={() => setShowMenu(false)} />
-                  <div style={{
-                    position: "absolute", right: 0, top: "42px", zIndex: 50,
-                    background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)",
-                    minWidth: "200px", padding: "8px 0", boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-                  }}>
-                    <div style={{ padding: "10px 16px", borderBottom: "1px solid var(--border)" }}>
-                      <p style={{ fontSize: "13px", fontWeight: 500, color: "var(--text)", margin: 0 }}>{session.user.name || "User"}</p>
-                      <p style={{ fontSize: "11px", color: "var(--text-faint)", margin: 0, marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis" }}>{session.user.email}</p>
-                    </div>
-                    <button
-                      onClick={() => signOut({ callbackUrl: "/signin" })}
-                      style={{
-                        display: "block", width: "100%", textAlign: "left", padding: "10px 16px",
-                        fontSize: "13px", color: "var(--text-soft)", background: "none", border: "none",
-                        cursor: "pointer", fontFamily: "var(--font-sans)",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-sunken)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                {item.label}
+              </Link>
+            ))}
+            {session?.user && (
+              <>
+                <div style={{ height: "1px", background: "var(--border)", margin: "8px 0" }} />
+                <div style={{ padding: "8px 12px" }}>
+                  <p style={{ fontSize: "13px", fontWeight: 500, color: "var(--text)", margin: 0 }}>{session.user.name || "User"}</p>
+                  <p style={{ fontSize: "11px", color: "var(--text-faint)", margin: 0, marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis" }}>{session.user.email}</p>
+                </div>
+                <button
+                  onClick={() => signOut({ callbackUrl: "/signin" })}
+                  style={{
+                    textAlign: "left",
+                    padding: "10px 12px",
+                    fontSize: "13px",
+                    color: "var(--text-soft)",
+                    background: "none",
+                    border: "none",
+                    borderRadius: "var(--radius-md)",
+                    cursor: "pointer",
+                    fontFamily: "var(--font-sans)",
+                  }}
+                >
+                  Sign out
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </header>
 
       <main
-        className="mx-auto"
         style={{
           maxWidth: "1180px",
-          padding: "8px 48px 120px",
+          margin: "0 auto",
+          padding: "8px 24px 120px",
           position: "relative",
           zIndex: 1,
         }}
+        className="sm:!px-12"
       >
         {children}
       </main>

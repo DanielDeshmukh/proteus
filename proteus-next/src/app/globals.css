@@ -42,11 +42,14 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Reset defaults */
 * {
   border-color: var(--border);
+  box-sizing: border-box;
 }
 
 /* Button base */
@@ -97,4 +100,14 @@ textarea:focus {
 ::selection {
   background: rgba(201, 169, 98, 0.3);
   color: var(--text);
+}
+
+/* ─── Mobile Responsive ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+  .stack-mobile { flex-direction: column !important; }
+  .full-width-mobile { width: 100% !important; }
+  .text-center-mobile { text-align: center !important; }
+  .p-sm-mobile { padding: 16px !important; }
+  .gap-sm-mobile { gap: 12px !important; }
 }

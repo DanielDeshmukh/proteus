@@ -81,7 +81,6 @@ export default function HistoryPage() {
     return badges[status] || badges.pending;
   };
 
-  // Detail view
   if (selectedId !== null) {
     return (
       <Layout>
@@ -90,11 +89,10 @@ export default function HistoryPage() {
     );
   }
 
-  // List view
   return (
     <Layout>
-      <section style={{ padding: "48px 0 32px" }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "28px", color: "var(--text)", marginBottom: "8px" }}>
+      <section style={{ padding: "40px 0 24px" }}>
+        <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(22px, 4vw, 28px)", color: "var(--text)", marginBottom: "6px" }}>
           History
         </h1>
         <p style={{ fontSize: "14px", color: "var(--text-soft)" }}>
@@ -104,7 +102,7 @@ export default function HistoryPage() {
 
       {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
 
-      <div style={{ marginBottom: "24px" }}>
+      <div style={{ marginBottom: "20px" }}>
         <input
           type="text"
           placeholder="Search runs..."
@@ -129,7 +127,7 @@ export default function HistoryPage() {
         </div>
       ) : filteredRuns.length === 0 ? (
         <Card>
-          <div style={{ textAlign: "center", padding: "32px" }}>
+          <div style={{ textAlign: "center", padding: "32px 16px" }}>
             <p style={{ color: "var(--text-faint)" }}>
               {fetchFailed ? "Failed to load history" : search ? "No runs match your search" : "No analysis runs yet"}
             </p>
@@ -154,43 +152,50 @@ export default function HistoryPage() {
           </div>
         </Card>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {filteredRuns.map((run) => {
             const badge = getStatusBadge(run.status);
             return (
               <Card key={run.id}>
                 <div
                   onClick={() => setSelectedId(run.id)}
-                  style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    cursor: "pointer",
+                    gap: "12px",
+                  }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "6px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
                       <span
                         style={{
                           fontFamily: "var(--font-mono)",
-                          fontSize: "11px",
-                          padding: "2px 8px",
+                          fontSize: "10px",
+                          padding: "2px 7px",
                           borderRadius: "100px",
                           background: badge.bg,
                           color: badge.color,
                           border: `1px solid ${badge.border}`,
+                          flexShrink: 0,
                         }}
                       >
                         {run.status}
                       </span>
-                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-faint)" }}>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--text-faint)" }}>
                         #{run.id}
                       </span>
                     </div>
-                    <p style={{ fontSize: "14px", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <p style={{ fontSize: "13px", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {run.jd_text?.substring(0, 80) || "No JD text"}
                     </p>
-                    <p style={{ fontSize: "12px", color: "var(--text-faint)", marginTop: "4px" }}>
-                      {new Date(run.created_at).toLocaleDateString()} &middot; {run.jd_source}
+                    <p style={{ fontSize: "11px", color: "var(--text-faint)", marginTop: "4px" }}>
+                      {new Date(run.created_at).toLocaleDateString()} · {run.jd_source}
                     </p>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px", marginLeft: "16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
                     {run.overall_score != null && (
                       <span
                         style={{
@@ -210,11 +215,12 @@ export default function HistoryPage() {
                         border: "1px solid var(--border)",
                         borderRadius: "var(--radius-md)",
                         color: "var(--text-soft)",
-                        padding: "6px 14px",
-                        fontSize: "12px",
+                        padding: "5px 12px",
+                        fontSize: "11px",
                         fontFamily: "var(--font-sans)",
                         cursor: "pointer",
                         transition: "all .15s ease",
+                        flexShrink: 0,
                       }}
                     >
                       Delete

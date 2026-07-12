@@ -217,16 +217,16 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
 
       {/* Header */}
       <Card>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "20px", color: "var(--text)", margin: 0 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(17px, 3vw, 20px)", color: "var(--text)", margin: 0 }}>
               Run #{run.id}
             </h2>
-            <p style={{ fontSize: "13px", color: "var(--text-faint)", marginTop: "4px" }}>
+            <p style={{ fontSize: "12px", color: "var(--text-faint)", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis" }}>
               {new Date(run.created_at).toLocaleString()} · {run.jd_source} JD · {run.resume_source} resume
             </p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
             {run.overall_score != null && (
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "24px", fontWeight: 600, color: "var(--color-gold-light)" }}>
                 {Math.round(run.overall_score * 100)}%
@@ -261,7 +261,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
       {dedupedGaps && (
         <Card>
           <SectionLabel>Gap Analysis</SectionLabel>
-          <div style={{ display: "flex", gap: "20px", marginBottom: "18px" }}>
+          <div style={{ display: "flex", gap: "14px", marginBottom: "18px", flexWrap: "wrap" }}>
             <span style={{ fontSize: "13px", color: "var(--text-soft)" }}>
               Matched: <strong style={{ color: "var(--color-gold-light)" }}>{dedupedGaps.matched_count}</strong>
             </span>
