@@ -161,7 +161,6 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
   const [run, setRun] = useState<RunDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -169,27 +168,6 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
       .then((data) => { setRun(data); setLoading(false); })
       .catch((err) => { setError(err.message); setLoading(false); });
   }, [runId]);
-
-  const handleDownloadPdf = async () => {
-    setPdfLoading(true);
-    try {
-      const res = await fetch(`/api/reports/pdf?run_id=${runId}`);
-      if (!res.ok) throw new Error("Failed to generate PDF");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `proteus-report-${runId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "PDF download failed");
-    } finally {
-      setPdfLoading(false);
-    }
-  };
 
   if (loading) return <div style={{ display: "flex", justifyContent: "center", padding: "48px" }}><Spinner size="lg" /></div>;
   if (error || !run) return <Card><p style={{ textAlign: "center", color: "var(--text-faint)", padding: "24px" }}>{error || "Run not found"}</p></Card>;
@@ -248,33 +226,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
               {new Date(run.created_at).toLocaleString()} · {run.jd_source} JD · {run.resume_source} resume
             </p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0, flexWrap: "wrap" }}>
-            <button
-              onClick={handleDownloadPdf}
-              disabled={pdfLoading}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "6px 14px",
-                background: pdfLoading ? "var(--surface-sunken)" : "rgba(201, 169, 98, 0.08)",
-                border: "1px solid rgba(201, 169, 98, 0.2)",
-                borderRadius: "var(--radius-md)",
-                color: pdfLoading ? "var(--text-faint)" : "var(--color-gold)",
-                fontSize: "12px",
-                fontFamily: "var(--font-sans)",
-                fontWeight: 500,
-                cursor: pdfLoading ? "wait" : "pointer",
-                transition: "all .15s ease",
-              }}
-              onMouseEnter={(e) => { if (!pdfLoading) e.currentTarget.style.background = "rgba(201, 169, 98, 0.14)"; }}
-              onMouseLeave={(e) => { if (!pdfLoading) e.currentTarget.style.background = "rgba(201, 169, 98, 0.08)"; }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-              </svg>
-              {pdfLoading ? "Generating..." : "Export PDF"}
-            </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
             {run.overall_score != null && (
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "24px", fontWeight: 600, color: "var(--color-gold-light)" }}>
                 {Math.round(run.overall_score * 100)}%

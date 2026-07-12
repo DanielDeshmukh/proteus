@@ -13,18 +13,6 @@ declare module "react-icons/fi" {
   export const FiDownload: ComponentType<{ size?: number; color?: string; className?: string }>;
 }
 
-declare module "jspdf" {
-  export default class jsPDF {
-    constructor();
-    setFont(font: string, style: string): void;
-    setFontSize(size: number): void;
-    text(text: string, x: number, y: number): void;
-    splitTextToSize(text: string, maxWidth: number): string[];
-    addPage(): void;
-    save(filename: string): void;
-  }
-}
-
 declare module "nodemailer" {
   interface TransportOptions {
     host?: string;
