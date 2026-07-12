@@ -1,12 +1,34 @@
 import { runPipeline } from "@/lib/agents";
-import { saveRun, updateRun } from "@/lib/db";
+import { saveRun, updateRun, checkRateLimit, incrementRateLimit } from "@/lib/db";
 import { auth } from "@/lib/auth/config";
 import type { Tone } from "@/types";
 
 export const maxDuration = 300;
 
+const DAILY_LIMIT = 10;
+
+const encoder = new TextEncoder();
+
+function sseError(message: string, status: number = 429) {
+  return new Response(JSON.stringify({ event: "error", message }) + "\n", {
+    status,
+    headers: { "Content-Type": "application/x-ndjson" },
+  });
+}
+
 export async function POST(request: Request) {
   const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    return sseError("Authentication required", 401);
+  }
+
+  // Rate limit check
+  const rateLimit = await checkRateLimit(userId, "analyze", DAILY_LIMIT);
+  if (!rateLimit.allowed) {
+    return sseError(`Daily limit reached: ${rateLimit.current}/${rateLimit.limit}. Resets tomorrow.`);
+  }
+
   const formData = await request.formData();
 
   const jdText = formData.get("jd_text") as string | null;
@@ -77,6 +99,7 @@ export async function POST(request: Request) {
           error_message: result.errors.length > 0 ? JSON.stringify(result.errors) : null,
         });
 
+        await incrementRateLimit(userId, "analyze");
         send({ event: "done", run_id: runId });
       } catch (e) {
         await updateRun(runId, {

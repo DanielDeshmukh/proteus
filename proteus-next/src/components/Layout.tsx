@@ -9,6 +9,7 @@ const navItems = [
   { path: "/analyze", label: "Analyze" },
   { path: "/models", label: "Models" },
   { path: "/history", label: "History" },
+  { path: "/docs", label: "Docs" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

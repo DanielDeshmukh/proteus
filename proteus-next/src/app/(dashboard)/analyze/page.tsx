@@ -12,7 +12,7 @@ import { GapAnalysisDisplay } from "@/components/GapAnalysisDisplay";
 import { RewriteDisplay } from "@/components/RewriteDisplay";
 import { CoverLetterDisplay } from "@/components/CoverLetterDisplay";
 import { ActionList } from "@/components/ActionList";
-import { apiPost, apiPostStream } from "@/lib/api";
+import { apiPost, apiPostStream, apiGet } from "@/lib/api";
 
 const pipelineStages = [
   { num: "01", name: "Parse", desc: "Extracts role, requirements, and seniority signal from the JD" },
@@ -29,6 +29,7 @@ export default function AnalyzePage() {
   const [currentStage, setCurrentStage] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const [result, setResult] = useState<{
     run_id?: number | null;
@@ -43,6 +44,10 @@ export default function AnalyzePage() {
   } | null>(null);
 
   const canAnalyze = jd && resume;
+
+  useEffect(() => {
+    apiGet("/api/usage").then((data) => setUsage(data)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (result && resultsRef.current) {
@@ -232,6 +237,11 @@ export default function AnalyzePage() {
               ? `Completed in ${(result.timings as Record<string, number>)?.total?.toFixed(1)}s`
               : "Ready to analyze"}
         </span>
+        {usage && (
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: usage.used >= usage.limit ? "#ff6b6b" : "var(--text-faint)" }}>
+            {usage.used}/{usage.limit} analyses today
+          </span>
+        )}
       </div>
 
       {/* Pipeline stages */}

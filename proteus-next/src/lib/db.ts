@@ -42,10 +42,109 @@ const SCHEMA = `
     action_list TEXT,
     status TEXT NOT NULL DEFAULT 'pending',
     error_message TEXT
-  )
+  );
+
+  CREATE TABLE IF NOT EXISTS rate_limits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    action TEXT NOT NULL,
+    window_start TEXT NOT NULL,
+    count INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_rate_limits_lookup
+    ON rate_limits(user_id, action, window_start);
 `;
 
 const MIGRATE_USER_ID = `ALTER TABLE application_runs ADD COLUMN user_id TEXT`;
+
+// ─── Rate Limiting ──────────────────────────────────────
+
+const DEFAULT_DAILY_LIMIT = 10;
+
+export interface RateLimitResult {
+  allowed: boolean;
+  current: number;
+  limit: number;
+  resetsAt: string;
+}
+
+function getTodayWindow(): string {
+  return new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+}
+
+export async function checkRateLimit(
+  userId: string,
+  action: string = "analyze",
+  limit: number = DEFAULT_DAILY_LIMIT
+): Promise<RateLimitResult> {
+  const window = getTodayWindow();
+  const resetsAt = `${window}T23:59:59Z`;
+
+  if (useLibsql) {
+    await ensureLibsql();
+    const client = getLibsql();
+    const result = await client.execute({
+      sql: "SELECT count FROM rate_limits WHERE user_id = ? AND action = ? AND window_start = ?",
+      args: [userId, action, window],
+    });
+    const current = (result.rows[0] as { count: number } | undefined)?.count || 0;
+    return { allowed: current < limit, current, limit, resetsAt };
+  }
+
+  const db = getSqlite();
+  const row = db
+    .prepare("SELECT count FROM rate_limits WHERE user_id = ? AND action = ? AND window_start = ?")
+    .get(userId, action, window) as { count: number } | undefined;
+  const current = row?.count || 0;
+  return { allowed: current < limit, current, limit, resetsAt };
+}
+
+export async function incrementRateLimit(
+  userId: string,
+  action: string = "analyze"
+): Promise<void> {
+  const window = getTodayWindow();
+
+  if (useLibsql) {
+    await ensureLibsql();
+    const client = getLibsql();
+    const existing = await client.execute({
+      sql: "SELECT id FROM rate_limits WHERE user_id = ? AND action = ? AND window_start = ?",
+      args: [userId, action, window],
+    });
+    if (existing.rows.length > 0) {
+      await client.execute({
+        sql: "UPDATE rate_limits SET count = count + 1 WHERE user_id = ? AND action = ? AND window_start = ?",
+        args: [userId, action, window],
+      });
+    } else {
+      await client.execute({
+        sql: "INSERT INTO rate_limits (user_id, action, window_start, count) VALUES (?, ?, ?, 1)",
+        args: [userId, action, window],
+      });
+    }
+    return;
+  }
+
+  const db = getSqlite();
+  const existing = db
+    .prepare("SELECT id FROM rate_limits WHERE user_id = ? AND action = ? AND window_start = ?")
+    .get(userId, action, window);
+  if (existing) {
+    db.prepare("UPDATE rate_limits SET count = count + 1 WHERE user_id = ? AND action = ? AND window_start = ?")
+      .run(userId, action, window);
+  } else {
+    db.prepare("INSERT INTO rate_limits (user_id, action, window_start, count) VALUES (?, ?, ?, 1)")
+      .run(userId, action, window);
+  }
+}
+
+export async function getUsageStats(userId: string): Promise<{ used: number; limit: number; resetsAt: string }> {
+  const limit = DEFAULT_DAILY_LIMIT;
+  const result = await checkRateLimit(userId, "analyze", limit);
+  return { used: result.current, limit: result.limit, resetsAt: result.resetsAt };
+}
 
 // ─────────────────────────────────────────────────────────
 // LibSQL backend (Turso)

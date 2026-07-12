@@ -1,13 +1,35 @@
 import { NextResponse } from "next/server";
 import { runPipeline } from "@/lib/agents";
-import { saveRun, updateRun } from "@/lib/db";
+import { saveRun, updateRun, checkRateLimit, incrementRateLimit } from "@/lib/db";
 import { auth } from "@/lib/auth/config";
 import type { Tone } from "@/types";
 
 export const maxDuration = 300;
 
+const DAILY_LIMIT = 10;
+
 export async function POST(request: Request) {
   const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+
+  // Rate limit check
+  const rateLimit = await checkRateLimit(userId, "analyze", DAILY_LIMIT);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: "Daily limit reached",
+        message: `You've used ${rateLimit.current} of ${rateLimit.limit} analyses today. Limit resets tomorrow.`,
+        used: rateLimit.current,
+        limit: rateLimit.limit,
+        resetsAt: rateLimit.resetsAt,
+      },
+      { status: 429 }
+    );
+  }
+
   const formData = await request.formData();
 
   const jdText = formData.get("jd_text") as string | null;
@@ -103,6 +125,8 @@ export async function POST(request: Request) {
       status: result.errors.length > 0 ? "partial" : "completed",
       error_message: result.errors.length > 0 ? JSON.stringify(result.errors) : null,
     });
+
+    await incrementRateLimit(userId, "analyze");
 
     return NextResponse.json({
       run_id: runId,

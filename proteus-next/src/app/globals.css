@@ -145,3 +145,13 @@ textarea:focus {
 .hamburger-open .hamburger-line:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
+
+/* ─── Docs Page Mobile ──────────────────────────────── */
+@media (max-width: 768px) {
+  .docs-sidebar {
+    display: none !important;
+  }
+  .docs-content {
+    padding: 24px 16px 80px !important;
+  }
+}
