@@ -94,6 +94,11 @@ export async function POST(request: Request) {
 
           await updateRun(runId, {
             overall_score: result.aggregated?.overall_score ?? null,
+            section_scores: result.aggregated ? JSON.stringify(result.aggregated.section_scores) : null,
+            gap_analysis: result.gap_analysis ? JSON.stringify(result.gap_analysis) : null,
+            rewrite_suggestions: result.rewrites ? JSON.stringify(result.rewrites) : null,
+            cover_letter: result.cover_letter ? JSON.stringify(result.cover_letter) : null,
+            action_list: result.aggregated ? JSON.stringify(result.aggregated.action_list) : null,
             status: result.errors.length > 0 ? "partial" : "completed",
             error_message: result.errors.length > 0 ? JSON.stringify(result.errors) : null,
           });
