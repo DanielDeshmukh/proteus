@@ -210,23 +210,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 cursor: "pointer",
                 padding: "4px",
                 color: "var(--text)",
+                width: "32px",
+                height: "32px",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-              className="!flex md:!hidden"
+              className={`!flex md:!hidden ${showMobileNav ? "hamburger-open" : ""}`}
               aria-label="Toggle navigation"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                {showMobileNav ? (
-                  <>
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </>
-                ) : (
-                  <>
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <line x1="3" y1="12" x2="21" y2="12" />
-                    <line x1="3" y1="18" x2="21" y2="18" />
-                  </>
-                )}
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <line className="hamburger-line" x1="3" y1="5" x2="17" y2="5" />
+                <line className="hamburger-line" x1="3" y1="10" x2="17" y2="10" />
+                <line className="hamburger-line" x1="3" y1="15" x2="17" y2="15" />
               </svg>
             </button>
           </div>
@@ -242,7 +237,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               flexDirection: "column",
               gap: "4px",
             }}
-            className="md:!hidden"
+            className="mobile-nav-enter md:!hidden"
           >
             {navItems.map((item) => (
               <Link

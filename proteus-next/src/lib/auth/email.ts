@@ -9,19 +9,26 @@ function emailShell(content: string): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
 </head>
-<body style="margin:0;padding:0;background-color:#111315;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#111315;padding:40px 20px;">
+<body style="margin:0;padding:0;background-color:#0d0f11;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;">
+  <!-- Full-width dark wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0d0f11;padding:32px 16px;">
     <tr>
       <td align="center">
-        <table width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background-color:#1a1d21;border:1px solid rgba(201,169,98,0.12);border-radius:12px;overflow:hidden;">
+        <!-- Card -->
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background-color:#1a1d21;border:1px solid rgba(201,169,98,0.2);border-radius:16px;overflow:hidden;">
+          <!-- Gold top accent -->
+          <tr>
+            <td style="height:3px;background:linear-gradient(90deg,#c9a962,#dfc08a,#c9a962);"></td>
+          </tr>
           <!-- Header -->
           <tr>
-            <td style="padding:36px 36px 28px;text-align:center;border-bottom:1px solid rgba(201,169,98,0.08);">
-              <div style="display:inline-block;width:34px;height:34px;border:2px solid #c9a962;border-radius:7px;transform:rotate(45deg);margin-bottom:18px;">
-                <div style="position:relative;top:6px;left:6px;width:14px;height:14px;border:2px solid #dfc08a;border-radius:3px;"></div>
+            <td style="padding:36px 36px 28px;text-align:center;border-bottom:1px solid rgba(201,169,98,0.1);">
+              <div style="display:inline-block;width:38px;height:38px;border:2.5px solid #c9a962;border-radius:9px;transform:rotate(45deg);margin-bottom:18px;">
+                <div style="position:relative;top:7px;left:7px;width:16px;height:16px;border:2.5px solid #dfc08a;border-radius:4px;"></div>
               </div>
-              <h1 style="color:#f5f5f0;font-size:20px;font-weight:500;letter-spacing:0.06em;margin:0;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">PROTEUS</h1>
+              <h1 style="color:#f5f5f0;font-size:22px;font-weight:600;letter-spacing:0.08em;margin:0;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">PROTEUS</h1>
             </td>
           </tr>
           <!-- Body -->
@@ -32,12 +39,12 @@ function emailShell(content: string): string {
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="padding:20px 36px;border-top:1px solid rgba(201,169,98,0.08);text-align:center;">
-              <p style="color:#4b5563;font-size:11px;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+            <td style="padding:20px 36px;border-top:1px solid rgba(201,169,98,0.1);text-align:center;">
+              <p style="color:#6b7280;font-size:11px;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
                 PROTEUS &mdash; AI Resume Analyzer &amp; Cover Letter Generator
               </p>
-              <p style="color:#374151;font-size:10px;margin:6px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-                <a href="${APP_URL}" style="color:#6b7280;text-decoration:underline;">Open PROTEUS</a>
+              <p style="margin:8px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+                <a href="${APP_URL}" style="color:#c9a962;font-size:11px;text-decoration:none;">Open PROTEUS &rarr;</a>
               </p>
             </td>
           </tr>
@@ -57,21 +64,34 @@ function emailText(content: string): string {
 
 function magicLinkHtml(url: string): string {
   const body = `
-    <h2 style="color:#f5f5f0;font-size:17px;font-weight:500;margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Sign in to your account</h2>
-    <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+    <h2 style="color:#f5f5f0;font-size:18px;font-weight:500;margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Sign in to your account</h2>
+    <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
       Click the button below to sign in to PROTEUS. This link will expire in 15 minutes.
     </p>
-    <table cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:24px;">
+    <!-- CTA Button -->
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:28px;">
       <tr>
         <td align="center">
-          <a href="${url}" style="display:inline-block;background:linear-gradient(180deg,#dfc08a,#c9a962);color:#111315;font-size:14px;font-weight:600;text-decoration:none;padding:13px 30px;border-radius:8px;letter-spacing:0.02em;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-            Sign in to PROTEUS
-          </a>
+          <table role="presentation" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="background:linear-gradient(180deg,#dfc08a,#c9a962);border-radius:10px;">
+                <a href="${url}" style="display:inline-block;color:#111315;font-size:15px;font-weight:700;text-decoration:none;padding:16px 40px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;letter-spacing:0.02em;">
+                  Sign in to PROTEUS
+                </a>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>
+    <!-- Divider -->
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:20px;">
+      <tr>
+        <td style="border-bottom:1px solid rgba(201,169,98,0.15);"></td>
+      </tr>
+    </table>
     <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      If you didn't request this email, you can safely ignore it. The link will expire automatically.
+      If you didn&rsquo;t request this email, you can safely ignore it. The link will expire automatically.
     </p>`;
   return emailShell(body);
 }
@@ -84,60 +104,54 @@ function magicLinkText(url: string): string {
 
 // ─── Welcome ────────────────────────────────────────────
 
+function featureRow(icon: string, title: string, desc: string): string {
+  return `
+    <tr>
+      <td style="padding:0 0 10px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;background:rgba(201,169,98,0.06);border:1px solid rgba(201,169,98,0.18);border-radius:10px;">
+          <tr>
+            <td style="padding:16px 18px;">
+              <p style="color:#dfc08a;font-size:13px;font-weight:600;margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+                ${icon} ${title}
+              </p>
+              <p style="color:#9ca3af;font-size:12px;margin:0;line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+                ${desc}
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+}
+
 function welcomeHtml(userName?: string): string {
   const greeting = userName ? `Hello ${userName},` : "Hello,";
   const body = `
-    <h2 style="color:#f5f5f0;font-size:17px;font-weight:500;margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Welcome to PROTEUS</h2>
+    <h2 style="color:#f5f5f0;font-size:18px;font-weight:500;margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Welcome to PROTEUS</h2>
     <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
       ${greeting}
     </p>
     <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      You now have access to PROTEUS, an AI-powered resume analyzer that runs a five-agent pipeline to give you:
+      You now have access to an AI-powered resume analyzer that runs a five-agent pipeline:
     </p>
-    <table cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:24px;">
-      <tr>
-        <td style="padding:0 0 10px;">
-          <table cellpadding="0" cellspacing="0" style="width:100%;background:rgba(201,169,98,0.06);border:1px solid rgba(201,169,98,0.12);border-radius:8px;">
-            <tr>
-              <td style="padding:14px 18px;">
-                <p style="color:#e0c87a;font-size:13px;font-weight:500;margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Semantic Match Score</p>
-                <p style="color:#9ca3af;font-size:12px;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">See how closely your resume aligns with the job description</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:0 0 10px;">
-          <table cellpadding="0" cellspacing="0" style="width:100%;background:rgba(201,169,98,0.06);border:1px solid rgba(201,169,98,0.12);border-radius:8px;">
-            <tr>
-              <td style="padding:14px 18px;">
-                <p style="color:#e0c87a;font-size:13px;font-weight:500;margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Gap Analysis</p>
-                <p style="color:#9ca3af;font-size:12px;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Identified gaps between your resume and role requirements</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:0 0 10px;">
-          <table cellpadding="0" cellspacing="0" style="width:100%;background:rgba(201,169,98,0.06);border:1px solid rgba(201,169,98,0.12);border-radius:8px;">
-            <tr>
-              <td style="padding:14px 18px;">
-                <p style="color:#e0c87a;font-size:13px;font-weight:500;margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Bullet Rewrites &amp; Cover Letter</p>
-                <p style="color:#9ca3af;font-size:12px;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">AI-drafted rewrites and a tailored cover letter</p>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:28px;">
+      ${featureRow("&#9733;", "Semantic Match Score", "See how closely your resume aligns with the job description")}
+      ${featureRow("&#9830;", "Gap Analysis", "Identified gaps between your resume and role requirements")}
+      ${featureRow("&#10003;", "Bullet Rewrites &amp; Cover Letter", "AI-drafted rewrites and a tailored cover letter")}
     </table>
-    <table cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:24px;">
+    <!-- CTA -->
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:20px;">
       <tr>
         <td align="center">
-          <a href="${APP_URL}/analyze" style="display:inline-block;background:linear-gradient(180deg,#dfc08a,#c9a962);color:#111315;font-size:14px;font-weight:600;text-decoration:none;padding:13px 30px;border-radius:8px;letter-spacing:0.02em;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-            Start your first analysis
-          </a>
+          <table role="presentation" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="background:linear-gradient(180deg,#dfc08a,#c9a962);border-radius:10px;">
+                <a href="${APP_URL}/analyze" style="display:inline-block;color:#111315;font-size:15px;font-weight:700;text-decoration:none;padding:16px 40px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;letter-spacing:0.02em;">
+                  Start your first analysis
+                </a>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>`;
@@ -147,7 +161,7 @@ function welcomeHtml(userName?: string): string {
 function welcomeText(userName?: string): string {
   const greeting = userName ? `Hello ${userName},` : "Hello,";
   return emailText(
-    `${greeting}\n\nWelcome to PROTEUS! You now have access to AI-powered resume analysis.\n\nWhat you can do:\n- Semantic match scoring against any job description\n- Gap analysis between your resume and role requirements\n- Bullet-level rewrites tailored to the job\n- AI-generated cover letters\n\nGet started: ${APP_URL}/analyze`
+    `${greeting}\n\nWelcome to PROTEUS! You now have access to AI-powered resume analysis.\n\nWhat you can do:\n  ★  Semantic match scoring against any job description\n  ◆  Gap analysis between your resume and role requirements\n  ✓  Bullet-level rewrites tailored to the job\n  ✓  AI-generated cover letters\n\nGet started: ${APP_URL}/analyze`
   );
 }
 
@@ -155,29 +169,39 @@ function welcomeText(userName?: string): string {
 
 function analysisCompleteHtml(score: number | null, runId: number): string {
   const scoreText = score != null ? `${Math.round(score * 100)}%` : "N/A";
-  const scoreColor = score != null && score >= 0.75 ? "#e0c87a" : score != null && score >= 0.5 ? "#c9a962" : "#9ca3af";
+  const scoreColor = score != null && score >= 0.75 ? "#dfc08a" : score != null && score >= 0.5 ? "#c9a962" : "#9ca3af";
+  const scoreLabel = score != null && score >= 0.75 ? "Strong match" : score != null && score >= 0.5 ? "Moderate match" : "Needs improvement";
   const body = `
-    <h2 style="color:#f5f5f0;font-size:17px;font-weight:500;margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Analysis Complete</h2>
-    <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      Your resume analysis has finished. Here's a summary:
+    <h2 style="color:#f5f5f0;font-size:18px;font-weight:500;margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Analysis Complete</h2>
+    <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+      Your resume analysis has finished. Here&rsquo;s your match score:
     </p>
-    <table cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:24px;">
+    <!-- Score card -->
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:28px;">
       <tr>
-        <td align="center" style="padding:28px 20px;background:rgba(201,169,98,0.06);border:1px solid rgba(201,169,98,0.12);border-radius:10px;">
-          <p style="color:#6b7280;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin:0 0 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Match Score</p>
-          <p style="color:${scoreColor};font-size:42px;font-weight:600;margin:0;line-height:1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">${scoreText}</p>
+        <td align="center" style="padding:32px 24px;background:rgba(201,169,98,0.08);border:1px solid rgba(201,169,98,0.25);border-radius:12px;">
+          <p style="color:#6b7280;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin:0 0 10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Match Score</p>
+          <p style="color:${scoreColor};font-size:48px;font-weight:700;margin:0;line-height:1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">${scoreText}</p>
+          <p style="color:#9ca3af;font-size:12px;margin:10px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">${scoreLabel}</p>
         </td>
       </tr>
     </table>
-    <p style="color:#9ca3af;font-size:13px;line-height:1.7;margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+    <p style="color:#9ca3af;font-size:13px;line-height:1.7;margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
       View your full results including gap analysis, rewrite suggestions, cover letter, and priority actions.
     </p>
-    <table cellpadding="0" cellspacing="0" style="width:100%;">
+    <!-- CTA -->
+    <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
       <tr>
         <td align="center">
-          <a href="${APP_URL}/history" style="display:inline-block;background:linear-gradient(180deg,#dfc08a,#c9a962);color:#111315;font-size:14px;font-weight:600;text-decoration:none;padding:13px 30px;border-radius:8px;letter-spacing:0.02em;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-            View results
-          </a>
+          <table role="presentation" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="background:linear-gradient(180deg,#dfc08a,#c9a962);border-radius:10px;">
+                <a href="${APP_URL}/history" style="display:inline-block;color:#111315;font-size:15px;font-weight:700;text-decoration:none;padding:16px 40px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;letter-spacing:0.02em;">
+                  View results
+                </a>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>`;
