@@ -2,39 +2,35 @@
   <img src="banner.png" alt="PROTEUS" width="100%" />
 </p>
 
-<h1 align="center">PROTEUS</h1>
 
-<p align="center">
-  <strong>One pipeline. One JD. Every output stays consistent.</strong>
-</p>
 
 <p align="center">
   <a href="https://proteus-phi.vercel.app">
-    <img src="https://img.shields.io/badge/LIVE_APP-proteus--phi.vercel.app-76b900?style=for-the-badge&logo=vercel&logoColor=white" alt="Live App" />
+    <img src="https://img.shields.io/badge/LIVE_APP-proteus--phi.vercel.app-76b900?style=for-the-badge&logo=vercel&logoColor=white&bg_color=1a1d21" alt="Live App" />
   </a>
   <a href="https://proteus-phi.vercel.app/docs">
-    <img src="https://img.shields.io/badge/DOCS-proteus--phi.vercel.app%2Fdocs-c9a962?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Documentation" />
+    <img src="https://img.shields.io/badge/DOCS-proteus--phi.vercel.app%2Fdocs-c9a962?style=for-the-badge&logo=readthedocs&logoColor=white&bg_color=1a1d21" alt="Documentation" />
   </a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/TypeScript-5.7-3178c6?style=flat-square&logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/NVIDIA_NIM-LLaMA_3.1_70B-76b900?style=flat-square&logo=nvidia&logoColor=white" alt="NVIDIA NIM" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-v4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=flat-square&logo=vercel" alt="Vercel" />
-  <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT License" />
+  <img src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white&bg_color=1a1d21" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-5.7-3178c6?style=flat-square&logo=typescript&logoColor=white&bg_color=1a1d21" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/NVIDIA_NIM-LLaMA_3.1_70B-76b900?style=flat-square&logo=nvidia&logoColor=white&bg_color=1a1d21" alt="NVIDIA NIM" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-v4-06b6d4?style=flat-square&logo=tailwindcss&logoColor=white&bg_color=1a1d21" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Vercel-Deployed-000000?style=flat-square&logo=vercel&logoColor=white&bg_color=1a1d21" alt="Vercel" />
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square&bg_color=1a1d21" alt="MIT License" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-Active-22c55e?style=flat-square" alt="Status" />
-  <img src="https://img.shields.io/badge/Models-5_healthy-76b900?style=flat-square" alt="Models" />
-  <img src="https://img.shields.io/badge/Pipeline-5_agents-c9a962?style=flat-square" alt="Pipeline" />
-  <img src="https://img.shields.io/badge/Rate_Limit-10%2Fday-f59e0b?style=flat-square" alt="Rate Limit" />
-  <img src="https://img.shields.io/badge/Auth-3_providers-8b5cf6?style=flat-square" alt="Auth" />
-  <img src="https://img.shields.io/github/stars/DanielDeshmukh/proteus?style=flat-square&color=c9a962" alt="Stars" />
-  <img src="https://img.shields.io/github/last-commit/DanielDeshmukh/proteus?style=flat-square" alt="Last Commit" />
-  <img src="https://img.shields.io/github/issues/DanielDeshmukh/proteus?style=flat-square" alt="Issues" />
+  <img src="https://img.shields.io/badge/Status-Active-22c55e?style=flat-square&bg_color=1a1d21" alt="Status" />
+  <img src="https://img.shields.io/badge/Models-5_healthy-76b900?style=flat-square&bg_color=1a1d21" alt="Models" />
+  <img src="https://img.shields.io/badge/Pipeline-5_agents-c9a962?style=flat-square&bg_color=1a1d21" alt="Pipeline" />
+  <img src="https://img.shields.io/badge/Rate_Limit-10%2Fday-f59e0b?style=flat-square&bg_color=1a1d21" alt="Rate Limit" />
+  <img src="https://img.shields.io/badge/Auth-3_providers-8b5cf6?style=flat-square&bg_color=1a1d21" alt="Auth" />
+  <img src="https://img.shields.io/github/stars/DanielDeshmukh/proteus?style=flat-square&color=c9a962&bg_color=1a1d21" alt="Stars" />
+  <img src="https://img.shields.io/github/last-commit/DanielDeshmukh/proteus?style=flat-square&bg_color=1a1d21" alt="Last Commit" />
+  <img src="https://img.shields.io/github/issues/DanielDeshmukh/proteus?style=flat-square&bg_color=1a1d21" alt="Issues" />
 </p>
 
 ---
@@ -161,6 +157,6 @@ Resume┘
 
 <p align="center">
   <a href="https://proteus-phi.vercel.app">
-    <img src="https://img.shields.io/badge/TRY_PROTEUS_NOW-76b900?style=for-the-badge&logo=vercel&logoColor=white" alt="Try PROTEUS" />
+    <img src="https://img.shields.io/badge/TRY_PROTEUS_NOW-76b900?style=for-the-badge&logo=vercel&logoColor=white&bg_color=1a1d21" alt="Try PROTEUS" />
   </a>
 </p>
