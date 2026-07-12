@@ -87,20 +87,6 @@ Resume┘
 | cover-letter | `meta/llama-3.1-70b-instruct` | auto |
 <!-- END MODELS AUTO-GENERATED -->
 
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 · App Router · TypeScript |
-| Styling | Tailwind CSS v4 · Dark theme · Geist fonts |
-| AI/ML | NVIDIA NIM · LLaMA 3.1 70B · Embeddings |
-| Database | better-sqlite3 (local) · Turso/libsql (Vercel) |
-| Auth | NextAuth.js v5 · Magic Link · Google · GitHub |
-| Validation | Zod v4 |
-| PDF Parsing | unpdf |
-| Deployment | Vercel · GitHub Actions |
-| Rate Limiting | Custom per-user daily limits |
-
 ## Features
 
 <details>
@@ -139,47 +125,21 @@ Resume┘
 
 </details>
 
-## Getting Started
+## Tech Stack
 
-```bash
-git clone https://github.com/DanielDeshmukh/proteus.git
-cd proteus/proteus-next
-npm install
-cp .env.example .env    # add your NVIDIA_NIM_API_KEY
-npm run dev             # http://localhost:3000
-```
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 · App Router · TypeScript |
+| Styling | Tailwind CSS v4 · Dark theme · Geist fonts |
+| AI/ML | NVIDIA NIM · LLaMA 3.1 70B · Embeddings |
+| Database | better-sqlite3 (local) · Turso/libsql (Vercel) |
+| Auth | NextAuth.js v5 · Magic Link · Google · GitHub |
+| Validation | Zod v4 |
+| PDF Parsing | unpdf |
+| Deployment | Vercel · GitHub Actions |
+| Rate Limiting | Custom per-user daily limits |
 
-### Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NVIDIA_NIM_API_KEY` | Yes | NVIDIA NIM API key |
-| `DATABASE_URL` | Vercel | Turso/libsql URL |
-| `DATABASE_AUTH_TOKEN` | Vercel | Turso auth token |
-| `AUTH_SECRET` | Yes | NextAuth.js secret |
-| `GOOGLE_CLIENT_ID` | Optional | Google OAuth |
-| `GOOGLE_CLIENT_SECRET` | Optional | Google OAuth |
-| `GITHUB_CLIENT_ID` | Optional | GitHub OAuth |
-| `GITHUB_CLIENT_SECRET` | Optional | GitHub OAuth |
-| `SMTP_HOST` | Optional | Email magic links |
-| `SMTP_PORT` | Optional | Email magic links |
-| `SMTP_USER` | Optional | Email magic links |
-| `SMTP_PASS` | Optional | Email magic links |
-| `EMAIL_FROM` | Optional | Sender address |
-
-## Deployment
-
-### Vercel (recommended)
-
-1. Push to GitHub
-2. Import at [vercel.com/new](https://vercel.com/new)
-3. Set root directory to `proteus-next`
-4. Add environment variables
-5. Deploy
-
-**Why Vercel?** PROTEUS uses better-sqlite3 locally and Turso/libsql on Vercel. The database layer auto-detects the environment.
-
-## API Reference
+## API
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
