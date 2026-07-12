@@ -169,10 +169,10 @@ function getLibsql(): any {
 async function ensureLibsql() {
   if (!libsqlReady) {
     const client = getLibsql();
-    await client.execute(SCHEMA);
-    try {
-      await client.execute(MIGRATE_USER_ID);
-    } catch { /* column already exists */ }
+    await client.batch([
+      SCHEMA,
+      MIGRATE_USER_ID,
+    ]);
     libsqlReady = true;
   }
 }
