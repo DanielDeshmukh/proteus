@@ -105,7 +105,7 @@ function getSqlite(): any {
 // ─────────────────────────────────────────────────────────
 
 export async function saveRun(data: {
-  user_id?: string;
+  user_id?: string | null;
   jd_text?: string;
   jd_source?: string;
   resume_text?: string;
