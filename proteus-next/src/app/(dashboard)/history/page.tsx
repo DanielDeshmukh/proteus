@@ -32,7 +32,8 @@ export default function HistoryPage() {
       const data = await apiGet("/api/history?limit=50");
       setRuns(data.runs || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load history");
+      const msg = err instanceof Error ? err.message : "Failed to load history";
+      setError(msg);
       setFetchFailed(true);
     } finally {
       setLoading(false);
@@ -129,25 +130,44 @@ export default function HistoryPage() {
         <Card>
           <div style={{ textAlign: "center", padding: "32px 16px" }}>
             <p style={{ color: "var(--text-faint)" }}>
-              {fetchFailed ? "Failed to load history" : search ? "No runs match your search" : "No analysis runs yet"}
+              {fetchFailed ? (error || "Failed to load history") : search ? "No runs match your search" : "No analysis runs yet"}
             </p>
             {fetchFailed && (
-              <button
-                onClick={() => { setFetchFailed(false); fetchHistory(); }}
-                style={{
-                  marginTop: "12px",
-                  fontFamily: "var(--font-sans)",
-                  fontSize: "13px",
-                  color: "var(--color-gold)",
-                  background: "none",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-md)",
-                  padding: "8px 20px",
-                  cursor: "pointer",
-                }}
-              >
-                Retry
-              </button>
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "12px", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => { setFetchFailed(false); setError(null); fetchHistory(); }}
+                  style={{
+                    fontFamily: "var(--font-sans)",
+                    fontSize: "13px",
+                    color: "var(--color-gold)",
+                    background: "none",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-md)",
+                    padding: "8px 20px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Retry
+                </button>
+                {error?.includes("Authentication") && (
+                  <a
+                    href="/signin"
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      fontSize: "13px",
+                      color: "#111315",
+                      background: "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))",
+                      border: "none",
+                      borderRadius: "var(--radius-md)",
+                      padding: "8px 20px",
+                      cursor: "pointer",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Sign in
+                  </a>
+                )}
+              </div>
             )}
           </div>
         </Card>
