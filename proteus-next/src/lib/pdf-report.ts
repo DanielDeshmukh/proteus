@@ -63,8 +63,8 @@ interface ReportData {
 
 // ─── Helpers ────────────────────────────────────────────
 
-function setFont(doc: jsPDF, style: "normal" | "bold" = "normal", size: number = 10) {
-  doc.setFont("helvetica", style);
+function setFont(doc: jsPDF, style: "normal" | "bold" | "italic" = "normal", size: number = 10) {
+  doc.setFont("helvetica", style === "italic" ? "italic" : style);
   doc.setFontSize(size);
 }
 
@@ -301,7 +301,7 @@ export function generateReport(data: ReportData): jsPDF {
       y += 4;
 
       // Rationale
-      setFont(doc, "italic", 7);
+      setFont(doc, "normal", 7);
       doc.setTextColor(...THEME.textFaint);
       const ratLines = doc.splitTextToSize(rewrite.rationale, 155);
       doc.text(ratLines[0], 24, y);
@@ -395,7 +395,8 @@ export function generateReport(data: ReportData): jsPDF {
   }
 
   // ─── Footer ───────────────────────────────────────────
-  const pageCount = doc.getNumberOfPages();
+  // jsPDF v4: internal.pages is a 2D array, length = page count
+  const pageCount = doc.internal.pages.length - 1;
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
 
