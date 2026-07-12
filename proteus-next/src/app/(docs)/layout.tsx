@@ -10,6 +10,9 @@ const sections = [
   { id: "pipeline", label: "Pipeline Architecture" },
   { id: "models", label: "NVIDIA NIM Models" },
   { id: "rate-limits", label: "Rate Limits & Usage" },
+  { id: "tips", label: "Tips & Best Practices" },
+  { id: "troubleshooting", label: "Troubleshooting" },
+  { id: "api", label: "API Reference" },
   { id: "faq", label: "FAQ" },
   { id: "changelog", label: "Changelog" },
 ];

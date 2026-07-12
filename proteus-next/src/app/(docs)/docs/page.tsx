@@ -283,6 +283,53 @@ export default function DocsPage() {
             Go to the <strong>Models</strong> page and click <strong>"Check NIM Health"</strong> to run a live connectivity test against each pipeline step. You'll see latency and any error details.
           </P>
         </SubSection>
+
+        <SubSection title="Know more about NVIDIA NIM">
+          <P>
+            NVIDIA NIM (NVIDIA Inference Microservices) provides optimized, production-ready containers for deploying AI models at scale. NIM delivers low-latency inference across NVIDIA GPUs with automatic batching, quantization, and tensor parallelism — making it ideal for real-time AI applications like PROTEUS.
+          </P>
+          <P>
+            Key advantages of NIM:
+          </P>
+          <List items={[
+            "Optimized inference — models are tuned for maximum throughput on NVIDIA GPUs",
+            "OpenAI-compatible API — drop-in replacement for OpenAI-style requests",
+            "Model catalog — access hundreds of pre-hosted models (Llama, Mistral, Nemotron, and more)",
+            "Serverless endpoints — no infrastructure to manage, pay only for what you use",
+            "Enterprise-grade — built-in security, compliance, and SLA guarantees",
+          ]} />
+          <div style={{ marginTop: "16px" }}>
+            <a
+              href="https://build.nvidia.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 20px",
+                background: "rgba(118,185,0,0.1)",
+                border: "1px solid rgba(118,185,0,0.3)",
+                borderRadius: "var(--radius-md)",
+                color: "#76b900",
+                fontSize: "13px",
+                fontWeight: 600,
+                fontFamily: "var(--font-sans)",
+                textDecoration: "none",
+                transition: "all .15s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(118,185,0,0.18)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(118,185,0,0.1)"; }}
+            >
+              <SiNvidia size={16} />
+              Explore NVIDIA NIM at build.nvidia.com
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </a>
+          </div>
+          <P>
+            You can also browse available models, test API endpoints, and get API keys directly from the NVIDIA build platform.
+          </P>
+        </SubSection>
       </Section>
 
       {/* ─── Rate Limits & Usage ──────────────────────── */}
@@ -315,6 +362,102 @@ export default function DocsPage() {
 
         <InfoBox variant="warn">
           Rate limits are enforced server-side. Attempting to bypass limits by creating multiple accounts is against the Terms of Service.
+        </InfoBox>
+      </Section>
+
+      {/* ─── Tips & Best Practices ─────────────────────── */}
+      <Section id="tips" title="Tips & Best Practices">
+        <SubSection title="Writing effective resumes for AI analysis">
+          <List items={[
+            "Use clear, action-led bullet points (e.g. 'Led a team of 5 engineers' not 'Was responsible for team')",
+            "Include measurable outcomes (percentages, dollar amounts, team sizes)",
+            "Mirror keywords from the job description — AI scoring is heavily keyword-driven",
+            "Keep formatting simple — avoid tables, columns, headers/footers, and graphics",
+            "One page is ideal for most roles; two pages max for senior positions",
+          ]} />
+        </SubSection>
+
+        <SubSection title="Getting the best JD input">
+          <List items={[
+            "Copy the full job posting, not just the title — more context = better analysis",
+            "Include requirements, responsibilities, and nice-to-haves",
+            "If the JD is behind a login, paste the text directly instead of using a URL",
+            "For multi-role postings, specify which role you're applying for in the text",
+          ]} />
+        </SubSection>
+
+        <SubSection title="Improving your score over time">
+          <List items={[
+            "Run analysis on the same JD after making changes to see your score improve",
+            "Focus on 'missing' gaps first — they have the biggest impact on your score",
+            "Use the rewrite suggestions as starting points, then personalize them",
+            "Don't copy rewrites verbatim — hiring managers can spot AI-generated text",
+          ]} />
+        </SubSection>
+      </Section>
+
+      {/* ─── Troubleshooting ───────────────────────────── */}
+      <Section id="troubleshooting" title="Troubleshooting">
+        <SubSection title="Analysis fails with timeout">
+          <P>
+            The pipeline has a 300-second limit. If your inputs are very long, try trimming them. Resume should be under 8,000 characters; JD under 12,000 characters.
+          </P>
+        </SubSection>
+
+        <SubSection title="Analysis returns no results">
+          <P>
+            This usually means the AI models returned invalid JSON. PROTEUS will automatically retry (up to 3 times) and fall back to alternative models. If it still fails, try simplifying your input text.
+          </P>
+        </SubSection>
+
+        <SubSection title="PDF upload fails to extract text">
+          <P>
+            PROTEUS uses unpdf for PDF parsing. Some PDFs are image-based (scans) and contain no extractable text. If you have a scanned PDF, use an OCR tool first to convert it to text.
+          </P>
+        </SubSection>
+
+        <SubSection title="Score seems wrong or too low">
+          <P>
+            The score measures semantic similarity, not formatting quality. A low score usually means your resume doesn't contain the keywords the JD is looking for. Check the gap analysis section for specific missing requirements.
+          </P>
+        </SubSection>
+
+        <SubSection title="Cover letter doesn't match the role">
+          <P>
+            The cover letter is generated from the same parsed context as your analysis. If the JD parser extracted the wrong role title or requirements, the cover letter will reflect that. Ensure your JD text is complete and accurate.
+          </P>
+        </SubSection>
+
+        <SubSection title="NIM health check shows errors">
+          <P>
+            Go to the <strong>Models</strong> page and click <strong>"Check NIM Health"</strong>. If a model is down, PROTEUS will automatically use fallback models. You can also check the GitHub Actions health check results in the repository.
+          </P>
+        </SubSection>
+      </Section>
+
+      {/* ─── API Reference ─────────────────────────────── */}
+      <Section id="api" title="API Reference">
+        <P>
+          PROTEUS exposes a REST API for programmatic access. All endpoints require authentication.
+        </P>
+
+        <Table
+          headers={["Endpoint", "Method", "Description"]}
+          rows={[
+            ["/api/analyze", "POST", "Run the full pipeline (FormData: jd_text, resume_text, cover_letter_tone)"],
+            ["/api/analyze/stream", "POST", "Run pipeline with SSE streaming events (same params)"],
+            ["/api/history", "GET", "List your past analysis runs (?limit, ?offset)"],
+            ["/api/history/:id", "GET", "Get a single run's full results"],
+            ["/api/history/:id", "DELETE", "Delete a run"],
+            ["/api/models", "GET", "List configured models and their roles"],
+            ["/api/health", "GET", "Basic health check (returns ok)"],
+            ["/api/health/nim", "GET", "NIM connectivity test for all pipeline steps"],
+            ["/api/usage", "GET", "Your daily usage stats (used, limit, resetsAt)"],
+          ]}
+        />
+
+        <InfoBox variant="info">
+          All API endpoints return JSON. The <Code>/api/analyze/stream</Code> endpoint returns newline-delimited JSON (NDJSON) for real-time streaming.
         </InfoBox>
       </Section>
 
