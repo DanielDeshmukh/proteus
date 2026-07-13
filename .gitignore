@@ -25,6 +25,13 @@ proteus-next/out/
 *.db
 *.sqlite
 
+# Temp test scripts
+test-coverletter*.mjs
+cover-letter-daniel.txt
+server-out.txt
+server-stderr.txt
+server-stdout.txt
+
 # OS
 .DS_Store
 Thumbs.db

@@ -4,7 +4,7 @@ import { callWithJsonRetry } from "./json-retry";
 
 const RESUME_PARSER_MODEL = getModelForRole("resume-parser");
 
-const MAX_RESUME_CHARS = 8000;
+const MAX_RESUME_CHARS = 10000;
 
 const RESUME_PARSER_SYSTEM_PROMPT = `You are an expert resume analyst. Given a raw resume text, extract structured information from it.
 
@@ -14,9 +14,6 @@ Return a JSON object with these fields:
 - "email": Email address (null if not found)
 - "phone": Phone number (null if not found)
 - "location": Candidate's location (null if not found)
-- "linkedin": LinkedIn URL (null if not found)
-- "github": GitHub URL (null if not found)
-- "portfolio": Portfolio/website URL (null if not found)
 - "summary": Professional summary/objective paragraph (null if not present)
 - "skills": Array of ALL technical skills, tools, frameworks, languages mentioned
 - "experience": Array of work experience objects, each with:
@@ -28,7 +25,6 @@ Return a JSON object with these fields:
   - "name": Project name
   - "description": Brief description
   - "technologies": Array of technologies used
-  - "url": Project URL (null if not found)
 - "education": Array of education objects, each with:
   - "degree": Degree obtained
   - "institution": School name
@@ -38,7 +34,6 @@ Return a JSON object with these fields:
   - "name": Certification name
   - "issuer": Issuing org (null if not found)
   - "year": Year obtained (null if not found)
-- "total_years_experience": Estimated total years of professional experience (null if cannot determine)
 
 Be thorough. Extract every skill, every bullet point, every project.
 Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
@@ -57,7 +52,7 @@ export function parseResume(rawResumeText: string): Promise<ResumeStructured> {
 
   return callWithJsonRetry(RESUME_PARSER_MODEL, RESUME_PARSER_SYSTEM_PROMPT, userContent, ResumeStructuredSchema, {
     temperature: 0.1,
-    maxTokens: 4096,
+    maxTokens: 3072,
     role: "resume-parser",
   });
 }

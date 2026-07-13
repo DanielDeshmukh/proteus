@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       : "professional";
 
     const runId = await saveRun({
-      user_id: session.user.id,
+      user_id: userId,
       jd_text: jdText.trim(),
       jd_source: "paste",
       resume_text: resumeText.trim(),
@@ -71,26 +71,9 @@ export async function POST(request: Request) {
         send({ event: "started", run_id: runId });
 
         try {
-          const result = await runPipeline(jdText.trim(), resumeText.trim(), tone);
-
-          if (result.jd) {
-            send({ event: "jd_parsed", data: result.jd });
-          }
-          if (result.resume) {
-            send({ event: "resume_parsed", data: result.resume });
-          }
-          if (result.gap_analysis) {
-            send({ event: "gap_analysis", data: result.gap_analysis });
-          }
-          if (result.rewrites) {
-            send({ event: "rewrites", data: result.rewrites });
-          }
-          if (result.cover_letter) {
-            send({ event: "cover_letter", data: result.cover_letter });
-          }
-          if (result.aggregated) {
-            send({ event: "result", data: result.aggregated });
-          }
+          const result = await runPipeline(jdText.trim(), resumeText.trim(), tone, (progressEvent) => {
+            send({ event: progressEvent.stage, ...("data" in progressEvent ? { data: progressEvent.data } : {}) });
+          });
 
           await updateRun(runId, {
             overall_score: result.aggregated?.overall_score ?? null,

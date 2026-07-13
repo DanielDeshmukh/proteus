@@ -4,6 +4,8 @@ import { callWithJsonRetry } from "./json-retry";
 
 const REWRITE_MODEL = getModelForRole("rewrite-suggester");
 
+const MAX_BULLETS = 20;
+
 const REWRITE_SYSTEM_PROMPT = `You are an expert resume writer who specializes in tailoring resumes to specific job descriptions.
 
 Given a job description, a resume, and a gap analysis identifying weak areas, generate specific rewrite suggestions for existing resume bullets.
@@ -14,7 +16,6 @@ For each suggestion:
 - "rationale": Brief explanation of what was improved
 - "target_requirement": Which JD requirement this addresses
 - "impact_score": 0.0-1.0 estimate of how much this rewrite improves the match
-- "experience_context": Which job/project the bullet came from
 
 Also identify "hidden_experience" — skills or experience the candidate HAS but isn't surfacing effectively in their resume.
 
@@ -44,16 +45,17 @@ export function suggestRewrites(
     return Promise.resolve({ suggestions: [], hidden_experience: [] });
   }
 
-  const resumeBullets = [];
+  const resumeBullets: Array<{ bullet: string; role: string; company: string }> = [];
   for (const exp of resume.experience) {
     for (const bullet of exp.bullets) {
       resumeBullets.push({
         bullet,
         role: exp.role,
         company: exp.company || "Unknown",
-        context: `${exp.role} at ${exp.company || "Unknown"}`,
       });
+      if (resumeBullets.length >= MAX_BULLETS) break;
     }
+    if (resumeBullets.length >= MAX_BULLETS) break;
   }
 
   const gapsContext = missingOrPartial.map((g) => ({
@@ -82,10 +84,9 @@ Generate rewrite suggestions for the bullets above to better match these gaps.`;
 
   return callWithJsonRetry(REWRITE_MODEL, REWRITE_SYSTEM_PROMPT, userPrompt, RewriteOutputSchema, {
     temperature: 0.3,
-    maxTokens: 4096,
+    maxTokens: 2560,
     role: "rewrite-suggester",
   }).then((output) => {
-    // Normalize various response formats
     if (output.suggestions && !Array.isArray(output.suggestions)) {
       output.suggestions = Object.values(output.suggestions as any);
     }

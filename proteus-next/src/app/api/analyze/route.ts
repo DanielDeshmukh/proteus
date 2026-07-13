@@ -100,7 +100,7 @@ export async function POST(request: Request) {
       : "professional";
 
     const runId = await saveRun({
-      user_id: session.user.id,
+      user_id: userId,
       jd_text: resolvedJd,
       jd_source: jdText ? "paste" : jdUrl ? "url" : "file",
       resume_text: resolvedResume,

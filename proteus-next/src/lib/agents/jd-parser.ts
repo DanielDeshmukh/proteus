@@ -1,10 +1,11 @@
 import { getModelForRole } from "../model-config";
 import { JDStructuredSchema, type JDStructured } from "../../types";
 import { callWithJsonRetry } from "./json-retry";
+import { preFilterJd } from "../jd-prefilter";
 
 const JD_PARSER_MODEL = getModelForRole("jd-parser");
 
-const MAX_JD_CHARS = 12000;
+const MAX_JD_CHARS = 18000;
 
 const JD_PARSER_SYSTEM_PROMPT = `You are an expert ATS (Applicant Tracking System) analyst and job description parser.
 
@@ -29,7 +30,6 @@ Return a JSON object with these fields:
 - "domain_keywords": Array of industry/domain-specific terms
 - "ats_bait": Array of EXACT tool/framework names as they appear in the posting (for ATS keyword matching)
 - "requirements_summary": 2-3 sentence summary of core requirements
-- "nice_to_haves": Array of preferred but not required qualifications
 
 Be thorough but precise. Extract only what is explicitly stated or strongly implied.
 Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
@@ -44,9 +44,12 @@ export function parseJd(rawJdText: string): Promise<JDStructured> {
     text = text.substring(0, MAX_JD_CHARS).trimEnd();
   }
 
-  const userContent = `Parse this job description. The text may be a noisy web scrape with multiple job listings and navigation elements. Find the SINGLE most detailed job description and extract from it only:
+  // Pre-filter job board noise before sending to LLM
+  const originalLength = text.length;
+  text = preFilterJd(text);
+  console.log(`[JD pre-filter] ${originalLength} chars → ${text.length} chars (${Math.round((1 - text.length / originalLength) * 100)}% noise removed)`);
 
-${text}`;
+  const userContent = `Parse this job description:\n\n${text}`;
 
   return callWithJsonRetry(JD_PARSER_MODEL, JD_PARSER_SYSTEM_PROMPT, userContent, JDStructuredSchema, {
     temperature: 0.1,

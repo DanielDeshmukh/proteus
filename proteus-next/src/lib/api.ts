@@ -42,17 +42,18 @@ export async function apiDelete(path: string) {
     if (res.status === 404) throw new Error("The requested resource was not found");
     throw new Error(msg);
   }
-  return res.json();
 }
 
 export async function apiPostStream(
   path: string,
   body: FormData,
-  onEvent: (event: Record<string, unknown>) => void
+  onEvent: (event: Record<string, unknown>) => void,
+  signal?: AbortSignal
 ) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     body,
+    signal,
   });
 
   if (!res.ok) {

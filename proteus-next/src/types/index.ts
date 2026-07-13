@@ -28,7 +28,6 @@ export const JDStructuredSchema = z.object({
   domain_keywords: coerceArray,
   ats_bait: coerceArray,
   requirements_summary: safeStr,
-  nice_to_haves: coerceArray.default([]),
 }).passthrough();
 
 export type JDStructured = z.infer<typeof JDStructuredSchema>;
@@ -69,9 +68,6 @@ export const ResumeStructuredSchema = z.object({
   email: safeStr.nullable().optional(),
   phone: safeStr.nullable().optional(),
   location: safeStr.nullable().optional(),
-  linkedin: safeStr.nullable().optional(),
-  github: safeStr.nullable().optional(),
-  portfolio: safeStr.nullable().optional(),
   summary: safeStr.nullable().optional(),
   skills: coerceArray,
   experience: z.preprocess(
@@ -90,7 +86,6 @@ export const ResumeStructuredSchema = z.object({
     (v) => Array.isArray(v) ? v : v && typeof v === "object" ? Object.values(v) : [],
     z.array(CertificationSchema)
   ),
-  total_years_experience: safeNum.nullable().optional(),
 }).passthrough();
 
 export type ResumeStructured = z.infer<typeof ResumeStructuredSchema>;
@@ -142,7 +137,6 @@ export const RewriteSuggestionSchema = z.object({
   rationale: safeStr,
   target_requirement: safeStr,
   impact_score: safeNum,
-  experience_context: safeStr.nullable().optional(),
 }).passthrough();
 
 export const RewriteOutputSchema = z.object({
