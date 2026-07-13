@@ -19,7 +19,10 @@ function sseError(message: string, status: number = 429) {
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    const userId = session?.user?.id || "local-test-user";
+    const userId = session?.user?.id;
+    if (!userId) {
+      return sseError("Authentication required", 401);
+    }
 
     const rateLimit = await checkRateLimit(userId, "analyze", DAILY_LIMIT);
     if (!rateLimit.allowed) {
@@ -51,7 +54,7 @@ export async function POST(request: Request) {
       : "professional";
 
     const runId = await saveRun({
-      user_id: userId === "local-test-user" ? null : userId,
+      user_id: userId,
       jd_text: jdText.trim(),
       jd_source: "paste",
       resume_text: resumeText.trim(),

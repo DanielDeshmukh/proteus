@@ -11,22 +11,23 @@ const DAILY_LIMIT = 10;
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    const userId = session?.user?.id || "local-test-user";
+    const userId = session?.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
 
-    if (userId !== "local-test-user") {
-      const rateLimit = await checkRateLimit(userId, "analyze", DAILY_LIMIT);
-      if (!rateLimit.allowed) {
-        return NextResponse.json(
-          {
-            error: "Daily limit reached",
-            message: `You've used ${rateLimit.current} of ${rateLimit.limit} analyses today. Limit resets tomorrow.`,
-            used: rateLimit.current,
-            limit: rateLimit.limit,
-            resetsAt: rateLimit.resetsAt,
-          },
-          { status: 429 }
-        );
-      }
+    const rateLimit = await checkRateLimit(userId, "analyze", DAILY_LIMIT);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: "Daily limit reached",
+          message: `You've used ${rateLimit.current} of ${rateLimit.limit} analyses today. Limit resets tomorrow.`,
+          used: rateLimit.current,
+          limit: rateLimit.limit,
+          resetsAt: rateLimit.resetsAt,
+        },
+        { status: 429 }
+      );
     }
 
     const formData = await request.formData();
@@ -99,7 +100,7 @@ export async function POST(request: Request) {
       : "professional";
 
     const runId = await saveRun({
-      user_id: userId === "local-test-user" ? null : userId,
+      user_id: userId,
       jd_text: resolvedJd,
       jd_source: jdText ? "paste" : jdUrl ? "url" : "file",
       resume_text: resolvedResume,
@@ -121,9 +122,7 @@ export async function POST(request: Request) {
         error_message: result.errors.length > 0 ? JSON.stringify(result.errors) : null,
       });
 
-      if (userId !== "local-test-user") {
-        await incrementRateLimit(userId, "analyze");
-      }
+      await incrementRateLimit(userId, "analyze");
 
       return NextResponse.json({
         run_id: runId,
