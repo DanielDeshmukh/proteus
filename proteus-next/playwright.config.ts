@@ -17,12 +17,10 @@ export default defineConfig({
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],
-  webServer: CI
-    ? undefined
-    : {
-        command: "npm run dev",
-        port: 3000,
-        reuseExistingServer: true,
-        timeout: 120_000,
-      },
+  webServer: {
+    command: "npm run dev",
+    port: 3000,
+    reuseExistingServer: true,
+    timeout: 120_000,
+  },
 });
