@@ -5,6 +5,10 @@
 
 # Test artifacts
 test-results.log
+proteus-next/test-results/
+proteus-next/playwright-report/
+proteus-next/blob-report/
+proteus-next/.playwright/
 
 # Node
 node_modules/
