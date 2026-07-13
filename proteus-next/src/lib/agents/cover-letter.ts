@@ -89,7 +89,7 @@ Write a ${tone} cover letter for this candidate applying to this role.`;
 
   return callWithJsonRetry(COVER_LETTER_MODEL, COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema, {
     temperature: 0.4,
-    maxTokens: 3000,
+    maxTokens: 2500,
     cleanControlChars: true,
     role: "cover-letter",
   });
