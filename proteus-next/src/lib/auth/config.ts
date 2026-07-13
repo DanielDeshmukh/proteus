@@ -4,6 +4,7 @@ import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
 import { createTursoAdapter } from "./adapter";
 import { authConfig } from "./auth.config";
+import { sendMagicLinkEmail } from "./email";
 
 const adapter = createTursoAdapter();
 
@@ -39,6 +40,9 @@ export const {
         },
       },
       from: process.env.EMAIL_FROM || "PROTEUS <onboarding@resend.dev>",
+      sendVerificationRequest: async ({ identifier, url }) => {
+        await sendMagicLinkEmail({ to: identifier, url });
+      },
     }),
   ],
   callbacks: {
