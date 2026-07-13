@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Layout } from "@/components/Layout";
 import { JDInput } from "@/components/JDInput";
 import { ResumeInput } from "@/components/ResumeInput";
@@ -22,15 +22,38 @@ const pipelineStages = [
   { num: "05", name: "Draft", desc: "Writes a cover letter from the same context" },
 ];
 
+const STAGE_MAP: Record<string, number> = {
+  parsing: 0,
+  jd_parsed: 0,
+  resume_parsed: 0,
+  analyzing: 1,
+  gap_analysis: 2,
+  generating: 3,
+  rewrites: 3,
+  cover_letter: 4,
+  aggregating: 4,
+  result: 4,
+};
+
 export default function AnalyzePage() {
   const [jd, setJd] = useState<{ type: string; value: string | File } | null>(null);
   const [resume, setResume] = useState<{ type: string; value: string | File } | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentStage, setCurrentStage] = useState<number | null>(null);
+  const [stageLabel, setStageLabel] = useState<string>("");
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const partialRef = useRef<{ gaps: unknown; rewrites: unknown; coverLetter: unknown }>({ gaps: null, rewrites: null, coverLetter: null });
+
+  // Partial results — rendered incrementally as events arrive
+  const [partialGaps, setPartialGaps] = useState<Record<string, unknown> | null>(null);
+  const [partialRewrites, setPartialRewrites] = useState<Record<string, unknown> | null>(null);
+  const [partialCoverLetter, setPartialCoverLetter] = useState<Record<string, unknown> | null>(null);
+
+  // Final result — only set on "done"
   const [result, setResult] = useState<{
     run_id?: number | null;
     overall_score?: number | null;
@@ -56,17 +79,36 @@ export default function AnalyzePage() {
   }, [result]);
 
   useEffect(() => {
-    if (!loading) { setElapsed(0); setCurrentStage(null); return; }
+    if (!loading) { setElapsed(0); setCurrentStage(null); setStageLabel(""); return; }
     const start = Date.now();
     const timer = setInterval(() => setElapsed((Date.now() - start) / 1000), 100);
     return () => clearInterval(timer);
   }, [loading]);
+
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setLoading(false);
+  }, []);
 
   const handleAnalyze = async () => {
     if (!canAnalyze) return;
     setLoading(true);
     setError(null);
     setResult(null);
+    setPartialGaps(null);
+    setPartialRewrites(null);
+    setPartialCoverLetter(null);
+    partialRef.current = { gaps: null, rewrites: null, coverLetter: null };
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 300_000);
 
     const useStreaming = jd.type === "text" && resume.type === "text";
 
@@ -76,34 +118,53 @@ export default function AnalyzePage() {
         formData.append("jd_text", jd.value as string);
         formData.append("resume_text", resume.value as string);
 
-        const partial: Record<string, unknown> = { run_id: null, timings: {} } as Record<string, unknown>;
         await apiPostStream("/api/analyze/stream", formData, (event) => {
           const evt = event as { event: string; data?: Record<string, unknown>; run_id?: number; message?: string };
+
           if (evt.event === "started") {
-            partial.run_id = evt.run_id;
             setCurrentStage(0);
+            setStageLabel("Parsing documents...");
+          } else if (evt.event === "jd_parsed") {
+            // JD parsed — no partial render needed, just internal state
+          } else if (evt.event === "resume_parsed") {
+            setStageLabel("Documents parsed — analyzing gaps...");
+          } else if (evt.event === "analyzing") {
+            setCurrentStage(1);
+            setStageLabel("Computing semantic similarity...");
           } else if (evt.event === "gap_analysis") {
-            partial.gap_analysis = evt.data;
+            setPartialGaps(evt.data ?? null);
+            partialRef.current.gaps = evt.data ?? null;
             setCurrentStage(2);
-          } else if (evt.event === "rewrites") {
-            partial.rewrite_suggestions = evt.data;
+            setStageLabel("Gaps mapped — generating rewrites...");
+          } else if (evt.event === "generating") {
             setCurrentStage(3);
+            setStageLabel("Generating rewrites and cover letter...");
+          } else if (evt.event === "rewrites") {
+            setPartialRewrites(evt.data ?? null);
+            partialRef.current.rewrites = evt.data ?? null;
           } else if (evt.event === "cover_letter") {
-            partial.cover_letter = evt.data;
-            setCurrentStage(4);
+            setPartialCoverLetter(evt.data ?? null);
+            partialRef.current.coverLetter = evt.data ?? null;
           } else if (evt.event === "result") {
-            partial.overall_score = (evt.data as Record<string, unknown>)?.overall_score;
-            partial.section_scores = (evt.data as Record<string, unknown>)?.section_scores;
-            partial.action_list = (evt.data as Record<string, unknown>)?.action_list;
             setCurrentStage(4);
+            setStageLabel("Aggregating scores...");
           } else if (evt.event === "done") {
-            partial.run_id = evt.run_id;
-            partial.timings = { total: 0 };
-            setResult({ ...partial });
+            const p = partialRef.current;
+            setResult({
+              run_id: evt.run_id,
+              overall_score: (p.gaps as any)?.overall_match ?? null,
+              section_scores: null,
+              gap_analysis: p.gaps,
+              rewrite_suggestions: p.rewrites,
+              cover_letter: p.coverLetter,
+              action_list: null,
+              timings: { total: elapsed },
+              errors: null,
+            });
           } else if (evt.event === "error") {
             throw new Error(evt.message);
           }
-        });
+        }, controller.signal);
       } else {
         const formData = new FormData();
         if (jd.type === "text") formData.append("jd_text", jd.value as string);
@@ -117,11 +178,19 @@ export default function AnalyzePage() {
         setResult(data);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("Analysis cancelled");
+      } else {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      }
     } finally {
+      clearTimeout(timeout);
+      abortRef.current = null;
       setLoading(false);
     }
   };
+
+  const hasPartialResults = loading && (partialGaps || partialRewrites || partialCoverLetter);
 
   return (
     <Layout>
@@ -170,7 +239,7 @@ export default function AnalyzePage() {
 
       {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
 
-      {/* Input grid - stacks on mobile */}
+      {/* Input grid */}
       <section
         style={{
           display: "grid",
@@ -191,48 +260,69 @@ export default function AnalyzePage() {
         </div>
       </section>
 
-      {/* Analyze button */}
+      {/* Analyze / Cancel button */}
       <div style={{ marginTop: "24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px", flexDirection: "column" }}>
-        <button
-          onClick={handleAnalyze}
-          disabled={!canAnalyze || loading}
-          style={{
-            fontFamily: "var(--font-sans)",
-            fontWeight: 600,
-            fontSize: "14px",
-            color: canAnalyze && !loading ? "#111315" : "var(--text-faint)",
-            background: canAnalyze && !loading ? "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))" : "var(--surface-sunken)",
-            border: canAnalyze && !loading ? "none" : "1px solid var(--border)",
-            borderRadius: "var(--radius-md)",
-            padding: "14px 32px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            cursor: canAnalyze && !loading ? "pointer" : "not-allowed",
-            opacity: canAnalyze && !loading ? 1 : 0.5,
-            transition: "transform .15s ease, filter .15s ease",
-            width: "100%",
-            maxWidth: "360px",
-            justifyContent: "center",
-          }}
-        >
-          {loading ? (
-            <>
-              <Spinner size="sm" />
-              <span>Analyzing...</span>
-            </>
-          ) : (
-            <>
-              Run Proteus pipeline
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </>
+        <div style={{ display: "flex", gap: "12px", width: "100%", maxWidth: "440px", justifyContent: "center" }}>
+          <button
+            onClick={handleAnalyze}
+            disabled={!canAnalyze || loading}
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontWeight: 600,
+              fontSize: "14px",
+              color: canAnalyze && !loading ? "#111315" : "var(--text-faint)",
+              background: canAnalyze && !loading ? "linear-gradient(180deg, var(--color-gold-light), var(--color-gold))" : "var(--surface-sunken)",
+              border: canAnalyze && !loading ? "none" : "1px solid var(--border)",
+              borderRadius: "var(--radius-md)",
+              padding: "14px 32px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              cursor: canAnalyze && !loading ? "pointer" : "not-allowed",
+              opacity: canAnalyze && !loading ? 1 : 0.5,
+              transition: "transform .15s ease, filter .15s ease",
+              flex: 1,
+              justifyContent: "center",
+            }}
+          >
+            {loading ? (
+              <>
+                <Spinner size="sm" />
+                <span>Analyzing...</span>
+              </>
+            ) : (
+              <>
+                Run Proteus pipeline
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </>
+            )}
+          </button>
+          {loading && (
+            <button
+              onClick={handleCancel}
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontWeight: 500,
+                fontSize: "13px",
+                color: "var(--text-soft)",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-md)",
+                padding: "14px 20px",
+                cursor: "pointer",
+                transition: "background .15s ease",
+                flexShrink: 0,
+              }}
+            >
+              Cancel
+            </button>
           )}
-        </button>
+        </div>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: "11.5px", color: "var(--text-faint)" }}>
           {loading
-            ? `Analyzing... ${elapsed.toFixed(1)}s`
+            ? stageLabel || `Analyzing... ${elapsed.toFixed(1)}s`
             : result
               ? `Completed in ${(result.timings as Record<string, number>)?.total?.toFixed(1)}s`
               : "Ready to analyze"}
@@ -250,7 +340,6 @@ export default function AnalyzePage() {
           <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)" }}>Pipeline</h3>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "10.5px", color: "var(--text-faint)" }}>Five agents · shared JD context · NVIDIA NIM</span>
         </div>
-        {/* Horizontal scroll on mobile */}
         <div
           style={{
             position: "relative",
@@ -295,7 +384,40 @@ export default function AnalyzePage() {
         </div>
       </section>
 
-      {/* Results */}
+      {/* Partial results — appear as each stage completes */}
+      {loading && hasPartialResults && (
+        <section style={{ marginTop: "44px" }}>
+          <div style={{ marginBottom: "24px" }}>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--color-gold)", marginBottom: "6px" }}>Live results</p>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(20px, 3vw, 26px)", color: "var(--text)" }}>Analyzing in progress</h2>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            {partialGaps && (
+              <Card>
+                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)", marginBottom: "16px" }}>Gap analysis</h3>
+                <GapAnalysisDisplay gaps={partialGaps as never} />
+              </Card>
+            )}
+
+            {partialRewrites && (
+              <Card>
+                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)", marginBottom: "16px" }}>Rewrite suggestions</h3>
+                <RewriteDisplay rewrites={partialRewrites as never} />
+              </Card>
+            )}
+
+            {partialCoverLetter && (
+              <Card>
+                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)", marginBottom: "16px" }}>Cover letter</h3>
+                <CoverLetterDisplay coverLetter={partialCoverLetter as never} />
+              </Card>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Final result */}
       {result ? (
         <section ref={resultsRef} style={{ marginTop: "44px" }}>
           <div style={{ marginBottom: "24px" }}>
