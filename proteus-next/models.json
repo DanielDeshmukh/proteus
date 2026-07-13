@@ -2,22 +2,20 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-        "meta/llama-3.1-8b-instruct"
+        "meta/llama-3.1-8b-instruct",
+        "meta/llama-3.1-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-        "meta/llama-3.1-8b-instruct"
+        "meta/llama-3.1-8b-instruct",
+        "meta/llama-3.1-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -46,11 +44,10 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "meta/llama-3.1-70b-instruct",
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-        "meta/llama-3.1-8b-instruct"
+        "meta/llama-3.1-8b-instruct",
+        "meta/llama-3.1-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -64,10 +61,10 @@
   ],
   "lastHealthCheck": "2026-07-11T19:09:29.093Z",
   "lastHealthyModels": {
-    "jd-parser": "nvidia/gliner-pii",
-    "resume-parser": "nvidia/gliner-pii",
+    "jd-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "resume-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "gap-analyzer": "nvidia/nv-embedqa-e5-v5",
     "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "cover-letter": "nvidia/gliner-pii"
+    "cover-letter": "nvidia/llama-3.3-nemotron-super-49b-v1.5"
   }
 }
