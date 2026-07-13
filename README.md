@@ -55,15 +55,15 @@ Resume┘
 > Models auto-update via GitHub Actions health checks every 6 hours.
 
 <!-- MODELS AUTO-GENERATED START -->
-### Active Models (auto-updated)
+### Active Models (auto-updated by health check bot)
 
 | Role | Model | Last Checked |
 |------|-------|--------------|
-| jd-parser | `meta/llama-3.1-70b-instruct` | auto |
-| resume-parser | `meta/llama-3.1-70b-instruct` | auto |
-| gap-analyzer | `nvidia/nv-embedqa-e5-v5` | auto |
-| rewrite-suggester | `meta/llama-3.1-70b-instruct` | auto |
-| cover-letter | `meta/llama-3.1-70b-instruct` | auto |
+| jd-parser | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-13T09:34:06.578Z |
+| resume-parser | `nvidia/gliner-pii` | 2026-07-13T09:34:06.578Z |
+| gap-analyzer | `nvidia/nv-embedqa-e5-v5` | 2026-07-13T09:34:06.578Z |
+| rewrite-suggester | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-13T09:34:06.578Z |
+| cover-letter | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-13T09:34:06.578Z |
 <!-- END MODELS AUTO-GENERATED -->
 
 ## Features
