@@ -3,7 +3,7 @@ import { authConfig } from "@/lib/auth/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-const publicRoutes = ["/signin", "/verify-request", "/error", "/forbidden", "/offline", "/api/auth", "/api/health", "/docs"];
+const publicRoutes = ["/signin", "/signup", "/forgot-password", "/reset-password", "/verify-request", "/error", "/forbidden", "/offline", "/api/auth", "/api/health", "/docs"];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
@@ -25,7 +25,7 @@ export default auth((req) => {
     signInUrl.searchParams.set("callbackUrl", pathname);
     return Response.redirect(signInUrl);
   }
-});
+}) as any;
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],

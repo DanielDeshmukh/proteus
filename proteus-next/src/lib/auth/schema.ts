@@ -5,6 +5,9 @@ export const AUTH_SCHEMA = `
     email TEXT UNIQUE,
     email_verified INTEGER,
     image TEXT,
+    password_hash TEXT,
+    password_reset_token TEXT,
+    password_reset_expires INTEGER,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 

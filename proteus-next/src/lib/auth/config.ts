@@ -1,10 +1,13 @@
 import NextAuth from "next-auth";
 import Email from "next-auth/providers/email";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 import type { JWT } from "next-auth/jwt";
 import type { Session } from "next-auth";
-import { createTursoAdapter } from "./adapter";
+import { createTursoAdapter, getUserByEmailWithPassword } from "./adapter";
 import { authConfig } from "./auth.config";
 import { sendMagicLinkEmail } from "./email";
+import { signinSchema } from "./validation";
 
 const adapter = createTursoAdapter();
 
@@ -44,7 +47,34 @@ export const {
         await sendMagicLinkEmail({ to: identifier, url });
       },
     }),
+    Credentials({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+
+        const parsed = signinSchema.safeParse({
+          email: credentials.email,
+          password: credentials.password,
+        });
+        if (!parsed.success) return null;
+
+        const user = await getUserByEmailWithPassword(parsed.data.email);
+        if (!user?.passwordHash) return null;
+
+        const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
+        if (!valid) return null;
+
+        return { id: user.id, name: user.name, email: user.email };
+      },
+    }),
   ],
+  pages: {
+    signIn: "/signin",
+  },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: { id?: string } }) {
       if (user?.id) {

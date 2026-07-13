@@ -256,7 +256,7 @@ export async function sendAnalysisCompleteEmail({ to, score, runId }: EmailParam
 
 // ─── Transport ──────────────────────────────────────────
 
-async function sendEmail({ to, subject, html, text }: { to: string; subject: string; html: string; text: string }) {
+export async function sendEmail({ to, subject, html, text }: { to: string; subject: string; html: string; text: string }) {
   const apiKey = process.env.SMTP_PASS || process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn(`[EMAIL] No SMTP_PASS set. Skipping "${subject}" to ${to}`);

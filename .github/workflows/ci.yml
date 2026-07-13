@@ -40,6 +40,8 @@ jobs:
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+      TEST_BOT_EMAIL: ${{ secrets.TEST_BOT_EMAIL }}
+      TEST_BOT_PASSWORD: ${{ secrets.TEST_BOT_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

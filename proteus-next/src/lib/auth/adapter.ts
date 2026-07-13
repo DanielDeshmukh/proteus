@@ -1,7 +1,7 @@
 import type { Adapter, AdapterUser, AdapterAccount, AdapterSession, VerificationToken } from "next-auth/adapters";
 
 const AUTH_SCHEMA = `
-  CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT, email TEXT UNIQUE, email_verified INTEGER, image TEXT, created_at TEXT NOT NULL DEFAULT (datetime('now')));
+  CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT, email TEXT UNIQUE, email_verified INTEGER, image TEXT, password_hash TEXT, password_reset_token TEXT, password_reset_expires INTEGER, created_at TEXT NOT NULL DEFAULT (datetime('now')));
   CREATE TABLE IF NOT EXISTS accounts (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, type TEXT NOT NULL, provider TEXT NOT NULL, provider_account_id TEXT NOT NULL, refresh_token TEXT, access_token TEXT, expires_at INTEGER, token_type TEXT, scope TEXT, id_token TEXT, session_state TEXT, UNIQUE(provider, provider_account_id));
   CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, session_token TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
   CREATE TABLE IF NOT EXISTS verification_tokens (identifier TEXT NOT NULL, token TEXT NOT NULL, expires INTEGER NOT NULL, UNIQUE(identifier, token));
@@ -49,8 +49,20 @@ async function ensureSchema() {
       } else {
         for (const s of stmts) await db.client.execute(s.sql);
       }
+      for (const col of ["password_hash", "password_reset_token", "password_reset_expires"]) {
+        try {
+          await db.client.execute(`ALTER TABLE users ADD COLUMN ${col} TEXT`);
+        } catch { /* column already exists */ }
+      }
     } catch (e) {
       console.error("[AUTH] Schema creation failed:", e);
+    }
+  } else {
+    const migrationCols = ["password_hash", "password_reset_token", "password_reset_expires"];
+    for (const col of migrationCols) {
+      try {
+        db.db.prepare(`ALTER TABLE users ADD COLUMN ${col} TEXT`).run();
+      } catch { /* column already exists */ }
     }
   }
   _schemaReady = true;
@@ -244,4 +256,58 @@ export function createTursoAdapter(): Adapter {
       return { identifier: row.identifier as string, token: row.token as string, expires: new Date((row.expires as number) * 1000) };
     },
   };
+}
+
+// ─── Password helpers (outside adapter) ────────────────
+
+export async function getUserByEmailWithPassword(email: string) {
+  await ensureSchema();
+  const db = getDb();
+  const result = await execQuery(db, `SELECT id, name, email, password_hash FROM users WHERE email = ?`, [email]);
+  const row = firstRow(result);
+  if (!row) return null;
+  return { id: String(row.id), name: row.name as string | null, email: row.email as string, passwordHash: row.password_hash as string | null };
+}
+
+export async function createUserWithPassword(email: string, name: string, passwordHash: string) {
+  await ensureSchema();
+  const db = getDb();
+  const id = generateId();
+  await execRun(db,
+    `INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)`,
+    [id, name, email, passwordHash]
+  );
+  return { id, name, email };
+}
+
+export async function setPasswordResetToken(email: string, token: string, expiresMs: number) {
+  await ensureSchema();
+  const db = getDb();
+  await execRun(db,
+    `UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE email = ?`,
+    [token, Math.floor(expiresMs / 1000), email]
+  );
+}
+
+export async function getUserByResetToken(token: string) {
+  await ensureSchema();
+  const db = getDb();
+  const result = await execQuery(db,
+    `SELECT id, email, password_reset_expires FROM users WHERE password_reset_token = ?`,
+    [token]
+  );
+  const row = firstRow(result);
+  if (!row) return null;
+  const expires = (row.password_reset_expires as number) * 1000;
+  if (Date.now() > expires) return null;
+  return { id: String(row.id), email: row.email as string };
+}
+
+export async function resetPassword(userId: string, passwordHash: string) {
+  await ensureSchema();
+  const db = getDb();
+  await execRun(db,
+    `UPDATE users SET password_hash = ?, password_reset_token = NULL, password_reset_expires = NULL WHERE id = ?`,
+    [passwordHash, userId]
+  );
 }
