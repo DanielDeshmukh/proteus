@@ -178,7 +178,7 @@ export default function DocsPage() {
 
         <SubSection title="4. Run the pipeline">
           <P>
-            Click <strong>"Run Proteus pipeline"</strong>. The analysis typically takes 30–120 seconds depending on the complexity of your inputs. You'll see real-time progress as each agent completes.
+            Click <strong>&quot;Run Proteus pipeline&quot;</strong>. The analysis typically takes 30–120 seconds depending on the complexity of your inputs. You&apos;ll see real-time progress as each agent completes.
           </P>
         </SubSection>
       </Section>
@@ -186,7 +186,7 @@ export default function DocsPage() {
       {/* ─── User Guide ───────────────────────────────── */}
       <Section id="user-guide" title="User Guide">
         <SubSection title="Understanding your results">
-          <P>After the pipeline completes, you'll see these sections in order:</P>
+          <P>After the pipeline completes, you&apos;ll see these sections in order:</P>
 
           <h4 style={{ color: "var(--text)", fontSize: "14px", margin: "16px 0 8px" }}>Match Score</h4>
           <P>
@@ -274,13 +274,13 @@ export default function DocsPage() {
 
         <SubSection title="Model health checks">
           <P>
-            A GitHub Actions workflow checks all models every 6 hours. If a model goes down, it's automatically replaced in <Code>models.json</Code>. The health check results are committed to the repository.
+            A GitHub Actions workflow checks all models every 6 hours. If a model goes down, it&apos;s automatically replaced in <Code>models.json</Code>. The health check results are committed to the repository.
           </P>
         </SubSection>
 
         <SubSection title="Checking health from the app">
           <P>
-            Go to the <strong>Models</strong> page and click <strong>"Check NIM Health"</strong> to run a live connectivity test against each pipeline step. You'll see latency and any error details.
+            Go to the <strong>Models</strong> page and click <strong>&quot;Check NIM Health&quot;</strong> to run a live connectivity test against each pipeline step. You&apos;ll see latency and any error details.
           </P>
         </SubSection>
 
@@ -356,7 +356,7 @@ export default function DocsPage() {
 
         <SubSection title="What happens when you hit the limit">
           <P>
-            You'll see a clear error message telling you how many analyses you've used and when the limit resets. The Analyze button will be disabled until the next day.
+            You&apos;ll see a clear error message telling you how many analyses you&apos;ve used and when the limit resets. The Analyze button will be disabled until the next day.
           </P>
         </SubSection>
 
@@ -418,7 +418,7 @@ export default function DocsPage() {
 
         <SubSection title="Score seems wrong or too low">
           <P>
-            The score measures semantic similarity, not formatting quality. A low score usually means your resume doesn't contain the keywords the JD is looking for. Check the gap analysis section for specific missing requirements.
+            The score measures semantic similarity, not formatting quality. A low score usually means your resume doesn&apos;t contain the keywords the JD is looking for. Check the gap analysis section for specific missing requirements.
           </P>
         </SubSection>
 
@@ -430,7 +430,7 @@ export default function DocsPage() {
 
         <SubSection title="NIM health check shows errors">
           <P>
-            Go to the <strong>Models</strong> page and click <strong>"Check NIM Health"</strong>. If a model is down, PROTEUS will automatically use fallback models. You can also check the GitHub Actions health check results in the repository.
+            Go to the <strong>Models</strong> page and click <strong>&quot;Check NIM Health&quot;</strong>. If a model is down, PROTEUS will automatically use fallback models. You can also check the GitHub Actions health check results in the repository.
           </P>
         </SubSection>
       </Section>
@@ -471,7 +471,7 @@ export default function DocsPage() {
 
         <SubSection title="Why is my score so low?">
           <P>
-            The score reflects semantic similarity between your resume and the JD. A low score means the JD keywords and requirements aren't well represented in your resume. Use the rewrite suggestions and gap analysis to improve.
+            The score reflects semantic similarity between your resume and the JD. A low score means the JD keywords and requirements aren&apos;t well represented in your resume. Use the rewrite suggestions and gap analysis to improve.
           </P>
         </SubSection>
 
@@ -495,7 +495,7 @@ export default function DocsPage() {
 
         <SubSection title="Why did I get an error about another sign-in method?">
           <P>
-            If you try to sign in with a different method than the one you used before, you'll see a friendly message suggesting which provider to use. For example, if you signed up with Google, use Google again — not GitHub.
+            If you try to sign in with a different method than the one you used before, you&apos;ll see a friendly message suggesting which provider to use. For example, if you signed up with Google, use Google again — not GitHub.
           </P>
         </SubSection>
 

@@ -90,8 +90,8 @@ async function withRetry<T>(
 
   // Try fallback model
   try {
-    const configPath = require("path").join(process.cwd(), "models.json");
-    const config = JSON.parse(require("fs").readFileSync(configPath, "utf-8"));
+    const configPath = require("path").join(process.cwd(), "models.json"); // eslint-disable-line @typescript-eslint/no-require-imports
+    const config = JSON.parse(require("fs").readFileSync(configPath, "utf-8")); // eslint-disable-line @typescript-eslint/no-require-imports
     const roleConfig = config.roles[role];
     if (roleConfig?.fallbacks?.length) {
       const currentModel = roleConfig.current;
@@ -113,7 +113,7 @@ async function withRetry<T>(
           });
           // If fallback works, update config
           roleConfig.current = fallback;
-          require("fs").writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
+          require("fs").writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n"); // eslint-disable-line @typescript-eslint/no-require-imports
           // Re-run original fn with updated config
           return await fn();
         } catch {

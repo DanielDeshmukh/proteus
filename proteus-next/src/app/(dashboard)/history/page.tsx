@@ -41,7 +41,24 @@ export default function HistoryPage() {
   }
 
   useEffect(() => {
-    fetchHistory();
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setFetchFailed(false);
+      try {
+        const data = await apiGet("/api/history?limit=50");
+        if (!cancelled) setRuns(data.runs || []);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load history");
+          setFetchFailed(true);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   const handleDelete = async (e: React.MouseEvent, runId: number) => {

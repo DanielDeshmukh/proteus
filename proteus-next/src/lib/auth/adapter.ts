@@ -22,14 +22,14 @@ function getDb() {
   const DB_URL = process.env.DATABASE_URL;
   if (DB_URL) {
     if (!_client) {
-      const { createClient } = require("@libsql/client");
+      const { createClient } = require("@libsql/client"); // eslint-disable-line @typescript-eslint/no-require-imports
       _client = createClient({ url: DB_URL, authToken: process.env.DATABASE_AUTH_TOKEN });
     }
     return { type: "libsql" as const, client: _client };
   }
   if (!_sqliteDb) {
-    const Database = require("better-sqlite3");
-    const path = require("path");
+    const Database = require("better-sqlite3"); // eslint-disable-line @typescript-eslint/no-require-imports
+    const path = require("path"); // eslint-disable-line @typescript-eslint/no-require-imports
     _sqliteDb = new Database(path.join(process.cwd(), "proteus.db"));
     _sqliteDb.pragma("journal_mode = WAL");
     _sqliteDb.pragma("foreign_keys = ON");

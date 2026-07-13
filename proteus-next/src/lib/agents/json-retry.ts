@@ -5,8 +5,8 @@ const RETRY_SUFFIX = `\n\nIMPORTANT: Your previous response was NOT valid JSON. 
 
 function getFallbackModels(role: string): string[] {
   try {
-    const path = require("path");
-    const fs = require("fs");
+    const path = require("path"); // eslint-disable-line @typescript-eslint/no-require-imports
+    const fs = require("fs"); // eslint-disable-line @typescript-eslint/no-require-imports
     const configPath = path.join(process.cwd(), "models.json");
     const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
     const roleConfig = config.roles[role];
