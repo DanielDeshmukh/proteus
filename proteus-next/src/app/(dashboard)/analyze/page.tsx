@@ -13,6 +13,7 @@ import { RewriteDisplay } from "@/components/RewriteDisplay";
 import { CoverLetterDisplay } from "@/components/CoverLetterDisplay";
 import { ActionList } from "@/components/ActionList";
 import { apiPost, apiPostStream, apiGet } from "@/lib/api";
+import type { GapAnalysis } from "@/types";
 
 const pipelineStages = [
   { num: "01", name: "Parse", desc: "Extracts role, requirements, and seniority signal from the JD" },
@@ -21,19 +22,6 @@ const pipelineStages = [
   { num: "04", name: "Rewrite", desc: "Drafts JD-aware rewrites for weak bullets" },
   { num: "05", name: "Draft", desc: "Writes a cover letter from the same context" },
 ];
-
-const STAGE_MAP: Record<string, number> = {
-  parsing: 0,
-  jd_parsed: 0,
-  resume_parsed: 0,
-  analyzing: 1,
-  gap_analysis: 2,
-  generating: 3,
-  rewrites: 3,
-  cover_letter: 4,
-  aggregating: 4,
-  result: 4,
-};
 
 export default function AnalyzePage() {
   const [jd, setJd] = useState<{ type: string; value: string | File } | null>(null);
@@ -79,7 +67,7 @@ export default function AnalyzePage() {
   }, [result]);
 
   useEffect(() => {
-    if (!loading) { setElapsed(0); setCurrentStage(null); setStageLabel(""); return; }
+    if (!loading) return;
     const start = Date.now();
     const timer = setInterval(() => setElapsed((Date.now() - start) / 1000), 100);
     return () => clearInterval(timer);
@@ -99,6 +87,9 @@ export default function AnalyzePage() {
   const handleAnalyze = async () => {
     if (!canAnalyze) return;
     setLoading(true);
+    setElapsed(0);
+    setCurrentStage(null);
+    setStageLabel("");
     setError(null);
     setResult(null);
     setPartialGaps(null);
@@ -152,7 +143,7 @@ export default function AnalyzePage() {
             const p = partialRef.current;
             setResult({
               run_id: evt.run_id,
-              overall_score: (p.gaps as any)?.overall_match ?? null,
+              overall_score: (p.gaps as GapAnalysis | null)?.overall_match ?? null,
               section_scores: null,
               gap_analysis: p.gaps,
               rewrite_suggestions: p.rewrites,

@@ -68,13 +68,12 @@ const JOB_LISTING_NOISE = /^(HERE Technologies|HERE Global BV|Google LLC|Europea
  * and short job listing entries — preserving only the main JD content.
  */
 export function preFilterJd(rawText: string): string {
-  let text = rawText;
+  const text = rawText;
 
   // Apply line-by-line noise removal
   const lines = text.split("\n");
   const cleaned: string[] = [];
 
-  let skipBlock = false;
   let consecutiveNoise = 0;
 
   for (const line of lines) {
