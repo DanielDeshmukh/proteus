@@ -5,15 +5,13 @@ import { auth } from "@/lib/auth/config";
 export async function GET(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-    }
+    const userId = session?.user?.id;
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "50", 10);
     const offset = parseInt(searchParams.get("offset") || "0", 10);
 
-    const runs = await listRuns(limit, offset, session.user.id);
+    const runs = await listRuns(limit, offset, userId || undefined);
     return NextResponse.json({ runs, count: runs.length });
   } catch (e) {
     console.error("GET /api/history error:", e);

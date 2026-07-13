@@ -8,9 +8,7 @@ export async function GET(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-    }
+    const userId = session?.user?.id;
 
     const { id } = await params;
     const runId = parseInt(id, 10);
@@ -24,7 +22,7 @@ export async function GET(
       return NextResponse.json({ error: `Run ${runId} not found` }, { status: 404 });
     }
 
-    if (run.user_id && run.user_id !== session.user.id) {
+    if (userId && run.user_id && run.user_id !== userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -44,9 +42,7 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-    }
+    const userId = session?.user?.id;
 
     const { id } = await params;
     const runId = parseInt(id, 10);
@@ -60,7 +56,7 @@ export async function DELETE(
       return NextResponse.json({ error: `Run ${runId} not found` }, { status: 404 });
     }
 
-    if (run.user_id && run.user_id !== session.user.id) {
+    if (userId && run.user_id && run.user_id !== userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
