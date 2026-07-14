@@ -134,7 +134,7 @@ export default function TermsPage() {
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: "20px", fontWeight: 600, color: "var(--text)", marginBottom: "14px" }}>11. Contact</h2>
             <p>
               Questions about these terms? Reach us at{" "}
-              <a href="mailto:support@proteus-app.com" style={{ color: "var(--color-gold)", textDecoration: "none" }}>support@proteus-app.com</a>.
+              <a href="mailto:deshmukhdaniel2005@gmail.com" style={{ color: "var(--color-gold)", textDecoration: "none" }}>deshmukhdaniel2005@gmail.com</a>.
             </p>
           </section>
 

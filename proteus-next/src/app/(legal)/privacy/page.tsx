@@ -97,7 +97,7 @@ export default function PrivacyPage() {
             </ul>
             <p style={{ marginTop: "12px" }}>
               To exercise any of these rights, contact us at{" "}
-              <a href="mailto:privacy@proteus-app.com" style={{ color: "var(--color-gold)", textDecoration: "none" }}>privacy@proteus-app.com</a>.
+              <a href="mailto:deshmukhdaniel2005@gmail.com" style={{ color: "var(--color-gold)", textDecoration: "none" }}>deshmukhdaniel2005@gmail.com</a>.
             </p>
           </section>
 
@@ -119,7 +119,7 @@ export default function PrivacyPage() {
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: "20px", fontWeight: 600, color: "var(--text)", marginBottom: "14px" }}>9. Contact</h2>
             <p>
               For privacy-related inquiries, contact us at{" "}
-              <a href="mailto:privacy@proteus-app.com" style={{ color: "var(--color-gold)", textDecoration: "none" }}>privacy@proteus-app.com</a>.
+              <a href="mailto:deshmukhdaniel2005@gmail.com" style={{ color: "var(--color-gold)", textDecoration: "none" }}>deshmukhdaniel2005@gmail.com</a>.
             </p>
           </section>
 
