@@ -58,7 +58,7 @@ export default function RootError({
               display: "inline-block",
             }}
           >
-            Go to dashboard
+            Go home
           </a>
         </div>
       </div>
