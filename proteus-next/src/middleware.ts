@@ -3,7 +3,7 @@ import { authConfig } from "@/lib/auth/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-const publicRoutes = ["/signin", "/signup", "/forgot-password", "/reset-password", "/verify-request", "/error", "/forbidden", "/offline", "/api/auth", "/api/health", "/docs"];
+const publicRoutes = ["/signin", "/signup", "/forgot-password", "/reset-password", "/verify-request", "/error", "/forbidden", "/offline", "/terms", "/privacy", "/cookies", "/api/auth", "/api/health", "/docs"];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
