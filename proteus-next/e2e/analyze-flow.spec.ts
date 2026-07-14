@@ -1,12 +1,15 @@
 import { test, expect } from "@playwright/test";
 
-const BOT_EMAIL = process.env.TEST_BOT_EMAIL || "proteus-e2e-bot+fak3x9z@proteus-test.local";
-const BOT_PASSWORD = process.env.TEST_BOT_PASSWORD || "T3st!Bot@Proteus2026";
+const BOT_EMAIL = process.env.TEST_BOT_EMAIL || "";
+const BOT_PASSWORD = process.env.TEST_BOT_PASSWORD || "";
 const BOT_NAME = "PROTEUS E2E Bot";
 
 test.describe.configure({ mode: "serial" });
 
+const hasBotCreds = !!BOT_EMAIL && !!BOT_PASSWORD;
+
 test.describe("Bot Setup", () => {
+  test.skip(!hasBotCreds, "TEST_BOT_EMAIL and TEST_BOT_PASSWORD env vars required");
   test("register test bot if not exists", async ({ request }) => {
     const res = await request.post("/api/auth/register", {
       data: { name: BOT_NAME, email: BOT_EMAIL, password: BOT_PASSWORD },
@@ -112,6 +115,7 @@ test.describe("Analyze Page — Auth Required", () => {
 });
 
 test.describe("Bot Sign-In Flow", () => {
+  test.skip(!hasBotCreds, "TEST_BOT_EMAIL and TEST_BOT_PASSWORD env vars required");
   test("can sign in with bot credentials", async ({ page }) => {
     await page.goto("/signin");
     await page.getByLabel("Email address").fill(BOT_EMAIL);

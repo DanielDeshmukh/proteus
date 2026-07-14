@@ -6,8 +6,8 @@
  * The user is created via the /api/auth/register endpoint or directly in the DB.
  */
 
-const TEST_BOT_EMAIL = "proteus-e2e-bot+fak3x9z@proteus-test.local";
-const TEST_BOT_PASSWORD = "T3st!Bot@Proteus2026";
+const TEST_BOT_EMAIL = process.env.TEST_BOT_EMAIL || "";
+const TEST_BOT_PASSWORD = process.env.TEST_BOT_PASSWORD || "";
 const TEST_BOT_NAME = "PROTEUS E2E Bot";
 
 async function seedViaApi(baseUrl: string) {
@@ -39,16 +39,16 @@ async function seedViaApi(baseUrl: string) {
 }
 
 async function main() {
+  if (!TEST_BOT_EMAIL || !TEST_BOT_PASSWORD) {
+    console.error("[SEED] TEST_BOT_EMAIL and TEST_BOT_PASSWORD env vars are required");
+    process.exit(1);
+  }
   const baseUrl = process.env.BASE_URL || "http://localhost:3000";
   const ok = await seedViaApi(baseUrl);
   if (!ok) process.exit(1);
 
-  console.log(`\n[SEED] Bot credentials (for manual testing):`);
-  console.log(`  Email:    ${TEST_BOT_EMAIL}`);
-  console.log(`  Password: ${TEST_BOT_PASSWORD}`);
-  console.log(`\n[SEED] Set these as GitHub Actions secrets:`);
-  console.log(`  TEST_BOT_EMAIL=${TEST_BOT_EMAIL}`);
-  console.log(`  TEST_BOT_PASSWORD=${TEST_BOT_PASSWORD}`);
+  console.log(`\n[SEED] Bot seeded successfully.`);
+  console.log(`[SEED] Set TEST_BOT_EMAIL and TEST_BOT_PASSWORD as GitHub Actions secrets.`);
 }
 
 main().catch(console.error);

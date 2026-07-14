@@ -39,3 +39,6 @@ server-stdout.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Personal files
+resume.pdf
