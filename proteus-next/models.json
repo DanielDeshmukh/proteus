@@ -33,7 +33,7 @@
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "current": "nvidia/gliner-pii",
       "fallbacks": [
         "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "meta/llama-3.1-70b-instruct",
@@ -59,12 +59,12 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": "2026-07-14T05:34:58.773Z",
+  "lastHealthCheck": "2026-07-14T22:01:11.008Z",
   "lastHealthyModels": {
     "jd-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "resume-parser": "nvidia/gliner-pii",
     "gap-analyzer": "nvidia/nv-embedqa-e5-v5",
-    "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "rewrite-suggester": "nvidia/gliner-pii",
     "cover-letter": "nvidia/gliner-pii"
   }
 }
