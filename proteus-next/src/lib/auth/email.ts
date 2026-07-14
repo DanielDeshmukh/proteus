@@ -1,4 +1,5 @@
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://proteus-phi.vercel.app";
+const LOGO_URL = `${APP_URL}/favicon.png`;
 
 // ─── Shared branding ────────────────────────────────────
 
@@ -12,23 +13,20 @@ function emailShell(content: string): string {
   <meta name="supported-color-schemes" content="dark">
 </head>
 <body style="margin:0;padding:0;background-color:#0d0f11;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;">
-  <!-- Full-width dark wrapper -->
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0d0f11;padding:32px 16px;">
     <tr>
       <td align="center">
-        <!-- Card -->
         <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background-color:#1a1d21;border:1px solid rgba(201,169,98,0.2);border-radius:16px;overflow:hidden;">
           <!-- Gold top accent -->
           <tr>
             <td style="height:3px;background:linear-gradient(90deg,#c9a962,#dfc08a,#c9a962);"></td>
           </tr>
-          <!-- Header -->
+          <!-- Header with logo -->
           <tr>
             <td style="padding:36px 36px 28px;text-align:center;border-bottom:1px solid rgba(201,169,98,0.1);">
-              <div style="display:inline-block;width:38px;height:38px;border:2.5px solid #c9a962;border-radius:9px;transform:rotate(45deg);margin-bottom:18px;">
-                <div style="position:relative;top:7px;left:7px;width:16px;height:16px;border:2.5px solid #dfc08a;border-radius:4px;"></div>
-              </div>
+              <img src="${LOGO_URL}" alt="PROTEUS" width="48" height="48" style="display:block;margin:0 auto 18px;border:0;outline:none;" />
               <h1 style="color:#f5f5f0;font-size:22px;font-weight:600;letter-spacing:0.08em;margin:0;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">PROTEUS</h1>
+              <p style="color:#6b7280;font-size:11px;margin:6px 0 0;letter-spacing:0.04em;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">AI Resume Analysis Platform</p>
             </td>
           </tr>
           <!-- Body -->
@@ -57,7 +55,7 @@ function emailShell(content: string): string {
 }
 
 function emailText(content: string): string {
-  return `PROTEUS — AI Resume Analyzer & Cover Letter Generator\n\n${content}\n\nOpen PROTEUS: ${APP_URL}`;
+  return `PROTEUS — AI Resume Analysis Platform\n\n${content}\n\nOpen PROTEUS: ${APP_URL}`;
 }
 
 // ─── Magic Link ─────────────────────────────────────────
@@ -66,9 +64,8 @@ function magicLinkHtml(url: string): string {
   const body = `
     <h2 style="color:#f5f5f0;font-size:18px;font-weight:500;margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Sign in to your account</h2>
     <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      Click the button below to sign in to PROTEUS. This link will expire in 15 minutes.
+      Use the button below to sign in to PROTEUS. This link is valid for 15 minutes.
     </p>
-    <!-- CTA Button -->
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:28px;">
       <tr>
         <td align="center">
@@ -84,21 +81,20 @@ function magicLinkHtml(url: string): string {
         </td>
       </tr>
     </table>
-    <!-- Divider -->
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:20px;">
       <tr>
         <td style="border-bottom:1px solid rgba(201,169,98,0.15);"></td>
       </tr>
     </table>
     <p style="color:#6b7280;font-size:12px;line-height:1.6;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      If you didn&rsquo;t request this email, you can safely ignore it. The link will expire automatically.
+      If you did not request this email, no action is required. The link will expire automatically.
     </p>`;
   return emailShell(body);
 }
 
 function magicLinkText(url: string): string {
   return emailText(
-    `Sign in to your account\n\nClick this link to sign in:\n${url}\n\nThis link expires in 15 minutes.\nIf you didn't request this, ignore this email.`
+    `Sign in to your account\n\nUse the link below to sign in (valid for 15 minutes):\n${url}\n\nIf you did not request this email, no action is required.`
   );
 }
 
@@ -125,21 +121,17 @@ function featureRow(icon: string, title: string, desc: string): string {
 }
 
 function welcomeHtml(userName?: string): string {
-  const greeting = userName ? `Hello ${userName},` : "Hello,";
+  const greeting = userName ? `Dear ${userName},` : "Dear user,";
   const body = `
     <h2 style="color:#f5f5f0;font-size:18px;font-weight:500;margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Welcome to PROTEUS</h2>
     <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      ${greeting}
-    </p>
-    <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      You now have access to an AI-powered resume analyzer that runs a five-agent pipeline:
+      ${greeting} Your account has been created successfully. PROTEUS provides AI-powered resume analysis through a five-stage evaluation pipeline:
     </p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:28px;">
-      ${featureRow("&#9733;", "Semantic Match Score", "See how closely your resume aligns with the job description")}
-      ${featureRow("&#9830;", "Gap Analysis", "Identified gaps between your resume and role requirements")}
-      ${featureRow("&#10003;", "Bullet Rewrites &amp; Cover Letter", "AI-drafted rewrites and a tailored cover letter")}
+      ${featureRow("&#9733;", "Semantic Match Score", "Quantified alignment between your resume and target role")}
+      ${featureRow("&#9830;", "Gap Analysis", "Identification of missing qualifications and experience")}
+      ${featureRow("&#10003;", "Rewrites &amp; Cover Letter", "Tailored bullet rewrites and a customized cover letter")}
     </table>
-    <!-- CTA -->
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:20px;">
       <tr>
         <td align="center">
@@ -159,9 +151,9 @@ function welcomeHtml(userName?: string): string {
 }
 
 function welcomeText(userName?: string): string {
-  const greeting = userName ? `Hello ${userName},` : "Hello,";
+  const greeting = userName ? `Dear ${userName},` : "Dear user,";
   return emailText(
-    `${greeting}\n\nWelcome to PROTEUS! You now have access to AI-powered resume analysis.\n\nWhat you can do:\n  ★  Semantic match scoring against any job description\n  ◆  Gap analysis between your resume and role requirements\n  ✓  Bullet-level rewrites tailored to the job\n  ✓  AI-generated cover letters\n\nGet started: ${APP_URL}/analyze`
+    `${greeting}\n\nYour account has been created successfully. PROTEUS provides AI-powered resume analysis:\n\n  ★  Semantic match scoring against any job description\n  ◆  Gap analysis between your resume and role requirements\n  ✓  Bullet-level rewrites tailored to the job\n  ✓  AI-generated cover letters\n\nGet started: ${APP_URL}/analyze`
   );
 }
 
@@ -174,9 +166,8 @@ function analysisCompleteHtml(score: number | null, runId: number): string {
   const body = `
     <h2 style="color:#f5f5f0;font-size:18px;font-weight:500;margin:0 0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">Analysis Complete</h2>
     <p style="color:#9ca3af;font-size:14px;line-height:1.7;margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      Your resume analysis has finished. Here&rsquo;s your match score:
+      Your resume analysis has been completed. Your match score is below.
     </p>
-    <!-- Score card -->
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:28px;">
       <tr>
         <td align="center" style="padding:32px 24px;background:rgba(201,169,98,0.08);border:1px solid rgba(201,169,98,0.25);border-radius:12px;">
@@ -187,9 +178,8 @@ function analysisCompleteHtml(score: number | null, runId: number): string {
       </tr>
     </table>
     <p style="color:#9ca3af;font-size:13px;line-height:1.7;margin:0 0 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-      View your full results including gap analysis, rewrite suggestions, cover letter, and priority actions.
+      Your full results include gap analysis, rewrite suggestions, a tailored cover letter, and priority actions.
     </p>
-    <!-- CTA -->
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
       <tr>
         <td align="center">
@@ -211,7 +201,7 @@ function analysisCompleteHtml(score: number | null, runId: number): string {
 function analysisCompleteText(score: number | null, runId: number): string {
   const scoreText = score != null ? `${Math.round(score * 100)}%` : "N/A";
   return emailText(
-    `Analysis Complete\n\nMatch Score: ${scoreText}\nRun ID: #${runId}\n\nView your full results including gap analysis, rewrite suggestions, cover letter, and priority actions.\n\nView results: ${APP_URL}/history`
+    `Analysis Complete\n\nMatch Score: ${scoreText}\nRun ID: #${runId}\n\nYour full results include gap analysis, rewrite suggestions, a tailored cover letter, and priority actions.\n\nView results: ${APP_URL}/history`
   );
 }
 
