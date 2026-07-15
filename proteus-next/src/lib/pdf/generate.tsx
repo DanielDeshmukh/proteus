@@ -3,6 +3,7 @@
 import { pdf } from "@react-pdf/renderer";
 import { CoverLetterPDF, CoverLetterData } from "./CoverLetterPDF";
 import { TextDocumentPDF, TextDocumentData } from "./TextDocumentPDF";
+import { AnalysisReportPDF, AnalysisReportData } from "./AnalysisReportPDF";
 
 export async function generateCoverLetterPDF(data: CoverLetterData): Promise<Blob> {
   const doc = <CoverLetterPDF data={data} />;
@@ -11,6 +12,11 @@ export async function generateCoverLetterPDF(data: CoverLetterData): Promise<Blo
 
 export async function generateTextPDF(data: TextDocumentData): Promise<Blob> {
   const doc = <TextDocumentPDF data={data} />;
+  return await pdf(doc).toBlob();
+}
+
+export async function generateAnalysisReportPDF(data: AnalysisReportData): Promise<Blob> {
+  const doc = <AnalysisReportPDF data={data} />;
   return await pdf(doc).toBlob();
 }
 

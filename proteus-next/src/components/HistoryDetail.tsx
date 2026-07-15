@@ -7,6 +7,7 @@ import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { GapAnalysisDisplay } from "@/components/GapAnalysisDisplay";
 import { CopyButton } from "@/components/CopyButton";
 import { DownloadButton } from "@/components/DownloadButton";
+import { ReportDownloadButton } from "@/components/ReportDownloadButton";
 import { apiGet } from "@/lib/api";
 
 interface RunDetail {
@@ -245,6 +246,22 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
             >
               {run.status}
             </span>
+            {run.status === "completed" && (
+              <ReportDownloadButton
+                data={{
+                  runId: run.id,
+                  createdAt: run.created_at,
+                  jdSource: run.jd_source,
+                  resumeSource: run.resume_source,
+                  overallScore: run.overall_score,
+                  sectionScores,
+                  gapAnalysis,
+                  rewriteSuggestions,
+                  actionList,
+                }}
+                filename={`PROTEUS_Report_Run${run.id}`}
+              />
+            )}
           </div>
         </div>
       </Card>
