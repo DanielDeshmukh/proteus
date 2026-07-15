@@ -27,12 +27,21 @@ function RadarChart({
   const n = labels.length;
   const cx = size / 2;
   const cy = size / 2;
-  const radius = size / 2 - 40;
+  const radius = size / 2 - 60;
   const levels = 5;
 
   function getPoint(i: number, r: number) {
     const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
     return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  }
+
+  function getLabelAnchor(i: number): { anchor: string; dx: number; dy: number } {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    if (Math.abs(cos) < 0.1) return { anchor: "middle", dx: 0, dy: sin > 0 ? 16 : -10 };
+    if (cos > 0) return { anchor: "start", dx: 8, dy: 4 };
+    return { anchor: "end", dx: -8, dy: 4 };
   }
 
   const gridPolygons = Array.from({ length: levels }, (_, l) => {
@@ -46,8 +55,9 @@ function RadarChart({
   });
 
   const labelPositions = labels.map((label, i) => {
-    const p = getPoint(i, radius + 24);
-    return { x: p.x, y: p.y, text: label.replace(/_/g, " ") };
+    const p = getPoint(i, radius + 20);
+    const { anchor, dx, dy } = getLabelAnchor(i);
+    return { x: p.x + dx, y: p.y + dy, text: label.replace(/_/g, " "), anchor };
   });
 
   return (
@@ -105,7 +115,7 @@ function RadarChart({
           key={`label-${i}`}
           x={label.x}
           y={label.y}
-          textAnchor="middle"
+          textAnchor={label.anchor as any}
           dominantBaseline="middle"
           fill={hovered === i ? "#f0f0f0" : "var(--text-soft)"}
           fontSize="11"

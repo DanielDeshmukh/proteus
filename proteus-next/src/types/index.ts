@@ -163,7 +163,10 @@ export type RewriteOutput = z.infer<typeof RewriteOutputSchema>;
 // Cover Letter Models
 // ─────────────────────────────────────────────────────────
 
-export const ToneSchema = z.enum(["professional", "enthusiastic", "concise"]);
+export const ToneSchema = z.preprocess(
+  (v) => { const s = String(v || "").toLowerCase().trim(); return (["professional","enthusiastic","concise"].includes(s) ? s : "professional") as "professional"|"enthusiastic"|"concise"; },
+  z.enum(["professional", "enthusiastic", "concise"])
+);
 export type Tone = z.infer<typeof ToneSchema>;
 
 export const CoverLetterSectionSchema = z.object({
@@ -174,7 +177,10 @@ export const CoverLetterSectionSchema = z.object({
 export const CoverLetterOutputSchema = z.object({
   job_title: safeStr,
   full_letter: safeStr,
-  sections: z.array(CoverLetterSectionSchema),
+  sections: z.preprocess(
+    (v) => Array.isArray(v) ? v : [],
+    z.array(CoverLetterSectionSchema)
+  ),
   tone: ToneSchema,
   key_points_addressed: coerceArray,
   word_count: safeNum,
