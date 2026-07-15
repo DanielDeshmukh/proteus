@@ -1,0 +1,96 @@
+DANIEL DESHMUKH
+deshmukhdaniel2005@gmail.com | +91 98765 43210 | Pune, Maharashtra, India
+LinkedIn: linkedin.com/in/danieldeshmukh | GitHub: github.com/danieldeshmukh | Portfolio: danieldeshmukh.dev
+
+PROFESSIONAL SUMMARY
+Results-driven Full-Stack Software Engineer with 4+ years of experience designing, developing, and deploying scalable web applications and AI-powered platforms. Proficient in TypeScript, React, Next.js, Node.js, Python, and cloud infrastructure (AWS, Vercel, Turso). Track record of building production-grade systems serving 10K+ users, optimizing performance by 40%, and leading cross-functional engineering teams. Passionate about AI/ML integration, developer tooling, and creating elegant solutions to complex problems.
+
+TECHNICAL SKILLS
+Languages: TypeScript, JavaScript (ES6+), Python, SQL, HTML5, CSS3, GraphQL
+Frontend: React 18, Next.js 14, Tailwind CSS, Radix UI, Framer Motion, TanStack Query
+Backend: Node.js, Express.js, FastAPI, tRPC, REST APIs, WebSocket
+Databases: PostgreSQL, Turso (libSQL), SQLite, Redis, Prisma ORM, Drizzle ORM
+AI/ML: OpenAI API, NVIDIA NIM, LangChain, RAG pipelines, Vector embeddings, pdfjs-dist, unpdf
+Cloud & DevOps: AWS (EC2, S3, Lambda, RDS), Vercel, Docker, GitHub Actions, Terraform
+Testing: Playwright, Jest, Vitest, React Testing Library, ESLint, Prettier
+Tools: Git, VS Code, Figma, Postman, Datadog, Sentry, Linear, Notion
+
+PROFESSIONAL EXPERIENCE
+
+Senior Full-Stack Engineer | TechVentures Pvt. Ltd. | Pune, India | Jan 2024 – Present
+- Architected and deployed an AI-powered document analysis platform using Next.js 14, TypeScript, and NVIDIA NIM LLMs, processing 500+ documents daily with 99.7% uptime
+- Designed a multi-agent pipeline (JD Parser, Resume Parser, Cover Letter Generator, Gap Analyzer) using LangChain patterns, reducing manual resume screening time by 65%
+- Implemented real-time streaming analysis via Server-Sent Events, improving perceived response time from 45s to 3s for initial tokens
+- Built a Turso/libSQL database layer with batch operations, handling 10K+ concurrent users with sub-50ms query latency
+- Configured CI/CD pipelines with GitHub Actions (lint, typecheck, E2E tests via Playwright), achieving 98% test coverage and zero-downtime deployments
+- Led a team of 4 engineers, conducting code reviews, pair programming sessions, and technical design discussions
+
+Full-Stack Developer | InnovateLabs | Remote | Jun 2022 – Dec 2023
+- Developed a real-time collaboration platform using React, Socket.io, and PostgreSQL, supporting 2K+ simultaneous users with <100ms latency
+- Built RESTful APIs and GraphQL endpoints serving 50K+ requests/day with 99.9% uptime
+- Implemented authentication system with NextAuth.js v5 (Google, GitHub, Magic Link OAuth), JWT tokens, and role-based access control
+- Optimized PostgreSQL queries and implemented Redis caching, reducing average API response time from 350ms to 80ms
+- Created automated deployment scripts using Docker and AWS ECS, reducing deployment time from 45 minutes to 5 minutes
+- Mentored 3 junior developers through structured pair programming and technical documentation
+
+Junior Software Engineer | DataFlow Systems | Pune, India | Aug 2021 – May 2022
+- Built responsive web interfaces using React, TypeScript, and Tailwind CSS for enterprise clients
+- Developed backend microservices using Node.js and Express, handling 10K+ daily API calls
+- Integrated third-party APIs (Stripe, SendGrid, Twilio) for payment processing and notifications
+- Wrote comprehensive unit and integration tests using Jest and React Testing Library
+- Participated in agile ceremonies (daily standups, sprint planning, retrospectives) with a team of 6
+
+Software Engineering Intern | CloudNine Technologies | Mumbai, India | Jan 2021 – Jul 2021
+- Developed internal tooling dashboard using React and Chart.js, visualizing real-time system metrics
+- Automated data pipeline processes using Python and Pandas, reducing manual data entry by 80%
+- Assisted in migrating legacy jQuery codebase to React, improving maintainability and performance
+- Documented API endpoints and created technical specifications for 15+ REST endpoints
+
+EDUCATION
+
+Bachelor of Technology in Computer Science and Engineering
+Savitribai Phule Pune University | Pune, India | 2017 – 2021
+- CGPA: 8.7/10 (First Class with Distinction)
+- Relevant Coursework: Data Structures & Algorithms, Operating Systems, Database Management Systems, Computer Networks, Software Engineering, Machine Learning, Web Technologies
+- Academic Projects: Real-time Chat Application (React, Socket.io, Node.js), E-commerce Platform (Next.js, PostgreSQL), ML-based Sentiment Analyzer (Python, TensorFlow)
+
+CERTIFICATIONS
+- AWS Certified Solutions Architect – Associate (2023)
+- Meta Front-End Developer Professional Certificate (2022)
+- MongoDB Certified Developer Associate (2022)
+
+KEY PROJECTS
+
+PROTEUS – AI Resume Analyzer | github.com/danieldeshmukh/proteus
+- Full-stack Next.js application with 4-stage AI pipeline for resume-job matching
+- Multi-agent architecture: JD Parser → Resume Parser → Gap Analyzer → Cover Letter Generator
+- Real-time streaming progress, rate limiting (10 analyses/day), usage analytics dashboard
+- Deployed on Vercel with Turso database, NVIDIA NIM LLMs, and Resend email service
+
+CollabHub – Real-time Collaboration Platform
+- WebSocket-based document collaboration with live cursors, presence indicators, and conflict resolution
+- Built with React, Socket.io, PostgreSQL, and Redis for pub/sub messaging
+- Supports 2K+ concurrent users with sub-100ms latency for cursor updates
+
+DevTrack – Developer Productivity Dashboard
+- Aggregates GitHub PRs, Jira tickets, and Linear issues into unified analytics dashboard
+- Built with Next.js, tRPC, Prisma ORM, and PostgreSQL
+- Implements OAuth 2.0 with GitHub and Jira, real-time webhook processing
+
+ACHIEVEMENTS & AWARDS
+- Winner, TechHack Bangalore 2023 – Built AI-powered code review tool in 36 hours
+- 1st Place, Pune Tech Summit Hackathon 2022 – Real-time disaster response coordination platform
+- Open Source Contributor – 50+ merged PRs in React ecosystem (react-icons, tanstack-query)
+- Technical Blog Writer – 20+ articles on Medium covering Next.js, TypeScript, and AI/ML (15K+ monthly readers)
+
+LANGUAGES
+- English (Professional Working Proficiency)
+- Hindi (Native)
+- Marathi (Native)
+
+INTERESTS
+- Contributing to open-source projects
+- Technical writing and content creation
+- AI/ML research and experimentation
+- Rock climbing and trail running
+- Chess (rated 1800 FIDE)

@@ -122,7 +122,10 @@ export const GapAnalysisSchema = z.object({
   missing_count: safeNum,
   total_requirements: safeNum,
   gaps: z.array(GapItemSchema),
-}).passthrough();
+}).passthrough().refine(
+  (data) => data.gaps.length > 0,
+  { message: "gaps array must not be empty" }
+);
 
 export type GapItem = z.infer<typeof GapItemSchema>;
 export type GapAnalysis = z.infer<typeof GapAnalysisSchema>;
@@ -148,7 +151,10 @@ export const RewriteOutputSchema = z.object({
     (v) => Array.isArray(v) ? v.map(x => typeof x === "string" ? x : JSON.stringify(x)) : [],
     z.array(z.string())
   ),
-}).passthrough();
+}).passthrough().refine(
+  (data) => data.suggestions.length > 0,
+  { message: "suggestions array must not be empty" }
+);
 
 export type RewriteSuggestion = z.infer<typeof RewriteSuggestionSchema>;
 export type RewriteOutput = z.infer<typeof RewriteOutputSchema>;
@@ -172,7 +178,10 @@ export const CoverLetterOutputSchema = z.object({
   tone: ToneSchema,
   key_points_addressed: coerceArray,
   word_count: safeNum,
-}).passthrough();
+}).passthrough().refine(
+  (data) => data.full_letter.trim().length > 50,
+  { message: "full_letter must be non-empty (at least 50 characters)" }
+);
 
 export type CoverLetterSection = z.infer<typeof CoverLetterSectionSchema>;
 export type CoverLetterOutput = z.infer<typeof CoverLetterOutputSchema>;

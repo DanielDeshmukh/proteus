@@ -1,0 +1,64 @@
+Senior Full-Stack Engineer — FinTech Startup
+
+About Us
+We are a fast-growing FinTech startup on a mission to democratize access to financial tools for small businesses across emerging markets. Our platform serves over 50,000 active users and processes $200M+ in annual transaction volume. We're backed by Tier 1 VCs and are preparing for Series B.
+
+Role Overview
+We're hiring a Senior Full-Stack Engineer to own critical parts of our payment processing infrastructure and merchant dashboard. You'll work directly with the CTO and a team of 8 engineers across 3 time zones.
+
+Responsibilities
+- Design and implement scalable microservices using Node.js and TypeScript
+- Build and maintain React-based dashboards with real-time data visualization
+- Optimize PostgreSQL queries handling 10M+ daily transactions
+- Implement CI/CD pipelines using GitHub Actions and Docker
+- Mentor junior engineers through code reviews and pair programming
+- Participate in on-call rotation for production systems (1 week per month)
+- Contribute to architecture decisions and technical roadmap planning
+
+Required Qualifications
+- 5+ years of professional software engineering experience
+- Strong proficiency in TypeScript, Node.js, and React
+- Experience with PostgreSQL or similar relational databases
+- Familiarity with cloud platforms (AWS or GCP)
+- Understanding of RESTful API design and GraphQL
+- Experience with Docker and containerized deployments
+- Solid understanding of authentication/authorization patterns (OAuth, JWT)
+- Track record of shipping production-grade applications
+
+Nice to Have
+- Experience with payment processing systems (Stripe, Adyen, or similar)
+- Knowledge of event-driven architectures (Kafka, RabbitMQ)
+- Familiarity with Kubernetes and infrastructure-as-code (Terraform)
+- Experience with Redis for caching and session management
+- Contributions to open-source projects
+- Previous startup experience (Series A or earlier)
+- Knowledge of regulatory compliance (PCI-DSS, SOC2)
+
+Technical Stack
+- Frontend: React 18, TypeScript, Tailwind CSS, TanStack Query
+- Backend: Node.js, Express, Prisma ORM
+- Database: PostgreSQL, Redis
+- Infrastructure: AWS (ECS, RDS, S3), Terraform
+- Tools: GitHub Actions, Datadog, PagerDuty
+
+Compensation & Benefits
+- Base salary: $140,000 - $180,000 depending on experience
+- Equity: 0.05% - 0.15% ISO grants
+- Health, dental, and vision insurance (100% premium covered)
+- $2,000 annual learning & development budget
+- Flexible PTO policy (minimum 3 weeks encouraged)
+- Remote-first culture with optional co-working space stipend
+- Annual team offsites (last one was in Lisbon)
+
+Interview Process
+1. Intro call with recruiter (30 min)
+2. Technical assessment: take-home project (2-3 hours)
+3. System design interview (60 min)
+4. Behavioral interview with CTO (45 min)
+5. Offer stage
+
+Location: Remote (US/EU time zones preferred)
+Type: Full-time
+Start Date: Immediate
+
+We are an equal opportunity employer and value diversity. We do not discriminate on the basis of race, religion, color, national origin, gender, sexual orientation, age, marital status, veteran status, or disability status.

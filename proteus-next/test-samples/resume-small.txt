@@ -1,0 +1,22 @@
+John Smith
+john.smith@email.com | (555) 123-4567 | San Francisco, CA
+
+Experience
+
+Software Engineer at TechCorp (2022 - Present)
+- Built React components for the main dashboard
+- Worked on backend APIs using Node.js
+- Fixed bugs and improved performance
+- Collaborated with team members
+
+Junior Developer at StartupXYZ (2020 - 2021)
+- Developed web applications using JavaScript
+- Helped with database management
+- Participated in code reviews
+
+Education
+
+BS Computer Science, State University (2020)
+
+Skills
+JavaScript, React, Node.js, HTML, CSS, Git

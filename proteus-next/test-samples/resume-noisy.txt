@@ -1,0 +1,566 @@
+============================================
+           ALEXANDER J. THUNDERWOLF
+============================================
+Email: alexander.thunderwolf@supercorp.io
+Phone: +1 (555) 987-6543
+Location: Silicon Valley, California, USA
+LinkedIn: linkedin.com/in/alexanderthunderwolf
+GitHub: github.com/alexthunderwolf
+Portfolio: alexthunderwolf.dev
+Twitter: @alexthunderwolf
+============================================
+
+OBJECTIVE (VERY IMPORTANT):
+============================================
+I am a HIGHLY MOTIVATED and PASSIONATE software engineer who is looking for an opportunity to use my EXTENSIVE SKILLS to contribute to a DYNAMIC and INNOVATIVE organization that values EXCELLENCE and CREATIVE THINKING. I am seeking a role that offers CHALLENGING PROJECTS, PROFESSIONAL GROWTH, and the opportunity to work with CUTTING-EDGE TECHNOLOGIES in a COLLABORATIVE and SUPPORTIVE environment where I can make a MEANINGFUL IMPACT and grow both personally and professionally.
+
+============================================
+EDUCATION (THE MOST IMPORTANT PART):
+============================================
+
+Master of Science in Computer Science (GPA: 3.95/4.0)
+Stanford University, Stanford, California, USA
+Graduated: June 2023
+Thesis: "Optimizing Distributed Systems Using Machine Learning-Based Load Balancing Algorithms"
+Advisor: Dr. Robert Johnson
+Relevant Coursework: Advanced Algorithms, Machine Learning, Deep Learning, Distributed Systems, Cloud Computing, Computer Vision, Natural Language Processing, Data Mining, Statistical Analysis, Big Data Analytics, Quantum Computing Foundations, Cryptography and Network Security
+
+Bachelor of Science in Computer Engineering (GPA: 3.88/4.0)
+University of California, Berkeley, California, USA
+Graduated: May 2021
+Minor: Mathematics
+Honors: Magna Cum Laude, Dean's List (6 semesters), Phi Beta Kappa
+Relevant Coursework: Data Structures, Algorithms, Operating Systems, Computer Architecture, Digital Logic Design, Microprocessor Systems, Embedded Systems, Real-Time Systems, Hardware Description Languages (Verilog, VHDL)
+
+High School Diploma (GPA: 4.0/4.0)
+Berkeley High School, Berkeley, California, USA
+Graduated: June 2017
+Awards: Valedictorian, National Merit Scholar, AP Scholar with Distinction, Science Fair Grand Prize Winner (3 consecutive years)
+
+============================================
+TECHNICAL SKILLS (THE LONGEST LIST EVER):
+============================================
+
+Programming Languages (I know ALL of them):
+- JavaScript (Expert level, 15+ years experience - yes I started when I was 5)
+- TypeScript (Expert level, 12+ years experience)
+- Python (Expert level, 14+ years experience)
+- Java (Expert level, 13+ years experience)
+- C++ (Expert level, 11+ years experience)
+- C (Expert level, 10+ years experience)
+- C# (Expert level, 9+ years experience)
+- Go (Expert level, 8+ years experience)
+- Rust (Expert level, 7+ years experience)
+- Ruby (Expert level, 6+ years experience)
+- PHP (Expert level, 5+ years experience)
+- Swift (Expert level, 4+ years experience)
+- Kotlin (Expert level, 4+ years experience)
+- Scala (Expert level, 3+ years experience)
+- Haskell (Expert level, 3+ years experience)
+- Erlang (Expert level, 2+ years experience)
+- Elixir (Expert level, 2+ years experience)
+- Clojure (Expert level, 2+ years experience)
+- F# (Expert level, 1+ years experience)
+- R (Expert level, 2+ years experience)
+- MATLAB (Expert level, 1+ years experience)
+- SQL (Expert level, 10+ years experience)
+- PL/SQL (Expert level, 5+ years experience)
+- Assembly (x86, x86-64, ARM, MIPS, RISC-V) (Expert level, 6+ years experience)
+- Fortran (Expert level, 1+ years experience)
+- COBOL (Expert level, 1+ years experience)
+- Lisp (Expert level, 2+ years experience)
+- Prolog (Expert level, 1+ years experience)
+- Julia (Expert level, 2+ years experience)
+- Dart (Expert level, 3+ years experience)
+- Lua (Expert level, 1+ years experience)
+- Perl (Expert level, 2+ years experience)
+- Shell Scripting (Bash, Zsh, Fish, PowerShell) (Expert level, 10+ years experience)
+
+Frontend Technologies (I can design AND code):
+- React.js (Expert, 10+ years)
+- Next.js (Expert, 8+ years)
+- Vue.js (Expert, 7+ years)
+- Angular (Expert, 6+ years)
+- Svelte (Expert, 5+ years)
+- HTML5 (Expert, 15+ years)
+- CSS3 (Expert, 15+ years)
+- SASS/SCSS (Expert, 12+ years)
+- LESS (Expert, 10+ years)
+- Tailwind CSS (Expert, 6+ years)
+- Bootstrap (Expert, 10+ years)
+- Material UI (Expert, 8+ years)
+- Ant Design (Expert, 7+ years)
+- Chakra UI (Expert, 5+ years)
+- Radix UI (Expert, 4+ years)
+- Framer Motion (Expert, 4+ years)
+- GSAP (Expert, 5+ years)
+- Three.js (Expert, 4+ years)
+- D3.js (Expert, 5+ years)
+- Chart.js (Expert, 6+ years)
+- Webpack (Expert, 8+ years)
+- Vite (Expert, 4+ years)
+- Parcel (Expert, 3+ years)
+- esbuild (Expert, 3+ years)
+
+Backend Technologies (I can build ANYTHING):
+- Node.js (Expert, 12+ years)
+- Express.js (Expert, 10+ years)
+- Fastify (Expert, 5+ years)
+- NestJS (Expert, 4+ years)
+- Django (Expert, 8+ years)
+- Flask (Expert, 7+ years)
+- FastAPI (Expert, 5+ years)
+- Spring Boot (Expert, 6+ years)
+- Ruby on Rails (Expert, 7+ years)
+- Laravel (Expert, 5+ years)
+- ASP.NET Core (Expert, 4+ years)
+- GraphQL (Expert, 6+ years)
+- REST APIs (Expert, 12+ years)
+- gRPC (Expert, 4+ years)
+- WebSockets (Expert, 6+ years)
+- Socket.io (Expert, 5+ years)
+
+Databases (I can manage ANY data):
+- PostgreSQL (Expert, 10+ years)
+- MySQL (Expert, 9+ years)
+- MongoDB (Expert, 8+ years)
+- Redis (Expert, 7+ years)
+- Elasticsearch (Expert, 6+ years)
+- DynamoDB (Expert, 5+ years)
+- Cassandra (Expert, 4+ years)
+- Neo4j (Expert, 3+ years)
+- InfluxDB (Expert, 3+ years)
+- SQLite (Expert, 8+ years)
+- Firebase Firestore (Expert, 5+ years)
+- Supabase (Expert, 3+ years)
+- Turso/libSQL (Expert, 2+ years)
+- Prisma ORM (Expert, 4+ years)
+- Drizzle ORM (Expert, 2+ years)
+- TypeORM (Expert, 3+ years)
+- Sequelize (Expert, 5+ years)
+- Mongoose (Expert, 6+ years)
+
+Cloud & DevOps (I can deploy ANYWHERE):
+- AWS (Expert, 8+ years) - EC2, S3, Lambda, RDS, ECS, EKS, CloudFront, API Gateway, SQS, SNS, Step Functions, Athena, Glue, Redshift, Neptune, DynamoDB, ElastiCache, Kinesis, MSK, CodePipeline, CodeBuild, CodeDeploy, CloudFormation, CDK
+- Google Cloud Platform (Expert, 6+ years) - Compute Engine, Cloud Functions, Cloud Run, Cloud Storage, BigQuery, Pub/Sub, Dataflow, Dataproc, AI Platform, Vertex AI, Kubernetes Engine, Cloud Build, Cloud Deploy
+- Microsoft Azure (Expert, 5+ years) - Virtual Machines, Azure Functions, Azure Storage, Azure SQL, Cosmos DB, Azure Kubernetes Service, Azure DevOps, Azure Pipelines
+- Docker (Expert, 8+ years)
+- Kubernetes (Expert, 6+ years)
+- Terraform (Expert, 5+ years)
+- Ansible (Expert, 4+ years)
+- GitHub Actions (Expert, 5+ years)
+- Jenkins (Expert, 6+ years)
+- CircleCI (Expert, 4+ years)
+- Travis CI (Expert, 3+ years)
+- GitLab CI/CD (Expert, 4+ years)
+- ArgoCD (Expert, 3+ years)
+- Helm (Expert, 4+ years)
+- Prometheus (Expert, 4+ years)
+- Grafana (Expert, 5+ years)
+- Datadog (Expert, 4+ years)
+- New Relic (Expert, 3+ years)
+- Sentry (Expert, 4+ years)
+- PagerDuty (Expert, 3+ years)
+
+AI/ML Technologies (I can make machines THINK):
+- TensorFlow (Expert, 6+ years)
+- PyTorch (Expert, 5+ years)
+- Scikit-learn (Expert, 7+ years)
+- Keras (Expert, 5+ years)
+- OpenCV (Expert, 4+ years)
+- NLTK (Expert, 4+ years)
+- spaCy (Expert, 3+ years)
+- Hugging Face Transformers (Expert, 3+ years)
+- LangChain (Expert, 2+ years)
+- OpenAI API (Expert, 3+ years)
+- NVIDIA NIM (Expert, 2+ years)
+- RAG Pipelines (Expert, 2+ years)
+- Vector Databases (Pinecone, Weaviate, Milvus, ChromaDB) (Expert, 3+ years)
+- Computer Vision (Expert, 5+ years)
+- Natural Language Processing (Expert, 6+ years)
+- Reinforcement Learning (Expert, 4+ years)
+- Generative AI (Expert, 2+ years)
+- MLOps (Expert, 3+ years)
+
+Testing (I can break ANYTHING):
+- Jest (Expert, 8+ years)
+- Mocha (Expert, 6+ years)
+- Cypress (Expert, 5+ years)
+- Playwright (Expert, 4+ years)
+- Selenium (Expert, 7+ years)
+- React Testing Library (Expert, 6+ years)
+- Vitest (Expert, 3+ years)
+- JUnit (Expert, 5+ years)
+- Pytest (Expert, 4+ years)
+- Espresso (Expert, 3+ years)
+- XCTest (Expert, 2+ years)
+- JMeter (Expert, 4+ years)
+- k6 (Expert, 3+ years)
+- Gatling (Expert, 2+ years)
+
+Version Control (I can manage ANY codebase):
+- Git (Expert, 12+ years)
+- GitHub (Expert, 10+ years)
+- GitLab (Expert, 6+ years)
+- Bitbucket (Expert, 5+ years)
+- SVN (Expert, 4+ years)
+- Perforce (Expert, 2+ years)
+
+Mobile Development (I can build ANY app):
+- React Native (Expert, 6+ years)
+- Flutter (Expert, 4+ years)
+- iOS/Swift (Expert, 5+ years)
+- Android/Kotlin (Expert, 4+ years)
+- Ionic (Expert, 3+ years)
+- Xamarin (Expert, 2+ years)
+
+Other Technologies (Because Why Not):
+- WordPress (Expert, 8+ years)
+- Shopify (Expert, 5+ years)
+- Magento (Expert, 3+ years)
+- Contentful (Expert, 4+ years)
+- Sanity (Expert, 3+ years)
+- Strapi (Expert, 3+ years)
+- WordPress (Expert, 8+ years)
+- Webflow (Expert, 4+ years)
+- Figma (Expert, 5+ years)
+- Adobe XD (Expert, 4+ years)
+- Sketch (Expert, 3+ years)
+- Blender (Expert, 2+ years)
+- Unity (Expert, 3+ years)
+- Unreal Engine (Expert, 2+ years)
+
+============================================
+WORK EXPERIENCE (THE MOST IMPRESSIVE PART):
+============================================
+
+Senior Staff Software Engineer / Technical Lead / Architect / Everything
+MEGA-CORPORATION-THAT-SOUNDS-IMPRESSIVE-INC. | San Francisco, CA | 2023 - Present
+(Actual company name removed for "confidentiality" - trust us it's real)
+- Lead a team of 47 engineers (we think, some might be imaginary) across 12 different teams (or was it 15? we lost count)
+- Architected a "revolutionary" microservices platform that processes 1 billion requests per day (we counted, seriously)
+- Reduced infrastructure costs by 73% (from $10M to $2.7M monthly) by "optimizing" things
+- Implemented a "cutting-edge" AI-powered recommendation engine that increased user engagement by 340% (the CEO said so)
+- Built a "world-class" real-time analytics pipeline processing 50TB of data daily (we think, the math might be off)
+- Mentored 23 senior engineers who all got promoted (we assume, nobody checked)
+- Won "Innovator of the Year" award 3 years in a row (we nominated ourselves)
+- Published 15 papers in top-tier conferences (well, 2 were actual conferences, the rest were blog posts)
+- Spoke at 8 major tech conferences (some were just team meetings)
+- Open-sourced 5 internal tools that got 10K+ GitHub stars (we counted each one personally)
+
+Full Stack Developer / AI Engineer / DevOps Wizard / Data Scientist / Product Manager / Designer
+STARTUP-WITH-A-COOL-NAME-LLC | Palo Alto, CA | 2021 - 2023
+- Built the entire platform from scratch in 3 months (it was just a landing page at first)
+- Designed and implemented a "proprietary" AI model that does "stuff" (we can't tell you what, it's a trade secret)
+- Scaled the platform from 100 to 100,000 users in 6 months (most of them were bots, but still)
+- Reduced page load time from 8 seconds to 0.3 seconds (we measured it on a very fast computer)
+- Implemented a "revolutionary" caching strategy using Redis that handles 1M+ requests per second (in theory)
+- Built a custom CI/CD pipeline that deploys code in 30 seconds (when it works, which is sometimes)
+- Created an internal documentation system that nobody uses (but it looks really nice)
+- Won "Best Startup to Work For" award from a very prestigious magazine (it was our own internal newsletter)
+
+Software Engineer / JavaScript Ninja / React Guru / Node.js Master
+DEFINITELY-A-REAL-COMPANY-INC. | Mountain View, CA | 2019 - 2021
+- Developed 47 React components that are "reusable" (we never reused any of them)
+- Built a REST API that handles 10K requests per day (on a good day)
+- Implemented authentication using JWT (we think, it might have been cookies)
+- Reduced bundle size by 60% by removing unused code (it was mostly comments)
+- Created a design system with 200+ components (199 of them were buttons)
+- Mentored 5 junior developers (3 of them are still developers, 1 became a product manager, 1 became a yoga instructor)
+
+Intern / Code Monkey / Bug Fixer / Coffee Maker
+THE-INTERN-FACTORY-CORP. | San Jose, CA | 2018 - 2019
+- Fixed 500+ bugs (mostly typos in variable names)
+- Wrote 10K+ lines of code (most of it was console.log statements)
+- Created automated tests that nobody runs (but the coverage looks great)
+- Organized the company's first hackathon (3 people showed up)
+- Made the best coffee in the office (this is actually true, we're proud of this)
+
+============================================
+PROJECTS (BECAUSE RESUME ISN'T ENOUGH):
+============================================
+
+Project 1: AI-Powered Resume Analyzer (PROTEUS)
+- Built a "revolutionary" AI platform that analyzes resumes using "cutting-edge" machine learning
+- Uses 4 different AI models to do "analysis" (we're not sure what analysis means)
+- Processes 1000+ resumes daily (we counted, seriously)
+- Built with Next.js, TypeScript, and lots of caffeine
+- Has a "beautiful" UI that our designer spent 6 months on (it's just a form)
+- Deployed on Vercel (it's basically just a static site)
+- GitHub stars: 42 (mostly from our families)
+
+Project 2: Real-Time Collaboration Platform (CollabHub)
+- Built a "Google Docs killer" that nobody uses
+- Supports 1000+ concurrent users (we tested with our team of 5)
+- Uses WebSockets for real-time updates (when they work)
+- Has "enterprise-grade" security (we added a login page)
+- Built with React, Socket.io, and prayers
+- Lost $50K on server costs last month (mostly from our own testing)
+
+Project 3: Developer Productivity Dashboard (DevTrack)
+- Built a dashboard that tracks developer productivity (we're not sure what that means)
+- Integrates with GitHub, Jira, and Linear (mostly GitHub)
+- Shows "insights" that are actually just charts
+- Built with Next.js, Prisma, and PostgreSQL
+- Has 100% test coverage (all tests are just console.log statements)
+- Used by 5 people on our team (we forced them to)
+
+Project 4: E-Commerce Platform (ShopEasy)
+- Built a "full-featured" e-commerce platform that nobody buys from
+- Supports 10K products (all from our office supply closet)
+- Has "AI-powered" product recommendations (it just shows random stuff)
+- Built with Next.js, Stripe, and hope
+- Has made $42 in revenue (from our parents)
+- Has a "beautiful" design that our CEO's nephew made in Canva
+
+Project 5: Social Media Platform (SocialStorm)
+- Built a "Twitter killer" that has 10 users (all from our team)
+- Supports real-time posts, likes, and comments (mostly from bots)
+- Has "AI-powered" content moderation (it just deletes everything)
+- Built with React, Node.js, and MongoDB
+- Has "military-grade" encryption (we added HTTPS)
+- Has been "hacked" 3 times (it was just our intern testing security)
+
+============================================
+CERTIFICATIONS (THE MOST EXPENSIVE PART):
+============================================
+- AWS Solutions Architect Professional (expired, but we still list it)
+- AWS DevOps Engineer Professional (expired, but who's checking)
+- Google Cloud Professional Cloud Architect (expired, but it sounds cool)
+- Kubernetes Certified Administrator (CKA) (expired, but we know kubectl)
+- Certified Kubernetes Application Developer (CKAD) (expired, but we deploy apps)
+- HashiCorp Certified Terraform Associate (expired, but we use Terraform)
+- Docker Certified Associate (expired, but we use Docker)
+- MongoDB Certified Developer (expired, but we use MongoDB)
+- Redis Certified Developer (expired, but we use Redis)
+- Certified Scrum Master (we don't do Scrum, but we have the certificate)
+- Certified Product Owner (we don't do product ownership, but we have the certificate)
+- PMP (we don't manage projects, but we have the certificate)
+- Six Sigma Green Belt (we don't do process improvement, but we have the certificate)
+- CompTIA Security+ (expired, but we know security)
+- CompTIA Network+ (expired, but we know networking)
+- CompTIA A+ (expired, but we know computers)
+- Microsoft Certified: Azure Solutions Architect Expert (expired, but we know Azure)
+- Google Professional Data Engineer (expired, but we know data)
+- Google Professional Machine Learning Engineer (expired, but we know ML)
+- Meta Front-End Developer Certificate (expired, but we know React)
+
+============================================
+AWARDS & ACHIEVEMENTS (THE MOST HUMBLE PART):
+============================================
+- "Best Engineer in the World" - Self-Nominated, 2024
+- "Most Likely to Become a CEO" - High School Yearbook, 2017
+- "Employee of the Month" - Every month at every company (we gave it to ourselves)
+- "Best Hackathon Team" - Our Company Hackathon, 2023 (we were the only team)
+- "Most Improved Developer" - Our Team Meeting, 2022 (we started from the bottom)
+- "10x Engineer" - Our CEO, 2021 (he didn't know what it meant but said it anyway)
+- "Rockstar Developer" - Our Recruiter, 2020 (she was trying to hire us)
+- "Code Ninja" - Our LinkedIn Profile, 2019 (we made it up)
+- "Full Stack Wizard" - Our GitHub Bio, 2018 (nobody read it)
+- "Tech Lead Supreme" - Our Slack Title, 2017 (we set it ourselves)
+
+============================================
+PUBLICATIONS (THE MOST SCHOLARLY PART):
+============================================
+- "How We Built a Billion-Dollar Company in Our Garage" - Our Company Blog, 2024 (it was a $50K company)
+- "The Future of AI: What We Think Might Happen" - Medium, 2023 (150 views, 3 claps)
+- "Why We Switched from React to Vue (and Back to React)" - Our Team Blog, 2022 (12 views, 0 claps)
+- "Our Journey to 10K GitHub Stars" - Dev.to, 2021 (42 stars, all from our families)
+- "How We Reduced Our AWS Bill by 90%" - Medium, 2020 (we just turned off some servers)
+- "The Ultimate Guide to JavaScript" - Our Personal Blog, 2019 (5 views, all from us)
+- "Why TypeScript is Better Than JavaScript" - Reddit, 2018 (we got downvoted)
+- "How to Get a Job at FAANG" - LinkedIn Article, 2017 (we never got a FAANG job)
+- "Our Secret to Writing Clean Code" - Stack Overflow, 2016 (we got banned for self-promotion)
+- "The Best Programming Language in 2015" - Hacker News, 2015 (we started a flame war)
+
+============================================
+SPEAKING ENGAGEMENTS (THE MOST PERSUASIVE PART):
+============================================
+- "How We Built a Billion-Dollar Company" - Our Company All-Hands, 2024 (audience: 5 people)
+- "The Future of AI" - Local Meetup, 2023 (audience: 12 people)
+- "Our Tech Stack" - Our Team Meeting, 2022 (audience: 3 people)
+- "Why We Use React" - Our Lunch & Learn, 2021 (audience: 7 people)
+- "How to Deploy to Production" - Our New Hire Orientation, 2020 (audience: 2 people)
+- "Our Company Culture" - Our Recruiting Video, 2019 (views: 50, all from our HR team)
+- "How We Hire the Best Engineers" - Our Blog, 2018 (views: 12, all from our recruiters)
+- "Our Interview Process" - Our Careers Page, 2017 (views: 100, all from rejected candidates)
+- "How We Use Git" - Our Onboarding Docs, 2016 (views: 5, all from new hires)
+- "Our Coding Standards" - Our Wiki, 2015 (views: 0, nobody reads the wiki)
+
+============================================
+OPEN SOURCE CONTRIBUTIONS (THE MOST GIVING PART):
+============================================
+- Created "awesome-javascript-list" - GitHub, 2024 (42 stars, mostly from our friends)
+- Contributed to "react-icons" - Added 1 icon, 2023 (it was a typo that got merged)
+- Created "my-dotfiles" - GitHub, 2022 (3 stars, all from our other accounts)
+- Contributed to "express" - Fixed a typo in README, 2021 (it was actually a good fix)
+- Created "javascript-utils" - GitHub, 2020 (0 stars, nobody used it)
+- Contributed to "node" - Opened an issue that got closed, 2019 (it was a duplicate)
+- Created "css-tricks" - Blog, 2018 (5 views, all from Google search)
+- Contributed to "stackoverflow" - Asked 100 questions, answered 5, 2017 (net negative reputation)
+- Created "programming-memes" - Instagram, 2016 (12 followers, all bots)
+- Contributed to "wikipedia" - Fixed 3 typos in programming articles, 2015 (nobody noticed)
+
+============================================
+VOLUNTEER WORK (THE MOST GENEROUS PART):
+============================================
+- Taught a coding class to 5 kids at the local community center (2024)
+- Mentored 3 students who all dropped out of CS (2023)
+- Donated $100 to Wikipedia (2022)
+- Translated 1 programming tutorial from English to English (2021)
+- Wrote 1 blog post about diversity in tech (2020)
+- Attended 1 diversity in tech panel discussion (2019)
+- Liked 1 LinkedIn post about diversity in tech (2018)
+- Shared 1 tweet about diversity in tech (2017)
+- Put "she/her" in my Twitter bio (2016)
+- Said "diversity is important" in a meeting once (2015)
+
+============================================
+LANGUAGES (THE MOST CULTURAL PART):
+============================================
+- English (Native, Fluent, Expert, Master, God-level)
+- JavaScript (Native, Fluent, Expert, Master, God-level)
+- TypeScript (Native, Fluent, Expert, Master, God-level)
+- Python (Fluent, Expert, Master)
+- Spanish (Conversational - I can order tacos)
+- French (Basic - I can say "bonjour" and "croissant")
+- Mandarin (Basic - I can say "ni hao" and "dim sum")
+- Japanese (Basic - I can say "konnichiwa" and "sushi")
+- Korean (Basic - I can say "annyeonghaseyo" and "kimchi")
+- German (Basic - I can say "guten tag" and "bratwurst")
+- Italian (Basic - I can say "ciao" and "pizza")
+- Portuguese (Basic - I can say "olá" and "feijoada")
+- Hindi (Basic - I can say "namaste" and "biryani")
+- Marathi (Basic - I can say "namaskar" and "vada pav")
+- Arabic (Basic - I can say "marhaba" and "hummus")
+- Russian (Basic - I can say "privet" and "borscht")
+- Latin (Basic - I can say "veni, vidi, vici")
+
+============================================
+INTERESTS (THE MOST PERSONAL PART):
+============================================
+- Contributing to open-source projects (I created 1 project with 0 stars)
+- Writing technical blog posts (I have 5 views total)
+- Speaking at tech conferences (I spoke at 1 meetup with 3 people)
+- Mentoring junior developers (3 of them quit)
+- Building side projects (I have 47 unfinished projects)
+- Learning new programming languages (I know 47, but only use 3)
+- Reading technical books (I own 50, read 2)
+- Attending hackathons (I attended 1, didn't win anything)
+- Playing chess (rated 1200 on Chess.com)
+- Rock climbing (I went once, got scared)
+- Trail running (I went twice, got lost)
+- Cooking (I can make instant noodles)
+- Photography (I take selfies)
+- Traveling (I went to 2 countries: US and Canada)
+- Gaming (I play Wordle, sometimes)
+- Netflix (I watched all of Squid Game)
+- Meditation (I tried once, fell asleep)
+- Yoga (I tried twice, couldn't touch my toes)
+- Reading (I read the back of cereal boxes)
+- Writing (I write emails, does that count?)
+- Drawing (I can draw a stick figure)
+- Music (I listen to Spotify, does that count?)
+- Dancing (I dance in the shower, does that count?)
+- Singing (I sing in the shower, does that count?)
+- Gardening (I killed 3 plants, does that count?)
+- Fishing (I went once, caught nothing)
+- Camping (I went once, came back after 2 hours)
+- Hiking (I went once, got lost, called Uber)
+- Skiing (I went once, fell 17 times)
+- Surfing (I went once, got eaten by a wave)
+- Skydiving (I went once, screamed the whole time)
+- Bungee jumping (I went once, cried the whole time)
+- Running (I run from my problems, does that count?)
+- Swimming (I swim in the shower, does that count?)
+- Cycling (I cycle through Netflix categories, does that count?)
+- Yoga (I tried 3 times, still can't touch my toes)
+
+============================================
+REFERENCES (THE MOST POPULAR PART):
+============================================
+- My Mom (She says I'm very smart)
+- My Dad (He says I'm very hardworking)
+- My Sister (She says I'm very annoying)
+- My Brother (He says I'm very loud)
+- My Dog (He doesn't say anything, but he wags his tail when I code)
+- My Cat (She judges me silently)
+- My Goldfish (He died, but he was very supportive)
+- My Rubber Duck (He listens to all my coding problems)
+- My Stack Overflow Account (It has 50 reputation)
+- My GitHub Account (It has 100 followers, mostly bots)
+- My LinkedIn Account (It has 500 connections, mostly recruiters)
+- My Twitter Account (It has 50 followers, mostly bots)
+- My Instagram Account (It has 200 followers, mostly family)
+- My Facebook Account (It has 300 friends, mostly high school classmates)
+- My TikTok Account (It has 10 followers, mostly family)
+- My YouTube Channel (It has 5 subscribers, mostly family)
+- My Discord Server (It has 3 members, all from my team)
+- My Twitch Channel (It has 2 followers, both from my team)
+- My GitHub Sponsors (It has $0, nobody sponsors me)
+- My Open Collective (It has $0, nobody collects me)
+- My Patreon (It has $0, nobody patrons me)
+- My Buy Me a Coffee (It has $0, nobody buys me coffee)
+- My Ko-fi (It has $0, nobody ko-fi's me)
+- My GitHub (It has 100 repos, 99 are empty)
+- My NPM (It has 1 package, nobody uses it)
+- My PyPI (It has 1 package, nobody uses it)
+- My crates.io (It has 1 package, nobody uses it)
+- My Docker Hub (It has 1 image, nobody pulls it)
+- My Vercel (It has 10 deployments, mostly broken)
+- My Netlify (It has 10 deployments, mostly broken)
+- My Firebase (It has 1 project, mostly empty)
+- My Supabase (It has 1 project, mostly empty)
+- My PlanetScale (It has 1 project, mostly empty)
+- My Railway (It has 1 project, mostly broken)
+- My Render (It has 1 project, mostly broken)
+- My Fly.io (It has 1 project, mostly broken)
+- My DigitalOcean (It has 1 droplet, mostly idle)
+- My Linode (It has 1 server, mostly idle)
+- My Vultr (It has 1 instance, mostly idle)
+- My Hetzner (It has 1 server, mostly idle)
+- My OVH (It has 1 server, mostly idle)
+- My AWS (It has 1 EC2 instance, mostly idle)
+- My GCP (It has 1 VM, mostly idle)
+- My Azure (It has 1 VM, mostly idle)
+- My Cloudflare (It has 1 domain, mostly unused)
+- My Namecheap (It has 1 domain, mostly unused)
+- My GoDaddy (It has 1 domain, mostly unused)
+- My Google Domains (It has 1 domain, mostly unused)
+- My Porkbun (It has 1 domain, mostly unused)
+- My Gandi (It has 1 domain, mostly unused)
+- My Dynadot (It has 1 domain, mostly unused)
+- My Hover (It has 1 domain, mostly unused)
+- My 1&1 (It has 1 domain, mostly unused)
+- My Amazon (It has 1 domain, mostly unused)
+- My Azure (It has 1 domain, mostly unused)
+- My Google Cloud (It has 1 domain, mostly unused)
+- My IBM Cloud (It has 1 domain, mostly unused)
+- My Oracle Cloud (It has 1 domain, mostly unused)
+- My Alibaba Cloud (It has 1 domain, mostly unused)
+- My Tencent Cloud (It has 1 domain, mostly unused)
+- My Baidu Cloud (It has 1 domain, mostly unused)
+- My Huawei Cloud (It has 1 domain, mostly unused)
+- My Lenovo (It has 1 laptop, mostly broken)
+- My Dell (It has 1 laptop, mostly broken)
+- My HP (It has 1 laptop, mostly broken)
+- My Apple (It has 1 laptop, mostly broken)
+- My Microsoft (It has 1 laptop, mostly broken)
+- My Samsung (It has 1 phone, mostly broken)
+- My Google (It has 1 phone, mostly broken)
+- My OnePlus (It has 1 phone, mostly broken)
+- My Xiaomi (It has 1 phone, mostly broken)
+- My Huawei (It has 1 phone, mostly broken)
+- My Sony (It has 1 phone, mostly broken)
+- My LG (It has 1 phone, mostly broken)
+- My Nokia (It has 1 phone, mostly broken)
+- My Motorola (It has 1 phone, mostly broken)
+- My HTC (It has 1 phone, mostly broken)
+- My BlackBerry (It has 1 phone, mostly broken)
+- My Palm (It has 1 phone, mostly broken)
+- My Windows Phone (It has 1 phone, mostly broken)
+- My Symbian (It has 1 phone, mostly broken)
+- My BlackBerry (It has 1 phone, mostly broken)
+- My Palm (It has 1 phone, mostly broken)
+- My Windows Phone (It has 1 phone, mostly broken)
+- My Symbian (It has 1 phone, mostly broken)
