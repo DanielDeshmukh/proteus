@@ -2,7 +2,7 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
         "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct"
@@ -12,7 +12,7 @@
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
         "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct"
@@ -33,9 +33,8 @@
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "meta/llama-3.1-70b-instruct",
         "meta/llama-3.1-8b-instruct"
       ],
@@ -44,7 +43,7 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/ising-calibration-1-35b-a3b",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
         "meta/llama-3.1-8b-instruct",
         "meta/llama-3.1-70b-instruct"
@@ -61,10 +60,10 @@
   ],
   "lastHealthCheck": "2026-07-16T14:00:47.265Z",
   "lastHealthyModels": {
-    "jd-parser": "nvidia/gliner-pii",
-    "resume-parser": "nvidia/gliner-pii",
+    "jd-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "resume-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "gap-analyzer": "nvidia/nv-embedqa-e5-v5",
-    "rewrite-suggester": "nvidia/gliner-pii",
-    "cover-letter": "nvidia/ising-calibration-1-35b-a3b"
+    "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "cover-letter": "nvidia/llama-3.3-nemotron-super-49b-v1.5"
   }
 }

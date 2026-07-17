@@ -88,7 +88,7 @@ async function withRetry<T>(
     }
   }
 
-  // Try fallback model
+  // Try fallback model (read-only: no disk write)
   try {
     const configPath = require("path").join(process.cwd(), "models.json"); // eslint-disable-line @typescript-eslint/no-require-imports
     const config = JSON.parse(require("fs").readFileSync(configPath, "utf-8")); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -98,22 +98,21 @@ async function withRetry<T>(
       const fallback = roleConfig.fallbacks.find((m: string) => m !== currentModel);
       if (fallback) {
         console.log(`[NIM] ${role} failed (${lastError?.name}), trying fallback: ${fallback}`);
-        // Create a new client with fallback model and retry once
         const fallbackClient = new OpenAI({
           apiKey: process.env.NVIDIA_NIM_API_KEY,
           baseURL: NIM_BASE_URL,
-      timeout: 180000,
+          timeout: 180000,
         });
         try {
-          const response = await fallbackClient.chat.completions.create({
+          // Test fallback with a minimal request
+          await fallbackClient.chat.completions.create({
             model: fallback,
             messages: [{ role: "user", content: 'Return exactly: {"ok":true}' }],
             max_tokens: 30,
             temperature: 0.1,
           });
-          // If fallback works, update config
+          // Fallback works — update in-memory config (no disk write on Vercel)
           roleConfig.current = fallback;
-          require("fs").writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n"); // eslint-disable-line @typescript-eslint/no-require-imports
           // Re-run original fn with updated config
           return await fn();
         } catch {
