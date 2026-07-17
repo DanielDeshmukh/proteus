@@ -30,9 +30,9 @@
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "current": "mistralai/mistral-nemotron",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+        "mistralai/mistral-nemotron"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -53,12 +53,12 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": "2026-07-17T08:14:44.716Z",
+  "lastHealthCheck": "2026-07-17T13:45:49.659Z",
   "lastHealthyModels": {
     "jd-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "resume-parser": "nvidia/gliner-pii",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
-    "rewrite-suggester": "mistralai/mistral-nemotron",
+    "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
     "cover-letter": "nvidia/nemotron-3-super-120b-a12b"
   }
 }

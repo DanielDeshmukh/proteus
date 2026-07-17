@@ -59,11 +59,11 @@ Resume┘
 
 | Role | Model | Last Checked |
 |------|-------|--------------|
-| jd-parser | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-17T08:14:44.716Z |
-| resume-parser | `nvidia/gliner-pii` | 2026-07-17T08:14:44.716Z |
-| gap-analyzer | `nvidia/llama-nemotron-embed-1b-v2` | 2026-07-17T08:14:44.716Z |
-| rewrite-suggester | `mistralai/mistral-nemotron` | 2026-07-17T08:14:44.716Z |
-| cover-letter | `nvidia/nemotron-3-super-120b-a12b` | 2026-07-17T08:14:44.716Z |
+| jd-parser | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-17T13:45:49.659Z |
+| resume-parser | `nvidia/gliner-pii` | 2026-07-17T13:45:49.659Z |
+| gap-analyzer | `nvidia/llama-nemotron-embed-1b-v2` | 2026-07-17T13:45:49.659Z |
+| rewrite-suggester | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-17T13:45:49.659Z |
+| cover-letter | `nvidia/nemotron-3-super-120b-a12b` | 2026-07-17T13:45:49.659Z |
 <!-- END MODELS AUTO-GENERATED -->
 
 ## Features
