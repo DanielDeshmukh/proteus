@@ -4,49 +4,43 @@
       "description": "Extract structured requirements from job descriptions",
       "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "meta/llama-3.1-8b-instruct",
-        "meta/llama-3.1-70b-instruct"
+        "nvidia/nemotron-3-nano-30b-a3b"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "current": "nvidia/llama-3.1-70b-instruct",
       "fallbacks": [
-        "meta/llama-3.1-8b-instruct",
-        "meta/llama-3.1-70b-instruct"
+        "nvidia/llama-3.3-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "gap-analyzer": {
       "description": "Semantic similarity scoring via embeddings",
-      "current": "nvidia/nv-embedqa-e5-v5",
+      "current": "nvidia/llama-nemotron-embed-1b-v2",
       "fallbacks": [
-        "nvidia/nv-embedqa-e5-v5",
-        "nvidia/nv-embedqa-mistral-7b-v2",
-        "nvidia/nv-embed-v1"
+        "nvidia/nv-embedqa-e5-v5"
       ],
       "testPrompt": "test",
       "type": "embedding"
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "current": "mistralai/mistral-nemotron",
       "fallbacks": [
-        "meta/llama-3.1-70b-instruct",
-        "meta/llama-3.1-8b-instruct"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "current": "nvidia/nemotron-3-super-120b-a12b",
       "fallbacks": [
-        "meta/llama-3.1-8b-instruct",
-        "meta/llama-3.1-70b-instruct"
+        "nvidia/llama-3.1-70b-instruct"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -58,12 +52,6 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": "2026-07-16T14:00:47.265Z",
-  "lastHealthyModels": {
-    "jd-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "resume-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "gap-analyzer": "nvidia/nv-embedqa-e5-v5",
-    "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "cover-letter": "nvidia/llama-3.3-nemotron-super-49b-v1.5"
-  }
+  "lastHealthCheck": null,
+  "lastHealthyModels": {}
 }
