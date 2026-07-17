@@ -2,9 +2,9 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "current": "nvidia/nemotron-3-nano-30b-a3b",
       "fallbacks": [
-        "nvidia/nemotron-3-nano-30b-a3b"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
       ],
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
@@ -53,9 +53,9 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": "2026-07-17T13:45:49.659Z",
+  "lastHealthCheck": "2026-07-17T19:15:41.155Z",
   "lastHealthyModels": {
-    "jd-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "jd-parser": "nvidia/nemotron-3-nano-30b-a3b",
     "resume-parser": "nvidia/gliner-pii",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
     "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
