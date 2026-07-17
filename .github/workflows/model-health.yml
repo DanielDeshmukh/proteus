@@ -31,7 +31,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add proteus-next/models.json README.md
           CHANGES="${{ steps.health.outputs.changes_json }}"
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore: auto-replace unhealthy models

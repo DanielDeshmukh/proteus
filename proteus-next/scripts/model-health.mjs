@@ -146,6 +146,34 @@ async function findReplacement(deadModel, roleConfig, allNimModels, preferredPre
   return null;
 }
 
+// ── README Auto-Update ────────────────────────────────────
+
+function updateReadmeModels(config) {
+  const readmePath = join(PROJECT_ROOT, "README.md");
+  let readme;
+  try { readme = readFileSync(readmePath, "utf-8"); } catch { return; }
+
+  const startMarker = "<!-- MODELS AUTO-GENERATED START -->";
+  const endMarker = "<!-- END MODELS AUTO-GENERATED -->";
+  const startIdx = readme.indexOf(startMarker);
+  const endIdx = readme.indexOf(endMarker);
+  if (startIdx < 0 || endIdx < 0) return;
+
+  const lines = ["### Active Models (auto-updated by health check bot)\n"];
+  lines.push("| Role | Model | Last Checked |");
+  lines.push("|------|-------|--------------|");
+  for (const [role, model] of Object.entries(config.lastHealthyModels || {})) {
+    lines.push(`| ${role} | \`${model}\` | ${config.lastHealthCheck || "never"} |`);
+  }
+  lines.push("");
+
+  const table = lines.join("\n");
+  const before = readme.substring(0, startIdx + startMarker.length);
+  const after = readme.substring(endIdx);
+  writeFileSync(readmePath, before + "\n" + table + after, "utf-8");
+  console.log("  README.md models table updated.");
+}
+
 // ── Main ──────────────────────────────────────────────────
 
 async function main() {
@@ -255,7 +283,10 @@ async function main() {
   config.lastHealthyModels = healthyModels;
   saveConfig(config);
 
-  // 6. Summary
+  // 6. Update README.md auto-generated section
+  updateReadmeModels(config);
+
+  // 7. Summary
   console.log("=== SUMMARY ===");
   for (const r of report) {
     const icon = r.status === "healthy" ? "OK" : r.status === "replaced" ? "REPLACED" : r.status === "swapped_to_fallback" ? "SWAPPED" : "FAIL";

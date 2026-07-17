@@ -46,24 +46,24 @@ Resume┘
 
 | Step | Agent | Model | Task |
 |------|-------|-------|------|
-| 01 | JD Parser | `meta/llama-3.1-70b-instruct` | Extract role, requirements, seniority |
-| 02 | Resume Parser | `meta/llama-3.1-70b-instruct` | Extract skills, experience, achievements |
-| 03 | Gap Analyzer | `nvidia/nv-embedqa-e5-v5` | Semantic similarity scoring |
-| 04 | Rewriter | `meta/llama-3.1-70b-instruct` | JD-aware bullet rewrites |
-| 05 | Cover Letter | `meta/llama-3.1-70b-instruct` | Tailored letter generation |
+| 01 | JD Parser | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | Extract role, requirements, seniority |
+| 02 | Resume Parser | `nvidia/llama-3.1-70b-instruct` | Extract skills, experience, achievements |
+| 03 | Gap Analyzer | `nvidia/llama-nemotron-embed-1b-v2` | Semantic similarity scoring |
+| 04 | Rewriter | `mistralai/mistral-nemotron` | JD-aware bullet rewrites |
+| 05 | Cover Letter | `nvidia/nemotron-3-super-120b-a12b` | Tailored letter generation |
 
-> Models auto-update via GitHub Actions health checks every 6 hours.
+> Models auto-update via GitHub Actions health checks every 3 hours.
 
 <!-- MODELS AUTO-GENERATED START -->
 ### Active Models (auto-updated by health check bot)
 
 | Role | Model | Last Checked |
 |------|-------|--------------|
-| jd-parser | `nvidia/gliner-pii` | 2026-07-16T14:00:47.265Z |
-| resume-parser | `nvidia/gliner-pii` | 2026-07-16T14:00:47.265Z |
-| gap-analyzer | `nvidia/nv-embedqa-e5-v5` | 2026-07-16T14:00:47.265Z |
-| rewrite-suggester | `nvidia/gliner-pii` | 2026-07-16T14:00:47.265Z |
-| cover-letter | `nvidia/ising-calibration-1-35b-a3b` | 2026-07-16T14:00:47.265Z |
+| jd-parser | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | never |
+| resume-parser | `nvidia/llama-3.1-70b-instruct` | never |
+| gap-analyzer | `nvidia/llama-nemotron-embed-1b-v2` | never |
+| rewrite-suggester | `mistralai/mistral-nemotron` | never |
+| cover-letter | `nvidia/nemotron-3-super-120b-a12b` | never |
 <!-- END MODELS AUTO-GENERATED -->
 
 ## Features
