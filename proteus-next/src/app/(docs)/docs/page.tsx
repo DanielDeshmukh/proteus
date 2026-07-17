@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SiNvidia } from "react-icons/si";
 
 function Section({ id, title, icon, children }: { id: string; title: string; icon?: React.ReactNode; children: React.ReactNode }) {
@@ -96,12 +96,37 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
 }
 
 export default function DocsPage() {
+  const [modelRows, setModelRows] = useState<string[][]>([
+    ["JD Parser", "Loading...", "Parse job descriptions into structured requirements"],
+    ["Resume Parser", "Loading...", "Extract structured data from resume text"],
+    ["Gap Analyzer", "Loading...", "Generate embeddings for semantic similarity scoring"],
+    ["Rewriter", "Loading...", "Rewrite resume bullets to match JD requirements"],
+    ["Cover Letter", "Loading...", "Generate tailored cover letters"],
+  ]);
+  const [lastChecked, setLastChecked] = useState<string | null>(null);
+
   useEffect(() => {
     const hash = window.location.hash.slice(1);
     if (hash) {
       const el = document.getElementById(hash);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     }
+
+    fetch("/api/models")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.models) {
+          setModelRows(
+            data.models.map((m: { agent: string; model: string; task: string }) => [
+              m.agent,
+              m.model,
+              m.task,
+            ])
+          );
+          setLastChecked(data.lastHealthCheck);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   return (
@@ -263,18 +288,18 @@ export default function DocsPage() {
 
         <Table
           headers={["Role", "Model", "Purpose"]}
-          rows={[
-            ["JD Parser", "meta/llama-3.1-70b-instruct", "Parse job descriptions into structured requirements"],
-            ["Resume Parser", "meta/llama-3.1-70b-instruct", "Extract structured data from resume text"],
-            ["Gap Analyzer", "nvidia/nv-embedqa-e5-v5", "Generate embeddings for semantic similarity scoring"],
-            ["Rewriter", "meta/llama-3.1-70b-instruct", "Rewrite resume bullets to match JD requirements"],
-            ["Cover Letter", "meta/llama-3.1-70b-instruct", "Generate tailored cover letters"],
-          ]}
+          rows={modelRows}
         />
+
+        {lastChecked && (
+          <p style={{ fontSize: "12px", color: "var(--text-faint)", fontFamily: "var(--font-mono)", marginTop: "8px" }}>
+            Last health check: {new Date(lastChecked).toLocaleString()}
+          </p>
+        )}
 
         <SubSection title="Model health checks">
           <P>
-            A GitHub Actions workflow checks all models every 6 hours. If a model goes down, it&apos;s automatically replaced in <Code>models.json</Code>. The health check results are committed to the repository.
+            A GitHub Actions workflow checks all models every 3 hours. If a model goes down, it&apos;s automatically replaced in <Code>models.json</Code>. The health check results are committed to the repository.
           </P>
         </SubSection>
 
