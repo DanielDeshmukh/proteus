@@ -64,7 +64,7 @@ export async function callWithJsonRetry<T>(
     role?: string;
   } = {}
 ): Promise<T> {
-  const { temperature = 0.3, maxTokens = 4096, maxRetries = 2, cleanControlChars = false, role } = options;
+  const { temperature = 0.3, maxTokens = 4096, maxRetries = 1, cleanControlChars = false, role } = options;
 
   let messages = [
     { role: "system" as const, content: systemPrompt },

@@ -50,7 +50,7 @@ function getClient(): OpenAI {
     client = new OpenAI({
       apiKey,
       baseURL: NIM_BASE_URL,
-      timeout: 180000,
+      timeout: 45000,
     });
   }
   return client;
@@ -61,8 +61,8 @@ function getClient(): OpenAI {
 async function withRetry<T>(
   fn: () => Promise<T>,
   role: string,
-  maxRetries = 2,
-  retryDelay = 3000
+  maxRetries = 1,
+  retryDelay = 2000
 ): Promise<T> {
   let lastError: NimError | null = null;
 
@@ -101,7 +101,7 @@ async function withRetry<T>(
         const fallbackClient = new OpenAI({
           apiKey: process.env.NVIDIA_NIM_API_KEY,
           baseURL: NIM_BASE_URL,
-          timeout: 180000,
+          timeout: 45000,
         });
         try {
           // Test fallback with a minimal request

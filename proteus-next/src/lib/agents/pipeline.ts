@@ -60,12 +60,12 @@ export async function runPipeline(
 
   // Stage 1: Parse JD and Resume in parallel (120s timeout each)
   try {
-    const jdPromise = withTimeout(parseJd(jdText), 300_000, "JD parser").then(
+    const jdPromise = withTimeout(parseJd(jdText), 45_000, "JD parser").then(
       (val) => ({ status: "fulfilled" as const, value: val }),
       (reason) => ({ status: "rejected" as const, reason })
     );
 
-    const resumePromise = withTimeout(parseResume(resumeText), 300_000, "Resume parser").then(
+    const resumePromise = withTimeout(parseResume(resumeText), 45_000, "Resume parser").then(
       (val) => ({ status: "fulfilled" as const, value: val }),
       (reason) => ({ status: "rejected" as const, reason })
     );
@@ -101,7 +101,7 @@ export async function runPipeline(
   try {
     result.gap_analysis = await withTimeout(
       analyzeGaps(result.jd, result.resume),
-      120_000,
+      30_000,
       "Gap analysis"
     );
     result.timings["gap_analysis"] = (performance.now() - t1) / 1000;
@@ -120,7 +120,7 @@ export async function runPipeline(
   try {
     const rewritesPromise = withTimeout(
       suggestRewrites(result.jd, result.resume, result.gap_analysis),
-      300_000,
+      45_000,
       "Rewrite suggester"
     ).then(
       (val) => ({ status: "fulfilled" as const, value: val }),
@@ -129,7 +129,7 @@ export async function runPipeline(
 
     const coverPromise = withTimeout(
       generateCoverLetter(result.jd, result.resume, result.gap_analysis, coverLetterTone),
-      300_000,
+      45_000,
       "Cover letter"
     ).then(
       (val) => ({ status: "fulfilled" as const, value: val }),
