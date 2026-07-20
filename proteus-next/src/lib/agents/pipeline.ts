@@ -129,7 +129,7 @@ export async function runPipeline(
 
     const coverPromise = withTimeout(
       generateCoverLetter(result.jd, result.resume, result.gap_analysis, coverLetterTone),
-      45_000,
+      55_000,
       "Cover letter"
     ).then(
       (val) => ({ status: "fulfilled" as const, value: val }),

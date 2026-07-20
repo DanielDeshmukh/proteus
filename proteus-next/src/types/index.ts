@@ -151,10 +151,7 @@ export const RewriteOutputSchema = z.object({
     (v) => Array.isArray(v) ? v.map(x => typeof x === "string" ? x : JSON.stringify(x)) : [],
     z.array(z.string())
   ),
-}).passthrough().refine(
-  (data) => data.suggestions.length > 0,
-  { message: "suggestions array must not be empty" }
-);
+}).passthrough();
 
 export type RewriteSuggestion = z.infer<typeof RewriteSuggestionSchema>;
 export type RewriteOutput = z.infer<typeof RewriteOutputSchema>;
