@@ -27,6 +27,11 @@ function repairJson(raw: string): string {
   );
   // Fix trailing commas before } or ]
   s = s.replace(/,\s*([}\]])/g, "$1");
+  // Remove trailing text after closing brace/bracket
+  const lastBrace = s.lastIndexOf("}");
+  const lastBracket = s.lastIndexOf("]");
+  const end = Math.max(lastBrace, lastBracket);
+  if (end >= 0 && end < s.length - 1) s = s.substring(0, end + 1);
   return s;
 }
 
@@ -64,7 +69,7 @@ export async function callWithJsonRetry<T>(
     role?: string;
   } = {}
 ): Promise<T> {
-  const { temperature = 0.3, maxTokens = 4096, maxRetries = 1, cleanControlChars = false, role } = options;
+  const { temperature = 0.3, maxTokens = 4096, maxRetries = 2, cleanControlChars = false, role } = options;
 
   let messages = [
     { role: "system" as const, content: systemPrompt },

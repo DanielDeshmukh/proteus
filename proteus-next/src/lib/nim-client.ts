@@ -166,14 +166,33 @@ export function extractJson(text: string): string {
 
   if (start > 0) cleaned = cleaned.substring(start);
 
-  const lastBrace = cleaned.lastIndexOf("}");
-  const lastBracket = cleaned.lastIndexOf("]");
+  // Find matching closing bracket/brace by counting depth
+  let depth = 0;
+  let inString = false;
+  let escape = false;
   let end = -1;
-  if (lastBrace >= 0 && lastBracket >= 0) end = Math.max(lastBrace, lastBracket);
-  else if (lastBrace >= 0) end = lastBrace;
-  else if (lastBracket >= 0) end = lastBracket;
+  const startChar = cleaned[0];
+  const closeChar = startChar === "{" ? "}" : "]";
 
-  if (end >= 0 && end < cleaned.length - 1) cleaned = cleaned.substring(0, end + 1);
+  for (let i = 0; i < cleaned.length; i++) {
+    const ch = cleaned[i];
+    if (escape) { escape = false; continue; }
+    if (ch === "\\") { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === startChar || ch === closeChar) {
+      if (ch === startChar) depth++;
+      else depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+
+  if (end >= 0) cleaned = cleaned.substring(0, end + 1);
+  else {
+    // Fallback: last occurrence
+    const lastClose = cleaned.lastIndexOf(closeChar);
+    if (lastClose >= 0) cleaned = cleaned.substring(0, lastClose + 1);
+  }
 
   return cleaned.trim();
 }
