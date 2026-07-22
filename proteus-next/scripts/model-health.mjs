@@ -205,6 +205,24 @@ async function main() {
     const latency = Date.now() - start;
 
     if (result.ok) {
+      // For chat models, validate response is parseable JSON
+      if (!isEmbed) {
+        try {
+          let jsonStr = result.content.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+          const firstBrace = jsonStr.indexOf("{");
+          if (firstBrace >= 0) jsonStr = jsonStr.substring(firstBrace);
+          const lastBrace = jsonStr.lastIndexOf("}");
+          if (lastBrace >= 0) jsonStr = jsonStr.substring(0, lastBrace + 1);
+          JSON.parse(jsonStr);
+        } catch {
+          console.log(`  Status: UNHEALTHY - non-JSON response: ${result.content.substring(0, 80)}`);
+          // Treat as unhealthy, fall through to fallback logic
+          result.ok = false;
+        }
+      }
+    }
+
+    if (result.ok) {
       console.log(`  Status: HEALTHY (${latency}ms)\n`);
       healthyModels[roleName] = roleConfig.current;
       report.push({ role: roleName, model: roleConfig.current, status: "healthy", latency });

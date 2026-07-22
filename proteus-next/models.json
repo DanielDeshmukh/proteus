@@ -6,17 +6,16 @@
       "fallbacks": [
         "nvidia/llama-3.3-nemotron-super-49b-v1.5"
       ],
-      "testPrompt": "Return exactly: {\"ok\":true}",
+      "testPrompt": "Extract skills from this job description and return JSON with hard_skills array: Looking for a Python developer with Django and PostgreSQL experience.",
       "type": "chat"
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.1-70b-instruct",
       "fallbacks": [
-        "nvidia/llama-3.1-70b-instruct",
         "nvidia/llama-3.3-70b-instruct"
       ],
-      "testPrompt": "Return exactly: {\"ok\":true}",
+      "testPrompt": "Parse this resume into JSON with name, skills array, and experience array: John Smith, Software Engineer, 5 years Python experience at Google.",
       "type": "chat"
     },
     "gap-analyzer": {
@@ -34,16 +33,16 @@
       "fallbacks": [
         "mistralai/mistral-nemotron"
       ],
-      "testPrompt": "Return exactly: {\"ok\":true}",
+      "testPrompt": "Rewrite this resume bullet to match a Python developer job: Built web apps using JavaScript. Return JSON with suggested_rewrite field.",
       "type": "chat"
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/nemotron-3-super-120b-a12b",
+      "current": "nvidia/llama-3.1-70b-instruct",
       "fallbacks": [
-        "nvidia/llama-3.1-70b-instruct"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
       ],
-      "testPrompt": "Return exactly: {\"ok\":true}",
+      "testPrompt": "Write a 2-sentence cover letter opening for a software engineer role at Google. Return JSON with full_letter field.",
       "type": "chat"
     }
   },
@@ -56,9 +55,9 @@
   "lastHealthCheck": "2026-07-22T08:34:22.283Z",
   "lastHealthyModels": {
     "jd-parser": "nvidia/nemotron-3-nano-30b-a3b",
-    "resume-parser": "nvidia/gliner-pii",
+    "resume-parser": "nvidia/llama-3.1-70b-instruct",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
     "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "cover-letter": "nvidia/nemotron-3-super-120b-a12b"
+    "cover-letter": "nvidia/llama-3.1-70b-instruct"
   }
 }
