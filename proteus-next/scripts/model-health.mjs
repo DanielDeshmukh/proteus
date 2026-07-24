@@ -191,6 +191,14 @@ async function main() {
 
   // 2. Test each role's current model
   for (const [roleName, roleConfig] of Object.entries(config.roles)) {
+    // Skip pinned models — these are manually curated and should not be auto-swapped
+    if (roleConfig.pinned) {
+      console.log(`Role: ${roleName} — PINNED (skipping auto-swap)`);
+      healthyModels[roleName] = roleConfig.current;
+      report.push({ role: roleName, model: roleConfig.current, status: "pinned", latency: 0 });
+      continue;
+    }
+
     const isEmbed = roleConfig.type === "embedding";
     const testPrompt = roleConfig.testPrompt || "Say hi";
 
