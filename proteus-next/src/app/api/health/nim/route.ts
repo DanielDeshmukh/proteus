@@ -61,11 +61,30 @@ async function testChat(model: string, apiKey: string, testPrompt?: string, time
     try {
       const data = JSON.parse(body);
       const content = data.choices?.[0]?.message?.content || "";
+      // Use same extraction logic as nim-client extractJson
       let jsonStr = content.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
       const firstBrace = jsonStr.indexOf("{");
-      if (firstBrace >= 0) jsonStr = jsonStr.substring(firstBrace);
-      const lastBrace = jsonStr.lastIndexOf("}");
-      if (lastBrace >= 0) jsonStr = jsonStr.substring(0, lastBrace + 1);
+      const firstBracket = jsonStr.indexOf("[");
+      let start = -1;
+      if (firstBrace >= 0 && firstBracket >= 0) start = Math.min(firstBrace, firstBracket);
+      else if (firstBrace >= 0) start = firstBrace;
+      else if (firstBracket >= 0) start = firstBracket;
+      if (start >= 0) jsonStr = jsonStr.substring(start);
+      // Find matching closing bracket by depth counting
+      let depth = 0, inStr = false, esc = false, end = -1;
+      const closeChar = jsonStr[0] === "{" ? "}" : "]";
+      for (let i = 0; i < jsonStr.length; i++) {
+        const ch = jsonStr[i];
+        if (esc) { esc = false; continue; }
+        if (ch === "\\") { esc = true; continue; }
+        if (ch === '"') { inStr = !inStr; continue; }
+        if (inStr) continue;
+        if (ch === jsonStr[0] || ch === closeChar) {
+          if (ch === jsonStr[0]) depth++; else depth--;
+          if (depth === 0) { end = i; break; }
+        }
+      }
+      if (end >= 0) jsonStr = jsonStr.substring(0, end + 1);
       JSON.parse(jsonStr);
     } catch {
       return { model, ok: false, latency, error: "Model returned non-JSON response", errorClass: "INVALID_OUTPUT", fix: "Model may not support structured output. Try a different model." };

@@ -85,6 +85,8 @@ Missing Requirements: ${gapAnalysis.gaps
 
 IMPORTANT: Use the candidate's ACTUAL name "${resume.name}" throughout the letter. Use real company names, real skill names, and real achievements from the experience section above. Do NOT use any placeholder text in brackets.
 
+CRITICAL: The candidate's name is "${resume.name}". You MUST use EXACTLY this name in the letter closing (e.g., "Sincerely, ${resume.name}"). Do NOT use any other name. Do NOT make up a name. Do NOT use placeholders.
+
 Write a ${tone} cover letter for this candidate applying to this role.`;
 
   return callWithJsonRetry(COVER_LETTER_MODEL, COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema, {
