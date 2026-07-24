@@ -31,9 +31,10 @@ interface TestResult {
   error?: string;
   errorClass?: string;
   fix?: string;
+  pinned?: boolean;
 }
 
-async function testChat(model: string, apiKey: string, timeout = 30000): Promise<Omit<TestResult, "step" | "agent" | "task">> {
+async function testChat(model: string, apiKey: string, testPrompt?: string, timeout = 30000): Promise<Omit<TestResult, "step" | "agent" | "task">> {
   const start = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
@@ -43,8 +44,8 @@ async function testChat(model: string, apiKey: string, timeout = 30000): Promise
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model,
-        messages: [{ role: "user", content: 'Return exactly: {"ok":true}' }],
-        max_tokens: 30,
+        messages: [{ role: "user", content: testPrompt || 'Return exactly: {"ok":true}' }],
+        max_tokens: 200,
         temperature: 0.1,
       }),
       signal: controller.signal,
@@ -55,6 +56,19 @@ async function testChat(model: string, apiKey: string, timeout = 30000): Promise
     if (!res.ok) {
       const cls = ERROR_CLASS[String(res.status)] || { name: "UNKNOWN", fix: "Check NIM status." };
       return { model, ok: false, latency, error: `HTTP ${res.status}: ${body.substring(0, 100)}`, errorClass: cls.name, fix: cls.fix };
+    }
+    // Validate response is parseable JSON
+    try {
+      const data = JSON.parse(body);
+      const content = data.choices?.[0]?.message?.content || "";
+      let jsonStr = content.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+      const firstBrace = jsonStr.indexOf("{");
+      if (firstBrace >= 0) jsonStr = jsonStr.substring(firstBrace);
+      const lastBrace = jsonStr.lastIndexOf("}");
+      if (lastBrace >= 0) jsonStr = jsonStr.substring(0, lastBrace + 1);
+      JSON.parse(jsonStr);
+    } catch {
+      return { model, ok: false, latency, error: "Model returned non-JSON response", errorClass: "INVALID_OUTPUT", fix: "Model may not support structured output. Try a different model." };
     }
     return { model, ok: true, latency };
   } catch (e: any) {
@@ -116,9 +130,9 @@ export async function GET() {
     const isEmbed = cfg.type === "embedding";
     const base = isEmbed
       ? await testEmbed(cfg.current, apiKey)
-      : await testChat(cfg.current, apiKey);
+      : await testChat(cfg.current, apiKey, cfg.testPrompt);
 
-    results.push({ ...step, ...base });
+    results.push({ ...step, ...base, pinned: cfg.pinned || false });
   }
 
   const healthy = results.filter(r => r.ok).length;
