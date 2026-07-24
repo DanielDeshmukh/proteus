@@ -42,9 +42,9 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/nemotron-3-nano-30b-a3b",
+      "current": "meta/llama-4-maverick-17b-128e-instruct",
       "fallbacks": [
-        "meta/llama-4-maverick-17b-128e-instruct"
+        "mistralai/mistral-nemotron"
       ],
       "testPrompt": "Write a 2-sentence cover letter opening for a software engineer role at Google. Return JSON with full_letter field.",
       "type": "chat",
@@ -63,6 +63,6 @@
     "resume-parser": "mistralai/mistral-nemotron",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
     "rewrite-suggester": "meta/llama-3.1-8b-instruct",
-    "cover-letter": "nvidia/nemotron-3-nano-30b-a3b"
+    "cover-letter": "meta/llama-4-maverick-17b-128e-instruct"
   }
 }
