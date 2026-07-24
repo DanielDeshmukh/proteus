@@ -42,9 +42,9 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/nemotron-3-super-120b-a12b",
+      "current": "mistralai/mistral-nemotron",
       "fallbacks": [
-        "mistralai/mistral-nemotron"
+        "nvidia/nemotron-3-nano-30b-a3b"
       ],
       "testPrompt": "Write a 2-sentence cover letter opening for a software engineer role at Google. Return JSON with full_letter field.",
       "type": "chat",
