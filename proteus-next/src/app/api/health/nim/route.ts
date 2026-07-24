@@ -45,7 +45,7 @@ async function testChat(model: string, apiKey: string, testPrompt?: string, time
       body: JSON.stringify({
         model,
         messages: [{ role: "user", content: testPrompt || 'Return exactly: {"ok":true}' }],
-        max_tokens: 200,
+        max_tokens: 500,
         temperature: 0.1,
       }),
       signal: controller.signal,
