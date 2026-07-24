@@ -2,9 +2,9 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "current": "meta/llama-4-maverick-17b-128e-instruct",
+      "current": "meta/llama-3.1-8b-instruct",
       "fallbacks": [
-        "mistralai/mistral-nemotron"
+        "meta/llama-4-maverick-17b-128e-instruct"
       ],
       "testPrompt": "Extract skills from this job description and return JSON with hard_skills array: Looking for a Python developer with Django and PostgreSQL experience.",
       "type": "chat",
@@ -59,7 +59,7 @@
   ],
   "lastHealthCheck": "2026-07-24T08:42:11.357Z",
   "lastHealthyModels": {
-    "jd-parser": "meta/llama-4-maverick-17b-128e-instruct",
+    "jd-parser": "meta/llama-3.1-8b-instruct",
     "resume-parser": "mistralai/mistral-nemotron",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
     "rewrite-suggester": "meta/llama-3.1-8b-instruct",
