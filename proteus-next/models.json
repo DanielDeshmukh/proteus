@@ -2,18 +2,18 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "current": "nvidia/nemotron-3-nano-30b-a3b",
       "fallbacks": [
-        "nvidia/nemotron-3-nano-30b-a3b"
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5"
       ],
       "testPrompt": "Extract skills from this job description and return JSON with hard_skills array: Looking for a Python developer with Django and PostgreSQL experience.",
       "type": "chat"
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/ising-calibration-1-35b-a3b",
       "fallbacks": [
-        "nvidia/ising-calibration-1-35b-a3b",
+        "nvidia/gliner-pii",
         "nvidia/llama-3.1-70b-instruct",
         "nvidia/llama-3.3-70b-instruct"
       ],
@@ -31,9 +31,9 @@
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "current": "nvidia/gliner-pii",
+      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
       "fallbacks": [
-        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "nvidia/gliner-pii",
         "mistralai/mistral-nemotron"
       ],
       "testPrompt": "Rewrite this resume bullet to match a Python developer job: Built web apps using JavaScript. Return JSON with suggested_rewrite field.",
@@ -41,9 +41,9 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "current": "nvidia/gliner-pii",
       "fallbacks": [
-        "nvidia/gliner-pii",
+        "nvidia/llama-3.3-nemotron-super-49b-v1.5",
         "nvidia/llama-3.1-70b-instruct"
       ],
       "testPrompt": "Write a 2-sentence cover letter opening for a software engineer role at Google. Return JSON with full_letter field.",
@@ -56,12 +56,12 @@
     "mistralai/",
     "nv-mistralai/"
   ],
-  "lastHealthCheck": "2026-07-23T22:07:21.832Z",
+  "lastHealthCheck": "2026-07-24T02:53:35.708Z",
   "lastHealthyModels": {
-    "jd-parser": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
-    "resume-parser": "nvidia/gliner-pii",
+    "jd-parser": "nvidia/nemotron-3-nano-30b-a3b",
+    "resume-parser": "nvidia/ising-calibration-1-35b-a3b",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
-    "rewrite-suggester": "nvidia/gliner-pii",
-    "cover-letter": "nvidia/llama-3.3-nemotron-super-49b-v1.5"
+    "rewrite-suggester": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+    "cover-letter": "nvidia/gliner-pii"
   }
 }
