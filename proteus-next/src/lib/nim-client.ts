@@ -101,7 +101,7 @@ async function withRetry<T>(
         const fallbackClient = new OpenAI({
           apiKey: process.env.NVIDIA_NIM_API_KEY,
           baseURL: NIM_BASE_URL,
-          timeout: 45000,
+          timeout: 55000,
         });
         try {
           // Test fallback with a minimal request
