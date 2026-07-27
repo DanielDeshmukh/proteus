@@ -22,7 +22,7 @@
     "cheerio": "^1.2.0",
     "docx": "^9.7.1",
     "mammoth": "^1.12.0",
-    "next": "^16.2.10",
+    "next": "^16.2.12",
     "next-auth": "^5.0.0-beta.31",
     "nodemailer": "^7.0.13",
     "openai": "^6.45.0",
