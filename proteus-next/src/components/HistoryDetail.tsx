@@ -189,8 +189,18 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
   function sanitizeForFilename(s: string): string {
     return s.replace(/[^a-zA-Z0-9\s-]/g, "").replace(/\s+/g, "_").substring(0, 50).replace(/_+$/, "");
   }
-  const candidateName = run.resume_text?.split("\n").find((l: string) => l.trim().length > 2)?.trim() || "Candidate";
-  const appliedRole = coverLetter?.job_title || "CoverLetter";
+  // Extract candidate name from cover letter closing (e.g. "Sincerely,\nAlexander J. Thunderwolf")
+  function extractNameFromLetter(letter: string): string | null {
+    const closingMatch = letter.match(/(?:sincerely|best regards|kind regards|regards|thank you)[,\s]*\n\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i);
+    return closingMatch ? closingMatch[1].trim() : null;
+  }
+  const candidateName = (coverLetter?.full_letter ? extractNameFromLetter(coverLetter.full_letter) : null)
+    || run.resume_text?.split("\n").find((l: string) => {
+      const t = l.trim();
+      return t.length > 2 && !/^[\s=\-_|#*>]+$/.test(t) && !/^[A-Z\s]{15,}$/.test(t);
+    })?.trim()
+    || "Candidate";
+  const appliedRole = (coverLetter?.job_title && !/ninja|guru|wizard|rockstar|monkey|devil/i.test(coverLetter.job_title)) ? coverLetter.job_title : "Role";
   const coverFilename = `${sanitizeForFilename(candidateName)}_${sanitizeForFilename(appliedRole)}`;
 
   // Dedupe gaps
@@ -320,7 +330,7 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
             actions={
               <div style={{ display: "flex", gap: "8px" }}>
                 <CopyButton text={coverLetter.full_letter} label="Copy" />
-                <DownloadButton content={coverLetter.full_letter} filename={coverFilename} isCoverLetter candidateName={candidateName} jobTitle={coverLetter.job_title} />
+                <DownloadButton content={coverLetter.full_letter} filename={coverFilename} isCoverLetter candidateName={candidateName} jobTitle={appliedRole} />
               </div>
             }
           >
