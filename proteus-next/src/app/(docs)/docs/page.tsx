@@ -252,26 +252,62 @@ export default function DocsPage() {
         </SubSection>
       </Section>
 
-      {/* ─── Pipeline Architecture ────────────────────── */}
-      <Section id="pipeline" title="Pipeline Architecture">
+      {/* ─── Architecture ────────────────────────────── */}
+      <Section id="architecture" title="Architecture">
         <P>
-          PROTEUS runs a five-agent pipeline where each agent is powered by a dedicated NVIDIA NIM model. The JD is parsed first, and its output is shared with all downstream agents.
+          PROTEUS is a full-stack Next.js application deployed on Vercel. Here&apos;s how the pieces fit together:
         </P>
 
         <Table
-          headers={["Step", "Agent", "What it does"]}
+          headers={["Layer", "Technology", "Role"]}
           rows={[
-            ["01", "JD Parser", "Extracts role title, requirements, seniority level, and key skills from the job description"],
-            ["02", "Resume Parser", "Extracts skills, experience, education, and achievements from your resume"],
-            ["03", "Gap Analyzer", "Compares parsed JD requirements against resume items using semantic embeddings"],
-            ["04", "Rewriter", "Drafts JD-aware rewrites for weak resume bullets to better match requirements"],
-            ["05", "Cover Letter Writer", "Writes a tailored cover letter using the same JD context and resume data"],
+            ["Frontend", "Next.js 16 + React + Tailwind CSS v4", "App router, streaming UI, dark theme"],
+            ["Auth", "NextAuth.js v5", "Email+password, magic link, Google, GitHub OAuth"],
+            ["Database", "Turso (libSQL)", "Per-user data isolation, run history, session storage"],
+            ["AI Pipeline", "NVIDIA NIM + Groq", "Five-agent pipeline — JD parsing through cover letter generation"],
+            ["PDF Generation", "react-pdf + unpdf", "Analysis report and cover letter PDF export"],
+            ["Deployment", "Vercel", "Serverless functions, edge middleware, auto-deploy from GitHub"],
+            ["CI/CD", "GitHub Actions", "Lint, typecheck, Playwright E2E tests, model health checks"],
+          ]}
+        />
+
+        <SubSection title="AI providers">
+          <P>
+            PROTEUS uses two AI providers:
+          </P>
+          <List items={[
+            "NVIDIA NIM — powers the JD parser, resume parser, gap analyzer, and rewrite suggester (4 agents). NIM provides optimized Llama and Mistral models via serverless endpoints.",
+            "Groq — powers the cover letter generator (1 agent). Groq runs Llama 3.3 70B on custom silicon with ~2-3 second response times, significantly faster than NIM for this use case.",
+          ]} />
+        </SubSection>
+      </Section>
+
+      {/* ─── Pipeline Architecture ────────────────────── */}
+      <Section id="pipeline" title="Pipeline Architecture">
+        <P>
+          PROTEUS runs a five-agent pipeline. The JD is parsed first, and its output is shared with all downstream agents. Each step uses a dedicated model with fallback support.
+        </P>
+
+        <Table
+          headers={["Step", "Agent", "Provider", "What it does"]}
+          rows={[
+            ["01", "JD Parser", "NVIDIA NIM", "Extracts role title, requirements, seniority level, and key skills from the job description"],
+            ["02", "Resume Parser", "NVIDIA NIM", "Extracts skills, experience, education, and achievements from your resume"],
+            ["03", "Gap Analyzer", "NVIDIA NIM", "Compares parsed JD requirements against resume items using semantic embeddings"],
+            ["04", "Rewriter", "NVIDIA NIM", "Drafts JD-aware rewrites for weak resume bullets to better match requirements"],
+            ["05", "Cover Letter", "Groq", "Writes a tailored cover letter using the same JD context and resume data"],
           ]}
         />
 
         <InfoBox variant="info">
           All agents share the same parsed JD context. This ensures your score, gaps, rewrites, and cover letter are all consistent with each other.
         </InfoBox>
+
+        <SubSection title="JD pre-filter">
+          <P>
+            Before the JD reaches the parser, a pre-filter strips job board noise &mdash; &quot;Apply Now&quot; buttons, tracking pixels, navigation elements, and boilerplate legal text. This improves parser accuracy and reduces token usage. If the filter removes more than 70% of text (safety check), it passes the original through.
+          </P>
+        </SubSection>
 
         <SubSection title="Fallback models">
           <P>
@@ -280,10 +316,10 @@ export default function DocsPage() {
         </SubSection>
       </Section>
 
-      {/* ─── NVIDIA NIM Models ────────────────────────── */}
-      <Section id="models" title="NVIDIA NIM Models" icon={<SiNvidia size={24} />}>
+      {/* ─── AI Models ────────────────────────────────── */}
+      <Section id="models" title="AI Models" icon={<SiNvidia size={24} />}>
         <P>
-          PROTEUS uses NVIDIA NIM (NVIDIA Inference Microservices) for all AI operations. Each pipeline step uses a dedicated model.
+          PROTEUS uses two AI providers. 4 agents run on NVIDIA NIM; the cover letter agent runs on Groq for faster responses.
         </P>
 
         <Table
@@ -299,7 +335,7 @@ export default function DocsPage() {
 
         <SubSection title="Model health checks">
           <P>
-            A GitHub Actions workflow checks all models every 3 hours. If a model goes down, it&apos;s automatically replaced in <Code>models.json</Code>. The health check results are committed to the repository.
+            A GitHub Actions workflow checks all NIM models every 3 hours. If a model goes down, it&apos;s automatically replaced in <Code>models.json</Code>. Pinned roles (like cover letter) are not auto-swapped. The health check results are committed to the repository.
           </P>
         </SubSection>
 
@@ -311,17 +347,13 @@ export default function DocsPage() {
 
         <SubSection title="Know more about NVIDIA NIM">
           <P>
-            NVIDIA NIM (NVIDIA Inference Microservices) provides optimized, production-ready containers for deploying AI models at scale. NIM delivers low-latency inference across NVIDIA GPUs with automatic batching, quantization, and tensor parallelism — making it ideal for real-time AI applications like PROTEUS.
-          </P>
-          <P>
-            Key advantages of NIM:
+            NVIDIA NIM (NVIDIA Inference Microservices) provides optimized, production-ready containers for deploying AI models at scale. NIM delivers low-latency inference across NVIDIA GPUs with automatic batching, quantization, and tensor parallelism.
           </P>
           <List items={[
             "Optimized inference — models are tuned for maximum throughput on NVIDIA GPUs",
             "OpenAI-compatible API — drop-in replacement for OpenAI-style requests",
             "Model catalog — access hundreds of pre-hosted models (Llama, Mistral, Nemotron, and more)",
             "Serverless endpoints — no infrastructure to manage, pay only for what you use",
-            "Enterprise-grade — built-in security, compliance, and SLA guarantees",
           ]} />
           <div style={{ marginTop: "16px" }}>
             <a
@@ -351,9 +383,45 @@ export default function DocsPage() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
             </a>
           </div>
+        </SubSection>
+
+        <SubSection title="Groq">
           <P>
-            You can also browse available models, test API endpoints, and get API keys directly from the NVIDIA build platform.
+            Groq provides ultra-fast LLM inference on custom LPU (Language Processing Unit) silicon. PROTEUS uses Groq for cover letter generation because it delivers Llama 3.3 70B responses in 2-3 seconds — compared to 10-60 seconds on NIM free tier.
           </P>
+          <List items={[
+            "Custom LPU hardware — purpose-built for LLM inference, not general-purpose GPUs",
+            "Consistent latency — no cold starts or priority queuing like free-tier NIM",
+            "OpenAI-compatible API — same request/response format, drop-in replacement",
+            "Rate limits — free tier allows ~30 requests/minute, sufficient for single-user cover letters",
+          ]} />
+          <div style={{ marginTop: "16px" }}>
+            <a
+              href="https://groq.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 20px",
+                background: "rgba(201,169,98,0.1)",
+                border: "1px solid rgba(201,169,98,0.3)",
+                borderRadius: "var(--radius-md)",
+                color: "var(--color-gold)",
+                fontSize: "13px",
+                fontWeight: 600,
+                fontFamily: "var(--font-sans)",
+                textDecoration: "none",
+                transition: "all .15s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,169,98,0.18)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(201,169,98,0.1)"; }}
+            >
+              Learn more at groq.com
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </a>
+          </div>
         </SubSection>
       </Section>
 
@@ -490,7 +558,7 @@ export default function DocsPage() {
       <Section id="faq" title="FAQ">
         <SubSection title="Why did my analysis take so long?">
           <P>
-            Each of the 5 agents makes an API call to NVIDIA NIM. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
+            Each agent makes an API call. Steps 1-4 use NVIDIA NIM; step 5 (cover letter) uses Groq. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
           </P>
         </SubSection>
 
