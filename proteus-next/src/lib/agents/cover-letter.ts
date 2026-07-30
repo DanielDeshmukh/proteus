@@ -1,8 +1,8 @@
-import { getModelForRole } from "../model-config";
 import { CoverLetterOutputSchema, type CoverLetterOutput, type Tone, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
-import { callWithJsonRetry } from "./json-retry";
+import { groqChatCompletion } from "../groq-client";
+import { ZodSchema } from "zod";
 
-const COVER_LETTER_MODEL = getModelForRole("cover-letter");
+const GROQ_MODEL = "llama-3.3-70b-versatile";
 
 const COVER_LETTER_SYSTEM_PROMPT = `You are an expert cover letter writer who creates tailored, compelling cover letters.
 
@@ -41,6 +41,70 @@ Return a JSON object with:
 - "word_count": Approximate word count
 
 Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
+
+function extractJson(text: string): string {
+  let cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+  const firstBrace = cleaned.indexOf("{");
+  const firstBracket = cleaned.indexOf("[");
+  let start = -1;
+  if (firstBrace >= 0 && firstBracket >= 0) start = Math.min(firstBrace, firstBracket);
+  else if (firstBrace >= 0) start = firstBrace;
+  else if (firstBracket >= 0) start = firstBracket;
+  if (start > 0) cleaned = cleaned.substring(start);
+
+  let depth = 0, inString = false, escape = false, end = -1;
+  const startChar = cleaned[0];
+  const closeChar = startChar === "{" ? "}" : "]";
+  for (let i = 0; i < cleaned.length; i++) {
+    const ch = cleaned[i];
+    if (escape) { escape = false; continue; }
+    if (ch === "\\") { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === startChar || ch === closeChar) {
+      if (ch === startChar) depth++; else depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+  if (end >= 0) cleaned = cleaned.substring(0, end + 1);
+  return cleaned.trim();
+}
+
+async function callWithRetry<T>(
+  model: string,
+  systemPrompt: string,
+  userContent: string,
+  schema: ZodSchema<T>,
+  maxRetries = 2
+): Promise<T> {
+  let messages = [
+    { role: "system" as const, content: systemPrompt },
+    { role: "user" as const, content: userContent },
+  ];
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await groqChatCompletion(model, messages, {
+        temperature: attempt === 0 ? 0.4 : 0.1,
+        maxTokens: 2000,
+      });
+
+      let jsonStr = extractJson(response);
+      const parsed = JSON.parse(jsonStr);
+      return schema.parse(parsed);
+    } catch (e: any) {
+      lastError = e;
+      messages = [
+        { role: "system" as const, content: systemPrompt + "\n\nIMPORTANT: Your previous response was NOT valid JSON. You MUST return ONLY a valid JSON object. No text before or after. No markdown code fences. Just the raw JSON starting with { and ending with }." },
+        { role: "user" as const, content: userContent },
+      ];
+    }
+  }
+
+  throw lastError || new Error("Cover letter generation failed after retries");
+}
 
 export function generateCoverLetter(
   jd: JDStructured,
@@ -83,16 +147,9 @@ Missing Requirements: ${gapAnalysis.gaps
     .map((g) => g.requirement)
     .join(", ")}
 
-IMPORTANT: Use the candidate's ACTUAL name "${resume.name}" throughout the letter. Use real company names, real skill names, and real achievements from the experience section above. Do NOT use any placeholder text in brackets.
-
-CRITICAL: The candidate's name is "${resume.name}". You MUST use EXACTLY this name in the letter closing (e.g., "Sincerely, ${resume.name}"). Do NOT use any other name. Do NOT make up a name. Do NOT use placeholders.
+CRITICAL: The candidate's name is "${resume.name}". You MUST use EXACTLY this name in the letter closing (e.g., "Sincerely, ${resume.name}"). Do NOT use any other name.
 
 Write a ${tone} cover letter for this candidate applying to this role.`;
 
-  return callWithJsonRetry(COVER_LETTER_MODEL, COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema, {
-    temperature: 0.4,
-    maxTokens: 2000,
-    cleanControlChars: true,
-    role: "cover-letter",
-  });
+  return callWithRetry(GROQ_MODEL, COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema);
 }
