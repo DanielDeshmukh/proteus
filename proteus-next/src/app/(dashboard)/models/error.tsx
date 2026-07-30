@@ -18,7 +18,7 @@ export default function ModelsError({
       </div>
       <h2 style={{ fontFamily: "var(--font-display)", fontSize: "18px", fontWeight: 500, color: "var(--text)", marginBottom: "8px" }}>Failed to load models</h2>
       <p style={{ fontSize: "13px", color: "var(--text-soft)", marginBottom: "20px" }}>
-        Could not load model configuration. NVIDIA NIM may be unreachable.
+        Could not load model configuration. AI providers may be unreachable.
       </p>
       <button onClick={reset} style={{ fontSize: "13px", color: "var(--color-gold)", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", padding: "10px 24px", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
         Retry

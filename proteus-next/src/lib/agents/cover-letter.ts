@@ -1,8 +1,11 @@
 import { CoverLetterOutputSchema, type CoverLetterOutput, type Tone, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
 import { groqChatCompletion } from "../groq-client";
+import { getModelForRole } from "../model-config";
 import { ZodSchema } from "zod";
 
-const GROQ_MODEL = "llama-3.3-70b-versatile";
+function getCoverLetterModel(): string {
+  try { return getModelForRole("cover-letter"); } catch { return "llama-3.3-70b-versatile"; }
+}
 
 const COVER_LETTER_SYSTEM_PROMPT = `You are an expert cover letter writer who creates tailored, compelling cover letters.
 
@@ -173,5 +176,5 @@ CRITICAL: The candidate's name is "${resume.name}". You MUST use EXACTLY this na
 
 Write a ${tone} cover letter for this candidate applying to this role.`;
 
-  return callWithRetry(GROQ_MODEL, COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema);
+  return callWithRetry(getCoverLetterModel(), COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema);
 }

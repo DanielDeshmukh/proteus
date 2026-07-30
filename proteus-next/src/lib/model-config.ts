@@ -3,6 +3,7 @@ import { join } from "path";
 
 interface ModelRole {
   description: string;
+  provider?: string;
   current: string;
   fallbacks: string[];
   testPrompt: string;
@@ -36,6 +37,11 @@ export function getModelForRole(role: string): string {
 
 export function getEmbeddingModel(): string {
   return getModelForRole("gap-analyzer");
+}
+
+export function getModelProvider(role: string): string {
+  const config = loadConfig();
+  return config.roles[role]?.provider || "nvidia-nim";
 }
 
 export function updateModelForRole(role: string, newModel: string): void {

@@ -52,7 +52,8 @@ export default function PrivacyPage() {
             <p style={{ marginBottom: "12px" }}>PROTEUS uses the following third-party processors:</p>
             <ul style={{ paddingLeft: "20px" }}>
               <li style={{ marginBottom: "8px" }}><strong style={{ color: "var(--text)" }}>Vercel:</strong> Hosting and deployment platform. See <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold)", textDecoration: "none" }}>Vercel&apos;s Privacy Policy</a>.</li>
-              <li style={{ marginBottom: "8px" }}><strong style={{ color: "var(--text)" }}>NVIDIA NIM API:</strong> AI inference for resume analysis. Uploaded content is sent to NVIDIA for processing and is not retained beyond the inference request.</li>
+              <li style={{ marginBottom: "8px" }}><strong style={{ color: "var(--text)" }}>NVIDIA NIM API:</strong> AI inference for resume parsing, gap analysis, and rewrite suggestions. Uploaded content is sent to NVIDIA for processing and is not retained beyond the inference request.</li>
+              <li style={{ marginBottom: "8px" }}><strong style={{ color: "var(--text)" }}>Groq:</strong> AI inference for cover letter generation. Uploaded content is sent to Groq for processing and is not retained beyond the inference request.</li>
               <li style={{ marginBottom: "8px" }}><strong style={{ color: "var(--text)" }}>Turso / libSQL:</strong> Database hosting for account data and analysis history.</li>
               <li style={{ marginBottom: "8px" }}><strong style={{ color: "var(--text)" }}>Resend:</strong> Transactional email delivery (magic links, notifications).</li>
               <li style={{ marginBottom: "8px" }}><strong style={{ color: "var(--text)" }}>Google / GitHub:</strong> OAuth authentication (optional, if you choose to sign in this way).</li>

@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PROTEUS — AI Resume Analyzer & Cover Letter Generator",
     description:
-      "Semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD. Powered by NVIDIA NIM.",
+      "Semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD. Powered by NVIDIA NIM and Groq.",
     images: ["/og-image.png"],
   },
   robots: {

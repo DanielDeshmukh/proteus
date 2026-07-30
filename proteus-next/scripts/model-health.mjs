@@ -19,8 +19,9 @@ const NIM_BASE_URL = "https://integrate.api.nvidia.com/v1";
 const TIMEOUT_MS = 30_000;
 const EMBED_TIMEOUT_MS = 15_000;
 
-const API_KEY = process.env.NVIDIA_NIM_API_KEY;
-if (!API_KEY) {
+const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+const NIM_API_KEY = process.env.NVIDIA_NIM_API_KEY;
+if (!NIM_API_KEY) {
   console.error("FATAL: NVIDIA_NIM_API_KEY not set");
   process.exit(1);
 }
@@ -40,7 +41,7 @@ function saveConfig(config) {
 async function fetchNimModels() {
   try {
     const res = await fetch(`${NIM_BASE_URL}/models`, {
-      headers: { Authorization: `Bearer ${API_KEY}` },
+      headers: { Authorization: `Bearer ${NIM_API_KEY}` },
       signal: AbortSignal.timeout(15000),
     });
     if (!res.ok) return [];
@@ -51,13 +52,13 @@ async function fetchNimModels() {
   }
 }
 
-async function testChatModel(model, prompt) {
+async function testNimChatModel(model, prompt) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(`${NIM_BASE_URL}/chat/completions`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${NIM_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], max_tokens: 30, temperature: 0.1 }),
       signal: controller.signal,
     });
@@ -74,13 +75,13 @@ async function testChatModel(model, prompt) {
   }
 }
 
-async function testEmbedModel(model, text) {
+async function testNimEmbedModel(model, text) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), EMBED_TIMEOUT_MS);
   try {
     const res = await fetch(`${NIM_BASE_URL}/embeddings`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${NIM_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({ model, input: text, input_type: "query" }),
       signal: controller.signal,
     });
@@ -91,6 +92,34 @@ async function testEmbedModel(model, text) {
   } catch (e) {
     clearTimeout(timer);
     return { ok: false, error: e.name === "AbortError" ? `Timeout ${EMBED_TIMEOUT_MS}ms` : e.message };
+  }
+}
+
+// ── Groq API ──────────────────────────────────────────────
+
+const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
+
+async function testGroqChatModel(model, prompt) {
+  if (!GROQ_API_KEY) return { ok: false, error: "GROQ_API_KEY not set" };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(`${GROQ_BASE_URL}/chat/completions`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], max_tokens: 30, temperature: 0.1 }),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      return { ok: false, error: `HTTP ${res.status}: ${text.substring(0, 100)}` };
+    }
+    const data = await res.json();
+    return { ok: true, content: data.choices?.[0]?.message?.content?.substring(0, 100) || "" };
+  } catch (e) {
+    clearTimeout(timer);
+    return { ok: false, error: e.name === "AbortError" ? `Timeout ${TIMEOUT_MS}ms` : e.message };
   }
 }
 
@@ -130,8 +159,8 @@ async function findReplacement(deadModel, roleConfig, allNimModels, preferredPre
   for (const candidate of candidates) {
     const start = Date.now();
     const result = isEmbed
-      ? await testEmbedModel(candidate, "test replacement")
-      : await testChatModel(candidate, "Return exactly: {\"ok\":true}");
+      ? await testNimEmbedModel(candidate, "test replacement")
+      : await testNimChatModel(candidate, "Return exactly: {\"ok\":true}");
     const latency = Date.now() - start;
 
     if (result.ok) {
@@ -191,11 +220,22 @@ async function main() {
 
   // 2. Test each role's current model
   for (const [roleName, roleConfig] of Object.entries(config.roles)) {
+    const provider = roleConfig.provider || "nvidia-nim";
+    const isGroq = provider === "groq";
+
     // Skip pinned models — these are manually curated and should not be auto-swapped
     if (roleConfig.pinned) {
-      console.log(`Role: ${roleName} — PINNED (skipping auto-swap)`);
+      console.log(`Role: ${roleName} — PINNED (provider: ${provider}, skipping auto-swap)`);
       healthyModels[roleName] = roleConfig.current;
       report.push({ role: roleName, model: roleConfig.current, status: "pinned", latency: 0 });
+      continue;
+    }
+
+    // Skip Groq roles — health check only covers NIM models
+    if (isGroq) {
+      console.log(`Role: ${roleName} — GROQ (skipping NIM health check)`);
+      healthyModels[roleName] = roleConfig.current;
+      report.push({ role: roleName, model: roleConfig.current, status: "groq_skipped", latency: 0 });
       continue;
     }
 
@@ -208,8 +248,8 @@ async function main() {
 
     const start = Date.now();
     const result = isEmbed
-      ? await testEmbedModel(roleConfig.current, testPrompt)
-      : await testChatModel(roleConfig.current, testPrompt);
+      ? await testNimEmbedModel(roleConfig.current, testPrompt)
+      : await testNimChatModel(roleConfig.current, testPrompt);
     const latency = Date.now() - start;
 
     if (result.ok) {
@@ -245,8 +285,8 @@ async function main() {
       console.log(`  Testing fallback: ${fallbackModel}`);
       const fbStart = Date.now();
       const fbResult = isEmbed
-        ? await testEmbedModel(fallbackModel, testPrompt)
-        : await testChatModel(fallbackModel, testPrompt);
+        ? await testNimEmbedModel(fallbackModel, testPrompt)
+        : await testNimChatModel(fallbackModel, testPrompt);
       const fbLatency = Date.now() - fbStart;
 
       if (fbResult.ok) {
@@ -315,7 +355,7 @@ async function main() {
   // 7. Summary
   console.log("=== SUMMARY ===");
   for (const r of report) {
-    const icon = r.status === "healthy" ? "OK" : r.status === "replaced" ? "REPLACED" : r.status === "swapped_to_fallback" ? "SWAPPED" : "FAIL";
+    const icon = r.status === "healthy" ? "OK" : r.status === "replaced" ? "REPLACED" : r.status === "swapped_to_fallback" ? "SWAPPED" : r.status === "groq_skipped" ? "GROQ" : "FAIL";
     const extra = r.replacedFrom ? ` (was: ${r.replacedFrom})` : "";
     console.log(`  [${icon}] ${r.role}: ${r.model}${extra} (${r.latency}ms)`);
   }

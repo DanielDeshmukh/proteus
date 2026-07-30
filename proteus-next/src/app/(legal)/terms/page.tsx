@@ -41,7 +41,7 @@ export default function TermsPage() {
               <li style={{ marginBottom: "6px" }}>Tailored cover letter generation</li>
             </ul>
             <p>
-              All AI analysis is performed using third-party language models via the NVIDIA NIM API. Results are generated probabilistically and should be reviewed by the user before use.
+              All AI analysis is performed using third-party language models via NVIDIA NIM and Groq APIs. Results are generated probabilistically and should be reviewed by the user before use.
             </p>
           </section>
 

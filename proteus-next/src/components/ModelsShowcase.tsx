@@ -12,6 +12,7 @@ interface ModelStep {
   work: string;
   icon: string;
   model: string;
+  provider: string;
 }
 
 export function ModelsShowcase() {
@@ -124,8 +125,8 @@ export function ModelsShowcase() {
                   </span>
                 </div>
 
-                {/* Model name badge */}
-                <div>
+                {/* Model name + provider badge */}
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                   <span
                     style={{
                       display: "inline-block",
@@ -139,6 +140,21 @@ export function ModelsShowcase() {
                     }}
                   >
                     {m.model}
+                  </span>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "10px",
+                      padding: "2px 8px",
+                      borderRadius: "100px",
+                      background: m.provider === "groq" ? "rgba(168, 85, 247, 0.1)" : "rgba(118, 185, 0, 0.1)",
+                      border: `1px solid ${m.provider === "groq" ? "rgba(168, 85, 247, 0.3)" : "rgba(118, 185, 0, 0.3)"}`,
+                      color: m.provider === "groq" ? "#a855f7" : "#76b900",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {m.provider === "groq" ? "Groq" : "NVIDIA NIM"}
                   </span>
                 </div>
 

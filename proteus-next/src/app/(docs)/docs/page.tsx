@@ -148,7 +148,7 @@ export default function DocsPage() {
       {/* ─── Introduction ─────────────────────────────── */}
       <Section id="introduction" title="Introduction">
         <P>
-          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline powered by NVIDIA NIM models to deliver consistent, JD-aware results.
+          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline powered by NVIDIA NIM and Groq to deliver consistent, JD-aware results.
         </P>
 
         <SubSection title="What you get">
@@ -336,7 +336,7 @@ export default function DocsPage() {
 
         <SubSection title="Model health checks">
           <P>
-            A GitHub Actions workflow checks all NIM models every 3 hours. If a model goes down, it&apos;s automatically replaced in <Code>models.json</Code>. Pinned roles (like cover letter) are not auto-swapped. The health check results are committed to the repository.
+            A health check script runs every 3 hours via GitHub Actions. It tests each NIM model against its role-specific test prompt. If a model fails, it&apos;s automatically replaced in <Code>models.json</Code>. Groq models (cover letter) are tested separately via the Groq API. Pinned roles are not auto-swapped. The health check results are committed to the repository.
           </P>
         </SubSection>
 
@@ -522,9 +522,9 @@ export default function DocsPage() {
           </P>
         </SubSection>
 
-        <SubSection title="NIM health check shows errors">
+        <SubSection title="Health check shows errors">
           <P>
-            Go to the <strong>Models</strong> page and click <strong>&quot;Check NIM Health&quot;</strong>. If a model is down, PROTEUS will automatically use fallback models. You can also check the GitHub Actions health check results in the repository.
+            Go to the <strong>Models</strong> page and click <strong>&quot;Check Health&quot;</strong>. If a NIM model is down, PROTEUS will automatically use fallback models. Groq models are tested separately. You can also check the GitHub Actions health check results in the repository.
           </P>
         </SubSection>
       </Section>

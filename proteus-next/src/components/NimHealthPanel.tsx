@@ -8,6 +8,7 @@ interface HealthResult {
   agent: string;
   task: string;
   model: string;
+  provider: string;
   ok: boolean;
   latency: number;
   error?: string;
@@ -48,10 +49,10 @@ export function NimHealthPanel() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: data ? "20px" : "0", flexWrap: "wrap" }}>
         <div>
           <h3 style={{ fontFamily: "var(--font-display)", fontSize: "16px", fontWeight: 600, color: "var(--text)", margin: 0 }}>
-            NIM Connectivity Check
+            Pipeline Health Check
           </h3>
           <p style={{ fontSize: "12px", color: "var(--text-faint)", margin: "4px 0 0" }}>
-            Live test of each pipeline step against NVIDIA NIM API
+            Live test of each pipeline step against NVIDIA NIM and Groq APIs
           </p>
         </div>
         <button
@@ -70,7 +71,7 @@ export function NimHealthPanel() {
             transition: "all .15s ease",
           }}
         >
-          {loading ? "Testing..." : data ? "Re-check" : "Check NIM Health"}
+          {loading ? "Testing..." : data ? "Re-check" : "Check Health"}
         </button>
       </div>
 
@@ -131,9 +132,12 @@ export function NimHealthPanel() {
                 {r.agent}
               </span>
 
-              {/* Model */}
+              {/* Model + Provider */}
               <span style={{ fontSize: "10px", fontFamily: "var(--font-mono)", color: "var(--text-soft)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {r.model}
+                <span style={{ marginLeft: "6px", fontSize: "9px", padding: "1px 5px", borderRadius: "100px", background: r.provider === "groq" ? "rgba(168,85,247,0.1)" : "rgba(118,185,0,0.1)", color: r.provider === "groq" ? "#a855f7" : "#76b900" }}>
+                  {r.provider === "groq" ? "Groq" : "NIM"}
+                </span>
               </span>
 
               {/* Latency */}

@@ -17,11 +17,11 @@ export default function ModelsPage() {
             marginBottom: "8px",
           }}
         >
-          NVIDIA Models Used by PROTEUS
+          AI Models Used by PROTEUS
         </h1>
         <p style={{ fontSize: "13px", color: "var(--text-soft)", maxWidth: "560px", lineHeight: 1.6 }}>
-          Each step in the pipeline is powered by a dedicated NVIDIA NIM model.
-          Models are health-checked every 6 hours and auto-replaced if they go down.
+          4 agents run on NVIDIA NIM; the cover letter agent runs on Groq.
+          Models are health-checked every 3 hours and auto-replaced if they go down.
         </p>
       </section>
 

@@ -3,6 +3,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 const NIM_BASE_URL = "https://integrate.api.nvidia.com/v1";
+const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
 
 const PIPELINE_STEPS = [
   { step: 1, agent: "JD Parser",         role: "jd-parser",        task: "Extract structured requirements" },
@@ -12,7 +13,7 @@ const PIPELINE_STEPS = [
   { step: 5, agent: "Cover Letter",      role: "cover-letter",     task: "Write tailored cover letter" },
 ];
 
-const ERROR_CLASS: Record<string, { name: string; fix: string }> = {
+const NIM_ERROR_CLASS: Record<string, { name: string; fix: string }> = {
   "502": { name: "BAD_GATEWAY",     fix: "NIM upstream timeout. Retry after 5-10s or switch model." },
   "503": { name: "SERVICE_UNAVAIL", fix: "NIM temporarily down. Wait 30s and retry." },
   "429": { name: "RATE_LIMITED",    fix: "Rate limit hit. Wait 60s or reduce frequency." },
@@ -21,11 +22,21 @@ const ERROR_CLASS: Record<string, { name: string; fix: string }> = {
   "404": { name: "MODEL_NOT_FOUND", fix: "Model removed or unavailable." },
 };
 
+const GROQ_ERROR_CLASS: Record<string, { name: string; fix: string }> = {
+  "502": { name: "BAD_GATEWAY",     fix: "Groq upstream timeout. Retry after 5-10s." },
+  "503": { name: "SERVICE_UNAVAIL", fix: "Groq temporarily down. Wait 30s and retry." },
+  "429": { name: "RATE_LIMITED",    fix: "Groq rate limit hit. Wait 60s." },
+  "401": { name: "AUTH_FAILED",     fix: "Invalid GROQ_API_KEY. Check environment variables." },
+  "403": { name: "FORBIDDEN",       fix: "Key lacks access to this model." },
+  "404": { name: "MODEL_NOT_FOUND", fix: "Model not available on Groq." },
+};
+
 interface TestResult {
   step: number;
   agent: string;
   task: string;
   model: string;
+  provider: string;
   ok: boolean;
   latency: number;
   error?: string;
@@ -34,12 +45,38 @@ interface TestResult {
   pinned?: boolean;
 }
 
-async function testChat(model: string, apiKey: string, testPrompt?: string, timeout = 30000): Promise<Omit<TestResult, "step" | "agent" | "task">> {
+function extractJson(text: string): string {
+  let jsonStr = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+  const firstBrace = jsonStr.indexOf("{");
+  const firstBracket = jsonStr.indexOf("[");
+  let start = -1;
+  if (firstBrace >= 0 && firstBracket >= 0) start = Math.min(firstBrace, firstBracket);
+  else if (firstBrace >= 0) start = firstBrace;
+  else if (firstBracket >= 0) start = firstBracket;
+  if (start >= 0) jsonStr = jsonStr.substring(start);
+  let depth = 0, inStr = false, esc = false, end = -1;
+  const closeChar = jsonStr[0] === "{" ? "}" : "]";
+  for (let i = 0; i < jsonStr.length; i++) {
+    const ch = jsonStr[i];
+    if (esc) { esc = false; continue; }
+    if (ch === "\\") { esc = true; continue; }
+    if (ch === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (ch === jsonStr[0] || ch === closeChar) {
+      if (ch === jsonStr[0]) depth++; else depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+  if (end >= 0) jsonStr = jsonStr.substring(0, end + 1);
+  return jsonStr;
+}
+
+async function testChat(model: string, apiKey: string, baseUrl: string, errorClass: Record<string, { name: string; fix: string }>, testPrompt?: string, timeout = 30000): Promise<Omit<TestResult, "step" | "agent" | "task" | "provider">> {
   const start = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
-    const res = await fetch(`${NIM_BASE_URL}/chat/completions`, {
+    const res = await fetch(`${baseUrl}/chat/completions`, {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -54,37 +91,13 @@ async function testChat(model: string, apiKey: string, testPrompt?: string, time
     const latency = Date.now() - start;
     const body = await res.text();
     if (!res.ok) {
-      const cls = ERROR_CLASS[String(res.status)] || { name: "UNKNOWN", fix: "Check NIM status." };
+      const cls = errorClass[String(res.status)] || { name: "UNKNOWN", fix: "Check API status." };
       return { model, ok: false, latency, error: `HTTP ${res.status}: ${body.substring(0, 100)}`, errorClass: cls.name, fix: cls.fix };
     }
-    // Validate response is parseable JSON
     try {
       const data = JSON.parse(body);
       const content = data.choices?.[0]?.message?.content || "";
-      // Use same extraction logic as nim-client extractJson
-      let jsonStr = content.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-      const firstBrace = jsonStr.indexOf("{");
-      const firstBracket = jsonStr.indexOf("[");
-      let start = -1;
-      if (firstBrace >= 0 && firstBracket >= 0) start = Math.min(firstBrace, firstBracket);
-      else if (firstBrace >= 0) start = firstBrace;
-      else if (firstBracket >= 0) start = firstBracket;
-      if (start >= 0) jsonStr = jsonStr.substring(start);
-      // Find matching closing bracket by depth counting
-      let depth = 0, inStr = false, esc = false, end = -1;
-      const closeChar = jsonStr[0] === "{" ? "}" : "]";
-      for (let i = 0; i < jsonStr.length; i++) {
-        const ch = jsonStr[i];
-        if (esc) { esc = false; continue; }
-        if (ch === "\\") { esc = true; continue; }
-        if (ch === '"') { inStr = !inStr; continue; }
-        if (inStr) continue;
-        if (ch === jsonStr[0] || ch === closeChar) {
-          if (ch === jsonStr[0]) depth++; else depth--;
-          if (depth === 0) { end = i; break; }
-        }
-      }
-      if (end >= 0) jsonStr = jsonStr.substring(0, end + 1);
+      const jsonStr = extractJson(content);
       JSON.parse(jsonStr);
     } catch {
       return { model, ok: false, latency, error: "Model returned non-JSON response", errorClass: "INVALID_OUTPUT", fix: "Model may not support structured output. Try a different model." };
@@ -93,12 +106,20 @@ async function testChat(model: string, apiKey: string, testPrompt?: string, time
   } catch (e: any) {
     clearTimeout(timer);
     const latency = Date.now() - start;
-    if (e.name === "AbortError") return { model, ok: false, latency, error: `Timeout ${timeout}ms`, errorClass: "TIMEOUT", fix: "NIM overloaded. Retry or switch model." };
+    if (e.name === "AbortError") return { model, ok: false, latency, error: `Timeout ${timeout}ms`, errorClass: "TIMEOUT", fix: "API overloaded. Retry or switch model." };
     return { model, ok: false, latency, error: e.message, errorClass: "NETWORK", fix: "Check internet connection." };
   }
 }
 
-async function testEmbed(model: string, apiKey: string, timeout = 15000): Promise<Omit<TestResult, "step" | "agent" | "task">> {
+async function testNimChat(model: string, apiKey: string, testPrompt?: string): Promise<Omit<TestResult, "step" | "agent" | "task" | "provider">> {
+  return testChat(model, apiKey, NIM_BASE_URL, NIM_ERROR_CLASS, testPrompt);
+}
+
+async function testGroqChat(model: string, apiKey: string, testPrompt?: string): Promise<Omit<TestResult, "step" | "agent" | "task" | "provider">> {
+  return testChat(model, apiKey, GROQ_BASE_URL, GROQ_ERROR_CLASS, testPrompt);
+}
+
+async function testEmbed(model: string, apiKey: string, timeout = 15000): Promise<Omit<TestResult, "step" | "agent" | "task" | "provider">> {
   const start = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
@@ -113,7 +134,7 @@ async function testEmbed(model: string, apiKey: string, timeout = 15000): Promis
     const latency = Date.now() - start;
     const body = await res.text();
     if (!res.ok) {
-      const cls = ERROR_CLASS[String(res.status)] || { name: "UNKNOWN", fix: "Check NIM status." };
+      const cls = NIM_ERROR_CLASS[String(res.status)] || { name: "UNKNOWN", fix: "Check NIM status." };
       return { model, ok: false, latency, error: `HTTP ${res.status}`, errorClass: cls.name, fix: cls.fix };
     }
     return { model, ok: true, latency };
@@ -126,10 +147,8 @@ async function testEmbed(model: string, apiKey: string, timeout = 15000): Promis
 }
 
 export async function GET() {
-  const apiKey = process.env.NVIDIA_NIM_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ status: "error", message: "NVIDIA_NIM_API_KEY not set" }, { status: 500 });
-  }
+  const nimApiKey = process.env.NVIDIA_NIM_API_KEY;
+  const groqApiKey = process.env.GROQ_API_KEY;
 
   const configPath = join(process.cwd(), "models.json");
   let config;
@@ -141,17 +160,31 @@ export async function GET() {
 
   const results: TestResult[] = [];
 
-  // Test each pipeline step (not just unique roles)
   for (const step of PIPELINE_STEPS) {
     const cfg = config.roles[step.role];
     if (!cfg) continue;
 
+    const provider = cfg.provider || "nvidia-nim";
     const isEmbed = cfg.type === "embedding";
-    const base = isEmbed
-      ? await testEmbed(cfg.current, apiKey)
-      : await testChat(cfg.current, apiKey, cfg.testPrompt);
 
-    results.push({ ...step, ...base, pinned: cfg.pinned || false });
+    let base;
+    if (provider === "groq") {
+      if (!groqApiKey) {
+        base = { model: cfg.current, ok: false, latency: 0, error: "GROQ_API_KEY not set", errorClass: "CONFIG", fix: "Set GROQ_API_KEY environment variable." };
+      } else {
+        base = await testGroqChat(cfg.current, groqApiKey, cfg.testPrompt);
+      }
+    } else {
+      if (!nimApiKey) {
+        base = { model: cfg.current, ok: false, latency: 0, error: "NVIDIA_NIM_API_KEY not set", errorClass: "CONFIG", fix: "Set NVIDIA_NIM_API_KEY environment variable." };
+      } else if (isEmbed) {
+        base = await testEmbed(cfg.current, nimApiKey);
+      } else {
+        base = await testNimChat(cfg.current, nimApiKey, cfg.testPrompt);
+      }
+    }
+
+    results.push({ ...step, ...base, provider, pinned: cfg.pinned || false });
   }
 
   const healthy = results.filter(r => r.ok).length;
