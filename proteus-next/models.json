@@ -2,6 +2,7 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
+      "provider": "nvidia-nim",
       "current": "meta/llama-3.1-8b-instruct",
       "fallbacks": [
         "meta/llama-4-maverick-17b-128e-instruct"
@@ -12,6 +13,7 @@
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
+      "provider": "nvidia-nim",
       "current": "mistralai/mistral-nemotron",
       "fallbacks": [
         "meta/llama-4-maverick-17b-128e-instruct"
@@ -22,6 +24,7 @@
     },
     "gap-analyzer": {
       "description": "Semantic similarity scoring via embeddings",
+      "provider": "nvidia-nim",
       "current": "nvidia/llama-nemotron-embed-1b-v2",
       "fallbacks": [
         "nvidia/nv-embedqa-e5-v5"
@@ -32,6 +35,7 @@
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
+      "provider": "nvidia-nim",
       "current": "meta/llama-3.1-8b-instruct",
       "fallbacks": [
         "mistralai/mistral-nemotron"
@@ -42,7 +46,8 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "current": "meta/llama-4-maverick-17b-128e-instruct",
+      "provider": "groq",
+      "current": "llama-3.3-70b-versatile",
       "fallbacks": [
         "mistralai/mistral-nemotron"
       ],
@@ -63,6 +68,6 @@
     "resume-parser": "mistralai/mistral-nemotron",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
     "rewrite-suggester": "meta/llama-3.1-8b-instruct",
-    "cover-letter": "meta/llama-4-maverick-17b-128e-instruct"
+    "cover-letter": "llama-3.3-70b-versatile"
   }
 }

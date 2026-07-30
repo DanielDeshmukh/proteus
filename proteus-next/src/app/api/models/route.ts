@@ -51,11 +51,15 @@ export async function GET() {
     const configPath = join(process.cwd(), "models.json");
     const config = JSON.parse(readFileSync(configPath, "utf-8"));
 
-    const models = PIPELINE_STEPS.map((step) => ({
-      ...step,
-      model: getModelForRole(step.role),
-      lastChecked: config.lastHealthCheck,
-    }));
+    const models = PIPELINE_STEPS.map((step) => {
+      const roleConfig = config.roles?.[step.role] || {};
+      return {
+        ...step,
+        model: getModelForRole(step.role),
+        provider: roleConfig.provider || "nvidia-nim",
+        lastChecked: config.lastHealthCheck,
+      };
+    });
 
     return NextResponse.json({
       models,

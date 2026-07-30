@@ -97,11 +97,11 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
 
 export default function DocsPage() {
   const [modelRows, setModelRows] = useState<string[][]>([
-    ["JD Parser", "Loading...", "Parse job descriptions into structured requirements"],
-    ["Resume Parser", "Loading...", "Extract structured data from resume text"],
-    ["Gap Analyzer", "Loading...", "Generate embeddings for semantic similarity scoring"],
-    ["Rewriter", "Loading...", "Rewrite resume bullets to match JD requirements"],
-    ["Cover Letter", "Loading...", "Generate tailored cover letters"],
+    ["JD Parser", "Loading...", "NVIDIA NIM", "Parse job descriptions into structured requirements"],
+    ["Resume Parser", "Loading...", "NVIDIA NIM", "Extract structured data from resume text"],
+    ["Gap Analyzer", "Loading...", "NVIDIA NIM", "Generate embeddings for semantic similarity scoring"],
+    ["Rewriter", "Loading...", "NVIDIA NIM", "Rewrite resume bullets to match JD requirements"],
+    ["Cover Letter", "Loading...", "Groq", "Generate tailored cover letters"],
   ]);
   const [lastChecked, setLastChecked] = useState<string | null>(null);
 
@@ -117,9 +117,10 @@ export default function DocsPage() {
       .then((data) => {
         if (data.models) {
           setModelRows(
-            data.models.map((m: { agent: string; model: string; task: string }) => [
+            data.models.map((m: { agent: string; model: string; provider: string; task: string }) => [
               m.agent,
               m.model,
+              m.provider === "groq" ? "Groq" : "NVIDIA NIM",
               m.task,
             ])
           );
@@ -323,7 +324,7 @@ export default function DocsPage() {
         </P>
 
         <Table
-          headers={["Role", "Model", "Purpose"]}
+          headers={["Role", "Model", "Provider", "Purpose"]}
           rows={modelRows}
         />
 
