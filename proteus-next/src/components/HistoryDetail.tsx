@@ -350,37 +350,39 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
       {actionList && actionList.length > 0 && (
         <Card>
           <SectionLabel>Action Items ({actionList.length})</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
             {actionList.map((a, i) => (
               <div
                 key={i}
                 style={{
                   display: "flex",
-                  alignItems: "flex-start",
-                  gap: "12px",
-                  padding: "12px 16px",
-                  background: "var(--surface-sunken)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-md)",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "7px 0",
+                  borderBottom: i < actionList.length - 1 ? "1px solid var(--border)" : "none",
                 }}
               >
                 <span
                   style={{
                     fontFamily: "var(--font-mono)",
-                    fontSize: "11px",
+                    fontSize: "10px",
                     color: "var(--color-gold)",
                     background: "rgba(201, 169, 98, 0.10)",
                     borderRadius: "100px",
-                    padding: "2px 8px",
+                    padding: "1px 6px",
                     flexShrink: 0,
+                    minWidth: "28px",
+                    textAlign: "center",
                   }}
                 >
                   P{a.priority}
                 </span>
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: "13px", color: "var(--text)", margin: 0 }}>{a.action}</p>
-                  <p style={{ fontSize: "12px", color: "var(--text-faint)", margin: "4px 0 0" }}>{a.impact}</p>
-                </div>
+                <span style={{ fontSize: "13px", color: "var(--text)", flex: 1, minWidth: 0 }}>
+                  {a.action}
+                </span>
+                <span style={{ fontSize: "11px", color: "var(--text-faint)", flexShrink: 0, whiteSpace: "nowrap" }}>
+                  {a.impact}
+                </span>
               </div>
             ))}
           </div>
