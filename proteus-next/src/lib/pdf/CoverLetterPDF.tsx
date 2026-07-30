@@ -66,8 +66,8 @@ export interface CoverLetterData {
 }
 
 export function CoverLetterPDF({ data }: { data: CoverLetterData }) {
-  const name = data.candidateName || "Daniel Deshmukh";
-  const role = data.role || "Software Engineer";
+  const name = data.candidateName || "Candidate";
+  const role = data.role || "";
   const date = data.date || new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",

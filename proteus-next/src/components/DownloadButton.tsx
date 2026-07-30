@@ -20,7 +20,7 @@ export function DownloadButton({ content, filename, isCoverLetter = false, candi
       const { generateCoverLetterPDF, generateTextPDF, downloadBlob } = await import("@/lib/pdf/generate");
 
       if (isCoverLetter) {
-        const blob = await generateCoverLetterPDF({ content });
+        const blob = await generateCoverLetterPDF({ content, candidateName, role: jobTitle });
         downloadBlob(blob, `${filename}.pdf`);
       } else {
         const blob = await generateTextPDF({ title: filename, content });
