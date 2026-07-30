@@ -42,6 +42,28 @@ Return a JSON object with:
 
 Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
 
+function sanitizeJsonString(s: string): string {
+  let result = "";
+  let inStr = false;
+  let esc = false;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (esc) { result += ch; esc = false; continue; }
+    if (inStr && ch === "\\") { result += ch; esc = true; continue; }
+    if (!inStr && ch === '"') { inStr = true; result += ch; continue; }
+    if (inStr && ch === '"') { inStr = false; result += ch; continue; }
+    if (inStr) {
+      const code = ch.charCodeAt(0);
+      if (code === 0x0a) { result += "\\n"; continue; }
+      if (code === 0x0d) { result += "\\r"; continue; }
+      if (code === 0x09) { result += "\\t"; continue; }
+      if (code < 0x20) { result += `\\u${code.toString(16).padStart(4, "0")}`; continue; }
+    }
+    result += ch;
+  }
+  return result;
+}
+
 function extractJson(text: string): string {
   let cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
   const firstBrace = cleaned.indexOf("{");
@@ -67,7 +89,7 @@ function extractJson(text: string): string {
     }
   }
   if (end >= 0) cleaned = cleaned.substring(0, end + 1);
-  return cleaned.trim();
+  return sanitizeJsonString(cleaned.trim());
 }
 
 async function callWithRetry<T>(
