@@ -91,7 +91,7 @@ async function callWithRetry<T>(
         maxTokens: 2000,
       });
 
-      let jsonStr = extractJson(response);
+      const jsonStr = extractJson(response);
       const parsed = JSON.parse(jsonStr);
       return schema.parse(parsed);
     } catch (e: any) {
