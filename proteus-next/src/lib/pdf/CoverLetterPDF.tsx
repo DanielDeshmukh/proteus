@@ -41,6 +41,9 @@ const styles = StyleSheet.create({
     lineHeight: 1.7,
     color: "#333",
   },
+  paragraph: {
+    marginBottom: 12,
+  },
   footer: {
     position: "absolute",
     bottom: 40,
@@ -91,9 +94,11 @@ export function CoverLetterPDF({ data }: { data: CoverLetterData }) {
         <Text style={styles.date}>{date}</Text>
 
         {/* Body — LLM content (greeting, paragraphs, closing) */}
-        <Text style={styles.body}>
-          {paragraphs.join("\n\n")}
-        </Text>
+        <View style={styles.body}>
+          {paragraphs.map((p, i) => (
+            <Text key={i} style={styles.paragraph}>{p}</Text>
+          ))}
+        </View>
 
         {/* Footer */}
         <Text style={styles.footer}>

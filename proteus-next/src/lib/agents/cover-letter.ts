@@ -34,7 +34,7 @@ TONE GUIDELINES:
 
 Return a JSON object with:
 - "job_title": The job title this letter is addressing
-- "full_letter": The complete cover letter text (must use the candidate's real name from the resume, not placeholders)
+- "full_letter": The complete cover letter text. SEPARATE each paragraph with a blank line (double newline \n\n). The letter MUST have: greeting line, blank line, opening paragraph, blank line, body paragraphs, blank line, closing. Must use the candidate's real name from the resume.
 - "sections": Array of section objects with "heading" and "content"
 - "tone": The tone used
 - "key_points_addressed": Which JD requirements were highlighted
