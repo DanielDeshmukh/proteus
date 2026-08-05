@@ -75,6 +75,8 @@ export async function POST(request: Request) {
             send({ event: progressEvent.stage, ...("data" in progressEvent ? { data: progressEvent.data } : {}) });
           });
 
+          console.log(`[Stream] Pipeline complete: errors=${result.errors.length}, has_gap=${!!result.gap_analysis}, has_rewrites=${!!result.rewrites}, has_cover=${!!result.cover_letter}`);
+
           await updateRun(runId, {
             overall_score: result.aggregated?.overall_score ?? null,
             section_scores: result.aggregated ? JSON.stringify(result.aggregated.section_scores) : null,
@@ -86,7 +88,7 @@ export async function POST(request: Request) {
           });
 
           await incrementRateLimit(userId, "analyze");
-          send({ event: "done", run_id: runId });
+          send({ event: "done", run_id: runId, errors: result.errors.length > 0 ? result.errors : undefined });
         } catch (e) {
           await updateRun(runId, {
             status: "failed",

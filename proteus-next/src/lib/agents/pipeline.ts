@@ -75,7 +75,9 @@ export async function runPipeline(
     if (jdResult.status === "fulfilled") {
       result.jd = jdResult.value;
       onProgress?.({ stage: "jd_parsed", data: jdResult.value });
+      console.log("[Pipeline] JD parsed OK");
     } else {
+      console.error("[Pipeline] JD parsing failed:", jdResult.reason);
       result.errors.push(`JD parsing failed: ${jdResult.reason}`);
       return result;
     }
@@ -83,7 +85,9 @@ export async function runPipeline(
     if (resumeResult.status === "fulfilled") {
       result.resume = resumeResult.value;
       onProgress?.({ stage: "resume_parsed", data: resumeResult.value });
+      console.log("[Pipeline] Resume parsed OK");
     } else {
+      console.error("[Pipeline] Resume parsing failed:", resumeResult.reason);
       result.errors.push(`Resume parsing failed: ${resumeResult.reason}`);
       return result;
     }
@@ -106,11 +110,11 @@ export async function runPipeline(
     );
     result.timings["gap_analysis"] = (performance.now() - t1) / 1000;
     onProgress?.({ stage: "gap_analysis", data: result.gap_analysis });
+    console.log("[Pipeline] Gap analysis OK");
   } catch (e) {
+    console.error("[Pipeline] Gap analysis failed:", e);
     result.errors.push(`Gap analysis failed: ${e}`);
     result.timings["gap_analysis"] = (performance.now() - t1) / 1000;
-    // Gap analysis failure is non-fatal — we can still generate with null gaps
-    // but downstream stages need it, so return
     return result;
   }
 
@@ -141,14 +145,18 @@ export async function runPipeline(
     if (rewritesResult.status === "fulfilled") {
       result.rewrites = rewritesResult.value;
       onProgress?.({ stage: "rewrites", data: rewritesResult.value });
+      console.log("[Pipeline] Rewrites OK");
     } else {
+      console.error("[Pipeline] Rewrites failed:", rewritesResult.reason);
       result.errors.push(`Rewrite suggester failed: ${rewritesResult.reason}`);
     }
 
     if (coverResult.status === "fulfilled") {
       result.cover_letter = coverResult.value;
       onProgress?.({ stage: "cover_letter", data: coverResult.value });
+      console.log("[Pipeline] Cover letter OK");
     } else {
+      console.error("[Pipeline] Cover letter failed:", coverResult.reason);
       result.errors.push(`Cover letter generator failed: ${coverResult.reason}`);
     }
 
@@ -166,7 +174,9 @@ export async function runPipeline(
     result.timings["aggregate"] = (performance.now() - t3) / 1000;
     result.timings["total"] = (performance.now() - t0) / 1000;
     onProgress?.({ stage: "result", data: result.aggregated });
+    console.log("[Pipeline] Aggregation OK, overall:", result.aggregated?.overall_score);
   } catch (e) {
+    console.error("[Pipeline] Aggregation failed:", e);
     result.errors.push(`Aggregation failed: ${e}`);
     result.timings["aggregate"] = (performance.now() - t3) / 1000;
   }

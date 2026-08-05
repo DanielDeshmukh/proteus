@@ -144,16 +144,21 @@ export default function AnalyzePage() {
             setStageLabel("Aggregating scores...");
           } else if (evt.event === "done") {
             const p = partialRef.current;
-            setResult({
-              run_id: evt.run_id,
-              overall_score: (p.gaps as GapAnalysis | null)?.overall_match ?? null,
-              section_scores: null,
-              gap_analysis: p.gaps,
-              rewrite_suggestions: p.rewrites,
-              cover_letter: p.coverLetter,
-              timings: { total: elapsedRef.current },
-              errors: null,
-            });
+            const doneErrors = (evt.errors as string[] | undefined) ?? null;
+            if (doneErrors && doneErrors.length > 0 && !p.gaps && !p.rewrites && !p.coverLetter) {
+              setError(`Pipeline completed with errors:\n${doneErrors.join("\n")}`);
+            } else {
+              setResult({
+                run_id: evt.run_id,
+                overall_score: (p.gaps as GapAnalysis | null)?.overall_match ?? null,
+                section_scores: null,
+                gap_analysis: p.gaps,
+                rewrite_suggestions: p.rewrites,
+                cover_letter: p.coverLetter,
+                timings: { total: elapsedRef.current },
+                errors: doneErrors,
+              });
+            }
           } else if (evt.event === "error") {
             throw new Error(evt.message);
           }
