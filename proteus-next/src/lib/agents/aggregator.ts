@@ -36,10 +36,10 @@ export function aggregateScores(gapAnalysis: GapAnalysis): PipelineOutput {
   };
 
   const weights: Record<string, number> = {
-    hard_skills: 0.4,
+    hard_skills: 0.5,
     soft_skills: 0.15,
     domain_keywords: 0.2,
-    ats_bait: 0.25,
+    ats_bait: 0.15,
   };
 
   let overallScore = 0;

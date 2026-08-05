@@ -3,8 +3,8 @@ import { getModelForRole } from "../model-config";
 import type { JDStructured, ResumeStructured, GapAnalysis, GapItem } from "../../types";
 
 const EMBEDDING_MODEL = getModelForRole("gap-analyzer");
-const MATCH_THRESHOLD = 0.55;
-const PARTIAL_THRESHOLD = 0.35;
+const MATCH_THRESHOLD = 0.45;
+const PARTIAL_THRESHOLD = 0.25;
 
 function cosineSimilarity(a: number[], b: number[]): number {
   let dot = 0;
@@ -128,7 +128,7 @@ export async function analyzeGaps(
   const partial = gaps.filter((g) => g.status === "partial").length;
   const missing = gaps.filter((g) => g.status === "missing").length;
   const total = requirements.length;
-  const overall = total > 0 ? (matched + partial * 0.5) / total : 0;
+  const overall = total > 0 ? (matched * 1.0 + partial * 0.65) / total : 0;
 
   return {
     overall_match: Math.round(overall * 10000) / 10000,
