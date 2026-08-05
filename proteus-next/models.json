@@ -13,10 +13,10 @@
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
-      "provider": "nvidia-nim",
-      "current": "mistralai/mistral-nemotron",
+      "provider": "groq",
+      "current": "llama-3.3-70b-versatile",
       "fallbacks": [
-        "meta/llama-4-maverick-17b-128e-instruct"
+        "llama-3.1-8b-instant"
       ],
       "testPrompt": "Parse this resume into JSON with name, skills array, and experience array: John Smith, Software Engineer, 5 years Python experience at Google.",
       "type": "chat",
@@ -65,7 +65,7 @@
   "lastHealthCheck": "2026-07-24T08:42:11.357Z",
   "lastHealthyModels": {
     "jd-parser": "meta/llama-3.1-8b-instruct",
-    "resume-parser": "mistralai/mistral-nemotron",
+    "resume-parser": "llama-3.3-70b-versatile",
     "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
     "rewrite-suggester": "meta/llama-3.1-8b-instruct",
     "cover-letter": "llama-3.3-70b-versatile"

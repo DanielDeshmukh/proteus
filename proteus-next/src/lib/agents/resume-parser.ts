@@ -54,5 +54,6 @@ export function parseResume(rawResumeText: string): Promise<ResumeStructured> {
     temperature: 0.1,
     maxTokens: 3072,
     role: "resume-parser",
+    provider: "groq",
   });
 }

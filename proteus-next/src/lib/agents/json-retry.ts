@@ -1,4 +1,5 @@
 import { chatCompletion, extractJson } from "../nim-client";
+import { groqChatCompletion } from "../groq-client";
 import { ZodSchema } from "zod";
 
 const RETRY_SUFFIX = `\n\nIMPORTANT: Your previous response was NOT valid JSON. You MUST return ONLY a valid JSON object. No text before or after. No markdown code fences. No explanation. Just the raw JSON starting with { and ending with }.`;
@@ -40,12 +41,12 @@ async function callAndParse<T>(
   messages: Array<{ role: "system" | "user" | "assistant"; content: string }>,
   schema: ZodSchema<T>,
   maxTokens: number,
-  cleanControlChars: boolean
+  cleanControlChars: boolean,
+  provider: string = "nvidia-nim"
 ): Promise<T> {
-  const response = await chatCompletion(model, messages, {
-    temperature: 0.0,
-    maxTokens,
-  });
+  const response = provider === "groq"
+    ? await groqChatCompletion(model, messages, { temperature: 0.0, maxTokens })
+    : await chatCompletion(model, messages, { temperature: 0.0, maxTokens });
 
   let jsonStr = extractJson(response);
   if (cleanControlChars) {
@@ -67,9 +68,10 @@ export async function callWithJsonRetry<T>(
     maxRetries?: number;
     cleanControlChars?: boolean;
     role?: string;
+    provider?: string;
   } = {}
 ): Promise<T> {
-  const { temperature = 0.3, maxTokens = 4096, maxRetries = 2, cleanControlChars = false, role } = options;
+  const { temperature = 0.3, maxTokens = 4096, maxRetries = 2, cleanControlChars = false, role, provider = "nvidia-nim" } = options;
 
   let messages = [
     { role: "system" as const, content: systemPrompt },
@@ -80,10 +82,15 @@ export async function callWithJsonRetry<T>(
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const response = await chatCompletion(model, messages, {
-        temperature: attempt === 0 ? temperature : 0.0,
-        maxTokens,
-      });
+      const response = provider === "groq"
+        ? await groqChatCompletion(model, messages, {
+            temperature: attempt === 0 ? temperature : 0.0,
+            maxTokens,
+          })
+        : await chatCompletion(model, messages, {
+            temperature: attempt === 0 ? temperature : 0.0,
+            maxTokens,
+          });
 
       let jsonStr = extractJson(response);
       if (cleanControlChars) {
@@ -109,7 +116,7 @@ export async function callWithJsonRetry<T>(
         return await callAndParse(fallback, [
           { role: "system" as const, content: systemPrompt },
           { role: "user" as const, content: userContent },
-        ], schema, maxTokens, cleanControlChars);
+        ], schema, maxTokens, cleanControlChars, provider);
       } catch {
         // Fallback also failed, try next
       }
