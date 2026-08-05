@@ -20,7 +20,6 @@ export interface DbRun {
   gap_analysis: string | null;
   rewrite_suggestions: string | null;
   cover_letter: string | null;
-  action_list: string | null;
   status: string;
   error_message: string | null;
 }
@@ -39,7 +38,6 @@ const SCHEMA = `
     gap_analysis TEXT,
     rewrite_suggestions TEXT,
     cover_letter TEXT,
-    action_list TEXT,
     status TEXT NOT NULL DEFAULT 'pending',
     error_message TEXT
   );
@@ -170,7 +168,7 @@ async function ensureLibsql() {
   if (!libsqlReady) {
     const client = getLibsql();
     await client.batch([
-      "CREATE TABLE IF NOT EXISTS application_runs (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, created_at TEXT NOT NULL, jd_text TEXT, jd_source TEXT, resume_text TEXT, resume_source TEXT, overall_score REAL, section_scores TEXT, gap_analysis TEXT, rewrite_suggestions TEXT, cover_letter TEXT, action_list TEXT, status TEXT NOT NULL DEFAULT 'pending', error_message TEXT)",
+      "CREATE TABLE IF NOT EXISTS application_runs (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, created_at TEXT NOT NULL, jd_text TEXT, jd_source TEXT, resume_text TEXT, resume_source TEXT, overall_score REAL, section_scores TEXT, gap_analysis TEXT, rewrite_suggestions TEXT, cover_letter TEXT, status TEXT NOT NULL DEFAULT 'pending', error_message TEXT)",
       "CREATE TABLE IF NOT EXISTS rate_limits (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, action TEXT NOT NULL, window_start TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0)",
       "CREATE INDEX IF NOT EXISTS idx_rate_limits_lookup ON rate_limits(user_id, action, window_start)",
     ]);
@@ -261,7 +259,6 @@ export async function updateRun(
     gap_analysis?: string | null;
     rewrite_suggestions?: string | null;
     cover_letter?: string | null;
-    action_list?: string | null;
     status?: string;
     error_message?: string | null;
   }
@@ -272,7 +269,6 @@ export async function updateRun(
     "gap_analysis",
     "rewrite_suggestions",
     "cover_letter",
-    "action_list",
     "status",
     "error_message",
   ]);

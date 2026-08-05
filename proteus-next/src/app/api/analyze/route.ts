@@ -117,7 +117,6 @@ export async function POST(request: Request) {
         gap_analysis: result.gap_analysis ? JSON.stringify(result.gap_analysis) : null,
         rewrite_suggestions: result.rewrites ? JSON.stringify(result.rewrites) : null,
         cover_letter: result.cover_letter ? JSON.stringify(result.cover_letter) : null,
-        action_list: result.aggregated ? JSON.stringify(result.aggregated.action_list) : null,
         status: result.errors.length > 0 ? "partial" : "completed",
         error_message: result.errors.length > 0 ? JSON.stringify(result.errors) : null,
       });
@@ -131,7 +130,6 @@ export async function POST(request: Request) {
         gap_analysis: result.gap_analysis ?? null,
         rewrite_suggestions: result.rewrites ?? null,
         cover_letter: result.cover_letter ?? null,
-        action_list: result.aggregated?.action_list ?? null,
         timings: result.timings,
         errors: result.errors.length > 0 ? result.errors : null,
       });

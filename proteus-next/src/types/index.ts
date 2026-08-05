@@ -193,24 +193,12 @@ export type CoverLetterOutput = z.infer<typeof CoverLetterOutputSchema>;
 // Aggregator Models
 // ─────────────────────────────────────────────────────────
 
-export const ActionItemSchema = z.object({
-  priority: safeNum,
-  action: safeStr,
-  impact: safeStr,
-  category: z.preprocess(
-    (v) => { const s = String(v || "").toLowerCase(); return (["rewrite","add_skill","surface_experience"].includes(s) ? s : "rewrite") as "rewrite"|"add_skill"|"surface_experience"; },
-    z.enum(["rewrite", "add_skill", "surface_experience"])
-  ),
-}).passthrough();
-
 export const PipelineOutputSchema = z.object({
   overall_score: safeNum,
   section_scores: z.record(z.string(), safeNum),
-  action_list: z.array(ActionItemSchema),
   summary: safeStr,
 }).passthrough();
 
-export type ActionItem = z.infer<typeof ActionItemSchema>;
 export type PipelineOutput = z.infer<typeof PipelineOutputSchema>;
 
 // ─────────────────────────────────────────────────────────
@@ -224,7 +212,6 @@ export const AnalyzeResponseSchema = z.object({
   gap_analysis: GapAnalysisSchema.nullable().optional(),
   rewrite_suggestions: RewriteOutputSchema.nullable().optional(),
   cover_letter: CoverLetterOutputSchema.nullable().optional(),
-  action_list: z.array(ActionItemSchema).nullable().optional(),
   timings: z.record(z.string(), z.number()).nullable().optional(),
   errors: z.array(z.string()).nullable().optional(),
 });

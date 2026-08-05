@@ -1,4 +1,4 @@
-import type { GapAnalysis, PipelineOutput, ActionItem } from "../../types";
+import type { GapAnalysis, PipelineOutput } from "../../types";
 
 export function aggregateScores(gapAnalysis: GapAnalysis): PipelineOutput {
   const hardSkillScores: number[] = [];
@@ -48,31 +48,6 @@ export function aggregateScores(gapAnalysis: GapAnalysis): PipelineOutput {
   }
   overallScore = Math.round(overallScore * 10000) / 10000;
 
-  const actions: ActionItem[] = [];
-  let priority = 1;
-
-  for (const gap of gapAnalysis.gaps) {
-    if (gap.status === "missing") {
-      actions.push({
-        priority,
-        action: `Add or surface experience for: ${gap.requirement}`,
-        impact: "High — currently missing from resume",
-        category: gap.category === "hard_skill" || gap.category === "ats_bait" ? "add_skill" : "surface_experience",
-      });
-      priority++;
-    } else if (gap.status === "partial") {
-      actions.push({
-        priority,
-        action: `Strengthen mention of: ${gap.requirement}`,
-        impact: `Medium — partially matched (score: ${Math.round(gap.similarity_score * 100)}%)`,
-        category: "rewrite",
-      });
-      priority++;
-    }
-  }
-
-  const truncatedActions = actions.slice(0, 10);
-
   const matchedPct = gapAnalysis.total_requirements
     ? (gapAnalysis.matched_count / gapAnalysis.total_requirements) * 100
     : 100;
@@ -83,13 +58,11 @@ export function aggregateScores(gapAnalysis: GapAnalysis): PipelineOutput {
   const summary =
     `Overall match: ${Math.round(overallScore * 100)}%. ` +
     `${gapAnalysis.matched_count}/${gapAnalysis.total_requirements} requirements matched (${Math.round(matchedPct)}%). ` +
-    `${gapAnalysis.missing_count} requirements missing (${Math.round(missingPct)}%). ` +
-    `${truncatedActions.length} prioritized actions generated.`;
+    `${gapAnalysis.missing_count} requirements missing (${Math.round(missingPct)}%).`;
 
   return {
     overall_score: overallScore,
     section_scores: sectionScores,
-    action_list: truncatedActions,
     summary,
   };
 }

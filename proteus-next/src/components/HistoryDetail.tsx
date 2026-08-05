@@ -22,7 +22,6 @@ interface RunDetail {
   gap_analysis: string | null;
   rewrite_suggestions: string | null;
   cover_letter: string | null;
-  action_list: string | null;
   status: string;
   error_message: string | null;
 }
@@ -177,13 +176,11 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
   let gapAnalysis: { gaps: Array<{ status: string; requirement: string; similarity_score: number; category: string; matched_evidence: string | null }>; matched_count: number; partial_count: number; missing_count: number; total_requirements: number } | null = null;
   let rewriteSuggestions: { suggestions: Array<{ original_bullet: string; suggested_rewrite: string; rationale: string; target_requirement: string; impact_score: number; experience_context: string }>; hidden_experience: string[] } | null = null;
   let coverLetter: { full_letter: string; sections: Array<{ heading: string; content: string }>; word_count: number; tone: string; job_title?: string } | null = null;
-  let actionList: Array<{ priority: number; action: string; impact: string; category: string }> | null = null;
 
   try { if (run.section_scores) sectionScores = JSON.parse(run.section_scores); } catch {}
   try { if (run.gap_analysis) gapAnalysis = JSON.parse(run.gap_analysis); } catch {}
   try { if (run.rewrite_suggestions) rewriteSuggestions = JSON.parse(run.rewrite_suggestions); } catch {}
   try { if (run.cover_letter) coverLetter = JSON.parse(run.cover_letter); } catch {}
-  try { if (run.action_list) actionList = JSON.parse(run.action_list); } catch {}
 
   // Build cover letter filename: {username}_{applied_role}
   function sanitizeForFilename(s: string): string {
@@ -267,7 +264,6 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
                   sectionScores,
                   gapAnalysis,
                   rewriteSuggestions,
-                  actionList,
                 }}
                 filename={`PROTEUS_Report_Run${run.id}`}
               />
@@ -353,49 +349,6 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
           >
             {coverLetter.full_letter}
           </pre>
-        </Card>
-      )}
-
-      {/* Actions */}
-      {actionList && actionList.length > 0 && (
-        <Card>
-          <SectionLabel>Action Items ({actionList.length})</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {actionList.map((a, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "7px 0",
-                  borderBottom: i < actionList.length - 1 ? "1px solid var(--border)" : "none",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "10px",
-                    color: "var(--color-gold)",
-                    background: "rgba(201, 169, 98, 0.10)",
-                    borderRadius: "100px",
-                    padding: "1px 6px",
-                    flexShrink: 0,
-                    minWidth: "28px",
-                    textAlign: "center",
-                  }}
-                >
-                  P{a.priority}
-                </span>
-                <span style={{ fontSize: "13px", color: "var(--text)", flex: 1, minWidth: 0 }}>
-                  {a.action}
-                </span>
-                <span style={{ fontSize: "11px", color: "var(--text-faint)", flexShrink: 0, whiteSpace: "nowrap" }}>
-                  {a.impact}
-                </span>
-              </div>
-            ))}
-          </div>
         </Card>
       )}
 

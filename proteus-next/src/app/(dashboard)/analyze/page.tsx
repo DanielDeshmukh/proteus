@@ -11,7 +11,6 @@ import { ScoreDisplay } from "@/components/ScoreDisplay";
 import { GapAnalysisDisplay } from "@/components/GapAnalysisDisplay";
 import { RewriteDisplay } from "@/components/RewriteDisplay";
 import { CoverLetterDisplay } from "@/components/CoverLetterDisplay";
-import { ActionList } from "@/components/ActionList";
 import { apiPost, apiPostStream, apiGet } from "@/lib/api";
 import type { GapAnalysis } from "@/types";
 
@@ -148,7 +147,6 @@ export default function AnalyzePage() {
               gap_analysis: p.gaps,
               rewrite_suggestions: p.rewrites,
               cover_letter: p.coverLetter,
-              action_list: null,
               timings: { total: elapsed },
               errors: null,
             });
@@ -441,13 +439,6 @@ export default function AnalyzePage() {
               <Card>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)", marginBottom: "16px" }}>Cover letter</h3>
                 <CoverLetterDisplay coverLetter={result.cover_letter as never} />
-              </Card>
-            )}
-
-            {result.action_list != null && Array.isArray(result.action_list) && result.action_list.length > 0 && (
-              <Card>
-                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)", marginBottom: "16px" }}>Priority actions</h3>
-                <ActionList actions={result.action_list as never} />
               </Card>
             )}
 

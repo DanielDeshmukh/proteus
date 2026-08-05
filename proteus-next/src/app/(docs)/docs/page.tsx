@@ -157,7 +157,6 @@ export default function DocsPage() {
             "Gap analysis — specific requirements you're missing or partially matching",
             "Bullet-level rewrites — JD-aware suggestions to strengthen weak experience items",
             "Cover letter — a tailored letter written from the same context as your resume",
-            "Priority actions — ranked steps to improve your application",
           ]} />
         </SubSection>
 
@@ -232,11 +231,6 @@ export default function DocsPage() {
           <h4 style={{ color: "var(--text)", fontSize: "14px", margin: "16px 0 8px" }}>Cover Letter</h4>
           <P>
             A tailored cover letter written from the same parsed context as your analysis. You can choose the tone (professional, friendly, confident) before running the pipeline. Use the copy or download buttons to export it.
-          </P>
-
-          <h4 style={{ color: "var(--text)", fontSize: "14px", margin: "16px 0 8px" }}>Priority Actions</h4>
-          <P>
-            Ranked action items telling you what to fix first for the biggest impact on your match score.
           </P>
         </SubSection>
 
