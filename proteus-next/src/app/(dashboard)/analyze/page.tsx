@@ -113,7 +113,7 @@ export default function AnalyzePage() {
         formData.append("resume_text", resume.value as string);
 
         await apiPostStream("/api/analyze/stream", formData, (event) => {
-          const evt = event as { event: string; data?: Record<string, unknown>; run_id?: number; message?: string };
+          const evt = event as { event: string; data?: Record<string, unknown>; run_id?: number; message?: string; errors?: string[] };
 
           if (evt.event === "started") {
             setCurrentStage(0);
