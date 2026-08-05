@@ -3,8 +3,8 @@ import { getModelForRole } from "../model-config";
 import type { JDStructured, ResumeStructured, GapAnalysis, GapItem } from "../../types";
 
 const EMBEDDING_MODEL = getModelForRole("gap-analyzer");
-const MATCH_THRESHOLD = 0.45;
-const PARTIAL_THRESHOLD = 0.25;
+const MATCH_THRESHOLD = 0.40;
+const PARTIAL_THRESHOLD = 0.20;
 
 function cosineSimilarity(a: number[], b: number[]): number {
   let dot = 0;
@@ -86,7 +86,6 @@ export async function analyzeGaps(
     };
   }
 
-  const allTexts = requirements.map((r) => r[0]).concat(resumeEvidence);
   const reqEmbeddings = await embedTexts(requirements.map((r) => r[0]), EMBEDDING_MODEL, "query");
   const resEmbeddings = await embedTexts(resumeEvidence, EMBEDDING_MODEL, "passage");
 

@@ -1,39 +1,30 @@
 import type { GapAnalysis, PipelineOutput } from "../../types";
 
 export function aggregateScores(gapAnalysis: GapAnalysis): PipelineOutput {
-  const hardSkillScores: number[] = [];
-  const softSkillScores: number[] = [];
-  const domainScores: number[] = [];
-  const atsScores: number[] = [];
+  const categories = ["hard_skill", "soft_skill", "domain_keyword", "ats_bait"] as const;
+  const categoryMap: Record<string, { matched: number; partial: number; total: number }> = {};
 
-  for (const gap of gapAnalysis.gaps) {
-    switch (gap.category) {
-      case "hard_skill":
-        hardSkillScores.push(gap.similarity_score);
-        break;
-      case "soft_skill":
-        softSkillScores.push(gap.similarity_score);
-        break;
-      case "domain_keyword":
-        domainScores.push(gap.similarity_score);
-        break;
-      case "ats_bait":
-        atsScores.push(gap.similarity_score);
-        break;
-    }
+  for (const cat of categories) {
+    categoryMap[cat] = { matched: 0, partial: 0, total: 0 };
   }
 
-  const avg = (scores: number[]): number => {
-    if (scores.length === 0) return 1.0;
-    return Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10000) / 10000;
-  };
+  for (const gap of gapAnalysis.gaps) {
+    const bucket = categoryMap[gap.category];
+    if (!bucket) continue;
+    bucket.total++;
+    if (gap.status === "matched") bucket.matched++;
+    else if (gap.status === "partial") bucket.partial++;
+  }
 
-  const sectionScores: Record<string, number> = {
-    hard_skills: avg(hardSkillScores),
-    soft_skills: avg(softSkillScores),
-    domain_keywords: avg(domainScores),
-    ats_bait: avg(atsScores),
-  };
+  const sectionScores: Record<string, number> = {};
+  for (const [cat, label] of [["hard_skill", "hard_skills"], ["soft_skill", "soft_skills"], ["domain_keyword", "domain_keywords"], ["ats_bait", "ats_bait"]] as const) {
+    const b = categoryMap[cat];
+    if (b.total === 0) {
+      sectionScores[label] = 1.0;
+    } else {
+      sectionScores[label] = Math.round(((b.matched * 1.0 + b.partial * 0.6) / b.total) * 10000) / 10000;
+    }
+  }
 
   const weights: Record<string, number> = {
     hard_skills: 0.5,
