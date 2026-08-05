@@ -18,10 +18,6 @@ const SAMPLE_RUNS = [
       tone: "professional",
       body: "Dear Hiring Manager,\n\nI am excited to apply for the Senior Software Engineer position at Google. With over 5 years of experience in distributed systems and cloud platforms, I bring a strong track record of building and scaling high-performance systems.\n\nBest regards,\nJane Smith",
     }),
-    action_list: JSON.stringify([
-      { action: "Add open source contributions to GitHub profile", priority: "high", impact: 5 },
-      { action: "Highlight GCP-specific experience more prominently", priority: "medium", impact: 3 },
-    ]),
   },
   {
     jd_text: "Product Manager at Netflix\n\nAbout the role:\nWe're looking for a Product Manager to lead our content discovery experience.\n\nRequirements:\n- 3+ years product management experience\n- Experience with recommendation systems or personalization\n- Strong analytical skills and data-driven decision making",
@@ -39,9 +35,6 @@ const SAMPLE_RUNS = [
       tone: "enthusiastic",
       body: "Dear Netflix Hiring Team,\n\nI've been a passionate Netflix user for years, and I'm thrilled to apply for the Product Manager role.\n\nBest,\nAlex Johnson",
     }),
-    action_list: JSON.stringify([
-      { action: "Gain additional PM experience before reapplying", priority: "high", impact: 8 },
-    ]),
   },
   {
     jd_text: "Junior Frontend Developer at Startup Co\n\nLooking for a junior developer to join our small team!\n\nRequirements:\n- 1-2 years experience with React\n- Basic understanding of HTML, CSS, JavaScript\n- Eagerness to learn and grow",
@@ -59,9 +52,6 @@ const SAMPLE_RUNS = [
       tone: "enthusiastic",
       body: "Dear Startup Co Team,\n\nI'm excited to apply for the Junior Frontend Developer position.\n\nBest,\nSam Lee",
     }),
-    action_list: JSON.stringify([
-      { action: "Build more complex projects to demonstrate experience depth", priority: "high", impact: 15 },
-    ]),
   },
 ];
 
@@ -82,7 +72,6 @@ async function seed() {
       section_scores: run.section_scores,
       gap_analysis: run.gap_analysis,
       cover_letter: run.cover_letter,
-      action_list: run.action_list,
       status: run.status,
     });
 

@@ -235,7 +235,6 @@ export interface DatabaseRun {
   gap_analysis: string | null;
   rewrite_suggestions: string | null;
   cover_letter: string | null;
-  action_list: string | null;
   status: string;
   error_message: string | null;
 }

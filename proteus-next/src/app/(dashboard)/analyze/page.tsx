@@ -48,7 +48,6 @@ export default function AnalyzePage() {
     gap_analysis?: unknown;
     rewrite_suggestions?: unknown;
     cover_letter?: unknown;
-    action_list?: unknown[] | null;
     timings?: Record<string, number> | null;
     errors?: string[] | null;
   } | null>(null);

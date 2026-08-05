@@ -317,8 +317,6 @@ async function testAnalyzePaste(jd, resume) {
     cover_letter_word_count: data.cover_letter?.word_count,
     cover_letter_tone: data.cover_letter?.tone,
     cover_letter_sections: data.cover_letter?.sections?.map(s => s.heading),
-    action_count: data.action_list?.length ?? 0,
-    actions: data.action_list?.map(a => `[P${a.priority}] ${a.action} (${a.impact})`),
     timings: data.timings,
     errors: data.errors,
   });

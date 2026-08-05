@@ -30,7 +30,6 @@ async function main() {
       gap_analysis TEXT,
       rewrite_suggestions TEXT,
       cover_letter TEXT,
-      action_list TEXT,
       status TEXT NOT NULL DEFAULT 'pending',
       error_message TEXT
     )

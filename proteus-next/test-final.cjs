@@ -56,7 +56,6 @@ async function main() {
   console.log(`\nGaps: matched=${data.gap_analysis?.matched_count} partial=${data.gap_analysis?.partial_count} missing=${data.gap_analysis?.missing_count}`);
   console.log(`Rewrites: ${data.rewrite_suggestions?.suggestions?.length ?? 'null'} (hidden: ${data.rewrite_suggestions?.hidden_experience?.length ?? 0})`);
   console.log(`Cover Letter: ${data.cover_letter?.word_count ?? 'null'} words`);
-  console.log(`Actions: ${data.action_list?.length ?? 0}`);
   console.log(`\nTimings:`, data.timings);
   if (data.errors) console.log(`Errors:`, data.errors);
 

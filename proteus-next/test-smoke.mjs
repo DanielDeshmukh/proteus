@@ -257,12 +257,6 @@ async function test() {
   console.log("  Preview:", d.cover_letter?.full_letter?.substring(0, 200) + "...");
   console.log("");
 
-  console.log("[ACTIONS]");
-  for (const a of d.action_list || []) {
-    console.log("  ", a.priority + ".", a.action);
-  }
-  console.log("");
-
   console.log("========================================");
   console.log("=== VERDICT: Did the model see through the noise? ===");
   console.log("========================================");

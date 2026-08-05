@@ -108,7 +108,6 @@ async function testJD(jd, index, resumeText, retryCount = 0) {
       gaps: data.gap_analysis ? { matched: data.gap_analysis.matched_count, partial: data.gap_analysis.partial_count, missing: data.gap_analysis.missing_count, total: data.gap_analysis.total_requirements } : null,
       rewriteCount: data.rewrite_suggestions?.suggestions?.length ?? 0,
       coverLetterWords: data.cover_letter?.word_count ?? 0,
-      actionCount: data.action_list?.length ?? 0,
       time: elapsed,
       errors: data.errors,
     };
