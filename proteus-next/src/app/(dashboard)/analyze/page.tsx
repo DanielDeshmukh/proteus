@@ -29,6 +29,7 @@ export default function AnalyzePage() {
   const [currentStage, setCurrentStage] = useState<number | null>(null);
   const [stageLabel, setStageLabel] = useState<string>("");
   const [elapsed, setElapsed] = useState(0);
+  const elapsedRef = useRef(0);
   const [error, setError] = useState<string | null>(null);
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -67,7 +68,11 @@ export default function AnalyzePage() {
   useEffect(() => {
     if (!loading) return;
     const start = Date.now();
-    const timer = setInterval(() => setElapsed((Date.now() - start) / 1000), 100);
+    const timer = setInterval(() => {
+      const e = (Date.now() - start) / 1000;
+      elapsedRef.current = e;
+      setElapsed(e);
+    }, 100);
     return () => clearInterval(timer);
   }, [loading]);
 
@@ -146,7 +151,7 @@ export default function AnalyzePage() {
               gap_analysis: p.gaps,
               rewrite_suggestions: p.rewrites,
               cover_letter: p.coverLetter,
-              timings: { total: elapsed },
+              timings: { total: elapsedRef.current },
               errors: null,
             });
           } else if (evt.event === "error") {
@@ -312,7 +317,7 @@ export default function AnalyzePage() {
           {loading
             ? stageLabel || `Analyzing... ${elapsed.toFixed(1)}s`
             : result
-              ? `Completed in ${(result.timings as Record<string, number>)?.total?.toFixed(1)}s`
+              ? `Completed in ${((result.timings as Record<string, number>)?.total ?? 0).toFixed(1)}s`
               : "Ready to analyze"}
         </span>
         {usage && (
