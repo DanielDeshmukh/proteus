@@ -51,7 +51,7 @@ export function parseResume(rawResumeText: string): Promise<ResumeStructured> {
   const userContent = `Parse this resume:\n\n${text}`;
 
   return callWithJsonRetry(RESUME_PARSER_MODEL, RESUME_PARSER_SYSTEM_PROMPT, userContent, ResumeStructuredSchema, {
-    temperature: 0.1,
+    temperature: 0,
     maxTokens: 3072,
     role: "resume-parser",
     provider: "groq",

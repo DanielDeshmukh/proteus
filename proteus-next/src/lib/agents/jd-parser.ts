@@ -52,7 +52,7 @@ export function parseJd(rawJdText: string): Promise<JDStructured> {
   const userContent = `Parse this job description:\n\n${text}`;
 
   return callWithJsonRetry(JD_PARSER_MODEL, JD_PARSER_SYSTEM_PROMPT, userContent, JDStructuredSchema, {
-    temperature: 0.1,
+    temperature: 0,
     maxTokens: 2048,
     role: "jd-parser",
   });
