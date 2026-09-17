@@ -336,7 +336,7 @@ export default function AnalyzePage() {
       <section style={{ marginTop: "48px", padding: "28px 0 8px", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "28px", flexWrap: "wrap", gap: "8px" }}>
           <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)" }}>Pipeline</h3>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "10.5px", color: "var(--text-faint)" }}>Five agents · shared JD context · NIM + Groq</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "10.5px", color: "var(--text-faint)" }}>Five agents · shared JD context · Groq + Gemini</span>
         </div>
         <div
           style={{

@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SiNvidia } from "react-icons/si";
+import { SiGoogle } from "react-icons/si";
 
 function Section({ id, title, icon, children }: { id: string; title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section id={id} style={{ marginBottom: "56px", scrollMarginTop: "32px" }}>
       <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "24px", color: "var(--text)", marginBottom: "20px", paddingBottom: "12px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "10px" }}>
-        {icon && <span style={{ color: "#76b900", display: "flex", alignItems: "center" }}>{icon}</span>}
+        {icon && <span style={{ color: "var(--color-gold)", display: "flex", alignItems: "center" }}>{icon}</span>}
         {title}
       </h2>
       <div style={{ fontSize: "14.5px", color: "var(--text-soft)", lineHeight: 1.8 }}>
@@ -97,10 +97,10 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
 
 export default function DocsPage() {
   const [modelRows, setModelRows] = useState<string[][]>([
-    ["JD Parser", "Loading...", "NVIDIA NIM", "Parse job descriptions into structured requirements"],
-    ["Resume Parser", "Loading...", "NVIDIA NIM", "Extract structured data from resume text"],
-    ["Gap Analyzer", "Loading...", "NVIDIA NIM", "Generate embeddings for semantic similarity scoring"],
-    ["Rewriter", "Loading...", "NVIDIA NIM", "Rewrite resume bullets to match JD requirements"],
+    ["JD Parser", "Loading...", "Groq", "Parse job descriptions into structured requirements"],
+    ["Resume Parser", "Loading...", "Groq", "Extract structured data from resume text"],
+    ["Gap Analyzer", "Loading...", "Groq", "Generate embeddings for semantic similarity scoring"],
+    ["Rewriter", "Loading...", "Groq", "Rewrite resume bullets to match JD requirements"],
     ["Cover Letter", "Loading...", "Groq", "Generate tailored cover letters"],
   ]);
   const [lastChecked, setLastChecked] = useState<string | null>(null);
@@ -120,7 +120,7 @@ export default function DocsPage() {
             data.models.map((m: { agent: string; model: string; provider: string; task: string }) => [
               m.agent,
               m.model,
-              m.provider === "groq" ? "Groq" : "NVIDIA NIM",
+              m.provider,
               m.task,
             ])
           );
@@ -148,7 +148,7 @@ export default function DocsPage() {
       {/* ─── Introduction ─────────────────────────────── */}
       <Section id="introduction" title="Introduction">
         <P>
-          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline powered by NVIDIA NIM and Groq to deliver consistent, JD-aware results.
+          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline powered by Groq and Google Gemini to deliver consistent, JD-aware results.
         </P>
 
         <SubSection title="What you get">
@@ -259,7 +259,7 @@ export default function DocsPage() {
             ["Frontend", "Next.js 16 + React + Tailwind CSS v4", "App router, streaming UI, dark theme"],
             ["Auth", "NextAuth.js v5", "Email+password, magic link, Google, GitHub OAuth"],
             ["Database", "Turso (libSQL)", "Per-user data isolation, run history, session storage"],
-            ["AI Pipeline", "NVIDIA NIM + Groq", "Five-agent pipeline — JD parsing through cover letter generation"],
+            ["AI Pipeline", "Groq + Gemini", "Five-agent pipeline — JD parsing through cover letter generation"],
             ["PDF Generation", "react-pdf + unpdf", "Analysis report and cover letter PDF export"],
             ["Deployment", "Vercel", "Serverless functions, edge middleware, auto-deploy from GitHub"],
             ["CI/CD", "GitHub Actions", "Lint, typecheck, Playwright E2E tests, model health checks"],
@@ -271,8 +271,8 @@ export default function DocsPage() {
             PROTEUS uses two AI providers:
           </P>
           <List items={[
-            "NVIDIA NIM — powers the JD parser, resume parser, gap analyzer, and rewrite suggester (4 agents). NIM provides optimized Llama and Mistral models via serverless endpoints.",
-            "Groq — powers the cover letter generator (1 agent). Groq runs Llama 3.3 70B on custom silicon with ~2-3 second response times, significantly faster than NIM for this use case.",
+            "Groq — powers the JD parser, resume parser, gap analyzer, and rewrite suggester (4 agents). Groq runs open-source models on custom LPU silicon with fast response times.",
+            "Google Gemini — powers as a fallback provider when Groq models are unavailable. Gemini 2.0 Flash provides fast, reliable inference.",
           ]} />
         </SubSection>
       </Section>
@@ -286,10 +286,10 @@ export default function DocsPage() {
         <Table
           headers={["Step", "Agent", "Provider", "What it does"]}
           rows={[
-            ["01", "JD Parser", "NVIDIA NIM", "Extracts role title, requirements, seniority level, and key skills from the job description"],
-            ["02", "Resume Parser", "NVIDIA NIM", "Extracts skills, experience, education, and achievements from your resume"],
-            ["03", "Gap Analyzer", "NVIDIA NIM", "Compares parsed JD requirements against resume items using semantic embeddings"],
-            ["04", "Rewriter", "NVIDIA NIM", "Drafts JD-aware rewrites for weak resume bullets to better match requirements"],
+            ["01", "JD Parser", "Groq", "Extracts role title, requirements, seniority level, and key skills from the job description"],
+            ["02", "Resume Parser", "Groq", "Extracts skills, experience, education, and achievements from your resume"],
+            ["03", "Gap Analyzer", "Groq", "Compares parsed JD requirements against resume items using semantic embeddings"],
+            ["04", "Rewriter", "Groq", "Drafts JD-aware rewrites for weak resume bullets to better match requirements"],
             ["05", "Cover Letter", "Groq", "Writes a tailored cover letter using the same JD context and resume data"],
           ]}
         />
@@ -312,9 +312,9 @@ export default function DocsPage() {
       </Section>
 
       {/* ─── AI Models ────────────────────────────────── */}
-      <Section id="models" title="AI Models" icon={<SiNvidia size={24} />}>
+      <Section id="models" title="AI Models">
         <P>
-          PROTEUS uses two AI providers. 4 agents run on NVIDIA NIM; the cover letter agent runs on Groq for faster responses.
+          PROTEUS runs on Groq as primary with Google Gemini as fallback.
         </P>
 
         <Table
@@ -330,65 +330,25 @@ export default function DocsPage() {
 
         <SubSection title="Model health checks">
           <P>
-            A health check script runs every 3 hours via GitHub Actions. It tests each NIM model against its role-specific test prompt. If a model fails, it&apos;s automatically replaced in <Code>models.json</Code>. Groq models (cover letter) are tested separately via the Groq API. Pinned roles are not auto-swapped. The health check results are committed to the repository.
+            A health check script runs every 3 hours via GitHub Actions. It tests each model against its role-specific test prompt. If a model fails, it&apos;s automatically replaced in <Code>models.json</Code>. Groq models are tested separately via the Groq API. Pinned roles are not auto-swapped. The health check results are committed to the repository.
           </P>
         </SubSection>
 
         <SubSection title="Checking health from the app">
           <P>
-            Go to the <strong>Models</strong> page and click <strong>&quot;Check NIM Health&quot;</strong> to run a live connectivity test against each pipeline step. You&apos;ll see latency and any error details.
+            Go to the <strong>Models</strong> page and click <strong>&quot;Check Health&quot;</strong> to run a live connectivity test against each pipeline step. You&apos;ll see latency and any error details.
           </P>
-        </SubSection>
-
-        <SubSection title="Know more about NVIDIA NIM">
-          <P>
-            NVIDIA NIM (NVIDIA Inference Microservices) provides optimized, production-ready containers for deploying AI models at scale. NIM delivers low-latency inference across NVIDIA GPUs with automatic batching, quantization, and tensor parallelism.
-          </P>
-          <List items={[
-            "Optimized inference — models are tuned for maximum throughput on NVIDIA GPUs",
-            "OpenAI-compatible API — drop-in replacement for OpenAI-style requests",
-            "Model catalog — access hundreds of pre-hosted models (Llama, Mistral, Nemotron, and more)",
-            "Serverless endpoints — no infrastructure to manage, pay only for what you use",
-          ]} />
-          <div style={{ marginTop: "16px" }}>
-            <a
-              href="https://build.nvidia.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "10px 20px",
-                background: "rgba(118,185,0,0.1)",
-                border: "1px solid rgba(118,185,0,0.3)",
-                borderRadius: "var(--radius-md)",
-                color: "#76b900",
-                fontSize: "13px",
-                fontWeight: 600,
-                fontFamily: "var(--font-sans)",
-                textDecoration: "none",
-                transition: "all .15s ease",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(118,185,0,0.18)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(118,185,0,0.1)"; }}
-            >
-              <SiNvidia size={16} />
-              Explore NVIDIA NIM at build.nvidia.com
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-            </a>
-          </div>
         </SubSection>
 
         <SubSection title="Groq">
           <P>
-            Groq provides ultra-fast LLM inference on custom LPU (Language Processing Unit) silicon. PROTEUS uses Groq for cover letter generation because it delivers Llama 3.3 70B responses in 2-3 seconds — compared to 10-60 seconds on NIM free tier.
+            Groq provides ultra-fast LLM inference on custom LPU (Language Processing Unit) silicon. PROTEUS uses Groq as its primary AI provider for the JD parser, resume parser, gap analyzer, rewrite suggester, and cover letter generator.
           </P>
           <List items={[
             "Custom LPU hardware — purpose-built for LLM inference, not general-purpose GPUs",
-            "Consistent latency — no cold starts or priority queuing like free-tier NIM",
+            "Consistent latency — no cold starts or priority queuing",
             "OpenAI-compatible API — same request/response format, drop-in replacement",
-            "Rate limits — free tier allows ~30 requests/minute, sufficient for single-user cover letters",
+            "Open-source models — runs Llama 3.3 70B and other open-source models with fast response times",
           ]} />
           <div style={{ marginTop: "16px" }}>
             <a
@@ -414,6 +374,46 @@ export default function DocsPage() {
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(201,169,98,0.1)"; }}
             >
               Learn more at groq.com
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+            </a>
+          </div>
+        </SubSection>
+
+        <SubSection title="Google Gemini">
+          <P>
+            Google Gemini provides fast, reliable inference as a fallback provider when Groq models are unavailable. Gemini 2.0 Flash offers competitive performance with high availability.
+          </P>
+          <List items={[
+            "High availability — Google's infrastructure ensures consistent uptime",
+            "Fast inference — Gemini 2.0 Flash provides quick response times",
+            "Broad model support — access to Google's latest multimodal AI models",
+            "Seamless fallback — automatically used when primary Groq models are down",
+          ]} />
+          <div style={{ marginTop: "16px" }}>
+            <a
+              href="https://ai.google.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 20px",
+                background: "rgba(201,169,98,0.1)",
+                border: "1px solid rgba(201,169,98,0.3)",
+                borderRadius: "var(--radius-md)",
+                color: "var(--color-gold)",
+                fontSize: "13px",
+                fontWeight: 600,
+                fontFamily: "var(--font-sans)",
+                textDecoration: "none",
+                transition: "all .15s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(201,169,98,0.18)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(201,169,98,0.1)"; }}
+            >
+              <SiGoogle size={16} />
+              Learn more at ai.google.dev
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
             </a>
           </div>
@@ -518,7 +518,7 @@ export default function DocsPage() {
 
         <SubSection title="Health check shows errors">
           <P>
-            Go to the <strong>Models</strong> page and click <strong>&quot;Check Health&quot;</strong>. If a NIM model is down, PROTEUS will automatically use fallback models. Groq models are tested separately. You can also check the GitHub Actions health check results in the repository.
+            Go to the <strong>Models</strong> page and click <strong>&quot;Check Health&quot;</strong>. If a model is down, PROTEUS will automatically use fallback models. You can also check the GitHub Actions health check results in the repository.
           </P>
         </SubSection>
       </Section>
@@ -539,7 +539,7 @@ export default function DocsPage() {
             ["/api/history/:id", "DELETE", "Delete a run"],
             ["/api/models", "GET", "List configured models and their roles"],
             ["/api/health", "GET", "Basic health check (returns ok)"],
-            ["/api/health/nim", "GET", "NIM connectivity test for all pipeline steps"],
+            ["/api/health/models", "GET", "Model connectivity test for all pipeline steps"],
             ["/api/usage", "GET", "Your daily usage stats (used, limit, resetsAt)"],
           ]}
         />
@@ -553,7 +553,7 @@ export default function DocsPage() {
       <Section id="faq" title="FAQ">
         <SubSection title="Why did my analysis take so long?">
           <P>
-            Each agent makes an API call. Steps 1-4 use NVIDIA NIM; step 5 (cover letter) uses Groq. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
+            Each agent makes an API call. Steps use Groq with Gemini fallback. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
           </P>
         </SubSection>
 

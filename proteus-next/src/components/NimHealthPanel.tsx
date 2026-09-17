@@ -52,7 +52,7 @@ export function NimHealthPanel() {
             Pipeline Health Check
           </h3>
           <p style={{ fontSize: "12px", color: "var(--text-faint)", margin: "4px 0 0" }}>
-            Live test of each pipeline step against NVIDIA NIM and Groq APIs
+            Live test of each pipeline step against Groq and Gemini APIs
           </p>
         </div>
         <button
@@ -135,8 +135,8 @@ export function NimHealthPanel() {
               {/* Model + Provider */}
               <span style={{ fontSize: "10px", fontFamily: "var(--font-mono)", color: "var(--text-soft)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {r.model}
-                <span style={{ marginLeft: "6px", fontSize: "9px", padding: "1px 5px", borderRadius: "100px", background: r.provider === "groq" ? "rgba(168,85,247,0.1)" : "rgba(118,185,0,0.1)", color: r.provider === "groq" ? "#a855f7" : "#76b900" }}>
-                  {r.provider === "groq" ? "Groq" : "NIM"}
+                <span style={{ marginLeft: "6px", fontSize: "9px", padding: "1px 5px", borderRadius: "100px", background: r.provider === "gemini" ? "rgba(59,130,246,0.1)" : "rgba(168,85,247,0.1)", color: r.provider === "gemini" ? "#3b82f6" : "#a855f7" }}>
+                  {r.provider === "gemini" ? "Gemini" : "Groq"}
                 </span>
               </span>
 

@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     "resume builder AI",
     "job application optimizer",
     "semantic resume matching",
-    "NVIDIA NIM AI",
+    "Groq AI",
     "full-stack developer resume",
   ],
   authors: [{ name: "Daniel Deshmukh" }],
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PROTEUS — AI Resume Analyzer & Cover Letter Generator",
     description:
-      "Semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD. Powered by NVIDIA NIM and Groq.",
+      "Semantic match scores, gap analysis, rewrite suggestions, and cover letters from a single JD. Powered by Groq and Google Gemini.",
     images: ["/og-image.png"],
   },
   robots: {

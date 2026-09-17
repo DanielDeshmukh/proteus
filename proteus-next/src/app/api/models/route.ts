@@ -56,7 +56,7 @@ export async function GET() {
       return {
         ...step,
         model: getModelForRole(step.role),
-        provider: roleConfig.provider || "nvidia-nim",
+        provider: roleConfig.provider || "groq",
         lastChecked: config.lastHealthCheck,
       };
     });

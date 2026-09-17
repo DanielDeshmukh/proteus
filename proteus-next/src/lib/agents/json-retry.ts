@@ -1,6 +1,41 @@
-import { chatCompletion, extractJson } from "../nim-client";
 import { groqChatCompletion } from "../groq-client";
+import { geminiChatCompletion } from "../gemini-client";
 import { ZodSchema } from "zod";
+
+function extractJson(text: string): string {
+  let cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+  const firstBrace = cleaned.indexOf("{");
+  const firstBracket = cleaned.indexOf("[");
+  let start = -1;
+  if (firstBrace >= 0 && firstBracket >= 0) start = Math.min(firstBrace, firstBracket);
+  else if (firstBrace >= 0) start = firstBrace;
+  else if (firstBracket >= 0) start = firstBracket;
+  if (start > 0) cleaned = cleaned.substring(start);
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  let end = -1;
+  const startChar = cleaned[0];
+  const closeChar = startChar === "{" ? "}" : "]";
+  for (let i = 0; i < cleaned.length; i++) {
+    const ch = cleaned[i];
+    if (escape) { escape = false; continue; }
+    if (ch === "\\") { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === startChar || ch === closeChar) {
+      if (ch === startChar) depth++;
+      else depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+  if (end >= 0) cleaned = cleaned.substring(0, end + 1);
+  else {
+    const lastClose = cleaned.lastIndexOf(closeChar);
+    if (lastClose >= 0) cleaned = cleaned.substring(0, lastClose + 1);
+  }
+  return cleaned.trim();
+}
 
 const RETRY_SUFFIX = `\n\nIMPORTANT: Your previous response was NOT valid JSON. You MUST return ONLY a valid JSON object. No text before or after. No markdown code fences. No explanation. Just the raw JSON starting with { and ending with }.`;
 
@@ -42,11 +77,14 @@ async function callAndParse<T>(
   schema: ZodSchema<T>,
   maxTokens: number,
   cleanControlChars: boolean,
-  provider: string = "nvidia-nim"
+  provider: string = "groq"
 ): Promise<T> {
-  const response = provider === "groq"
-    ? await groqChatCompletion(model, messages, { temperature: 0.0, maxTokens })
-    : await chatCompletion(model, messages, { temperature: 0.0, maxTokens });
+  let response: string;
+  if (provider === "gemini") {
+    response = await geminiChatCompletion(model, messages, { temperature: 0.0, maxTokens });
+  } else {
+    response = await groqChatCompletion(model, messages, { temperature: 0.0, maxTokens });
+  }
 
   let jsonStr = extractJson(response);
   if (cleanControlChars) {
@@ -71,7 +109,7 @@ export async function callWithJsonRetry<T>(
     provider?: string;
   } = {}
 ): Promise<T> {
-  const { temperature = 0.3, maxTokens = 4096, maxRetries = 2, cleanControlChars = false, role, provider = "nvidia-nim" } = options;
+  const { temperature = 0.3, maxTokens = 4096, maxRetries = 2, cleanControlChars = false, role, provider = "groq" } = options;
 
   let messages = [
     { role: "system" as const, content: systemPrompt },
@@ -82,15 +120,13 @@ export async function callWithJsonRetry<T>(
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const response = provider === "groq"
-        ? await groqChatCompletion(model, messages, {
-            temperature: attempt === 0 ? temperature : 0.0,
-            maxTokens,
-          })
-        : await chatCompletion(model, messages, {
-            temperature: attempt === 0 ? temperature : 0.0,
-            maxTokens,
-          });
+      let response: string;
+      const temp = attempt === 0 ? temperature : 0.0;
+      if (provider === "gemini") {
+        response = await geminiChatCompletion(model, messages, { temperature: temp, maxTokens });
+      } else {
+        response = await groqChatCompletion(model, messages, { temperature: temp, maxTokens });
+      }
 
       let jsonStr = extractJson(response);
       if (cleanControlChars) {
@@ -108,7 +144,7 @@ export async function callWithJsonRetry<T>(
     }
   }
 
-  // Primary model failed — try fallback models
+  // Primary model failed — try Groq fallbacks
   if (role) {
     const fallbacks = getFallbackModels(role);
     for (const fallback of fallbacks) {
@@ -116,10 +152,26 @@ export async function callWithJsonRetry<T>(
         return await callAndParse(fallback, [
           { role: "system" as const, content: systemPrompt },
           { role: "user" as const, content: userContent },
-        ], schema, maxTokens, cleanControlChars, provider);
+        ], schema, maxTokens, cleanControlChars, "groq");
       } catch {
         // Fallback also failed, try next
       }
+    }
+
+    // Groq fallbacks exhausted — try Gemini
+    try {
+      const configPath = require("path").join(process.cwd(), "models.json");
+      const config = JSON.parse(require("fs").readFileSync(configPath, "utf-8"));
+      const geminiModel = config.roles[role]?.gemini_model;
+      if (geminiModel) {
+        console.log(`[json-retry] All Groq models failed for ${role}, trying Gemini: ${geminiModel}`);
+        return await callAndParse(geminiModel, [
+          { role: "system" as const, content: systemPrompt },
+          { role: "user" as const, content: userContent },
+        ], schema, maxTokens, cleanControlChars, "gemini");
+      }
+    } catch {
+      // Config load failed, ignore
     }
   }
 

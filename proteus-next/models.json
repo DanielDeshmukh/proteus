@@ -3,71 +3,55 @@
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
       "provider": "groq",
-      "current": "llama-3.3-70b-versatile",
-      "fallbacks": [
-        "llama-3.1-8b-instant"
-      ],
+      "current": "openai/gpt-oss-120b",
+      "fallbacks": ["openai/gpt-oss-20b", "qwen/qwen3.8-27b"],
+      "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Extract skills from this job description and return JSON with hard_skills array: Looking for a Python developer with Django and PostgreSQL experience.",
-      "type": "chat",
-      "pinned": true
+      "type": "chat"
     },
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
       "provider": "groq",
-      "current": "llama-3.3-70b-versatile",
-      "fallbacks": [
-        "llama-3.1-8b-instant"
-      ],
+      "current": "openai/gpt-oss-120b",
+      "fallbacks": ["openai/gpt-oss-20b", "qwen/qwen3.8-27b"],
+      "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Parse this resume into JSON with name, skills array, and experience array: John Smith, Software Engineer, 5 years Python experience at Google.",
-      "type": "chat",
-      "pinned": true
+      "type": "chat"
     },
     "gap-analyzer": {
-      "description": "Semantic similarity scoring via embeddings",
-      "provider": "nvidia-nim",
-      "current": "nvidia/llama-nemotron-embed-1b-v2",
-      "fallbacks": [
-        "nvidia/nv-embedqa-e5-v5"
-      ],
+      "description": "Exact + word-level skill matching (no embeddings)",
+      "provider": "groq",
+      "current": "openai/gpt-oss-120b",
+      "fallbacks": ["qwen/qwen3.8-27b"],
+      "gemini_model": "gemini-2.0-flash",
       "testPrompt": "test",
-      "type": "embedding",
-      "pinned": true
+      "type": "chat"
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
-      "provider": "nvidia-nim",
-      "current": "meta/llama-3.1-8b-instruct",
-      "fallbacks": [
-        "mistralai/mistral-nemotron"
-      ],
+      "provider": "groq",
+      "current": "qwen/qwen3.8-27b",
+      "fallbacks": ["openai/gpt-oss-20b"],
+      "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Rewrite this resume bullet to match a Python developer job: Built web apps using JavaScript. Return JSON with suggested_rewrite field.",
-      "type": "chat",
-      "pinned": true
+      "type": "chat"
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
       "provider": "groq",
-      "current": "llama-3.3-70b-versatile",
-      "fallbacks": [
-        "mistralai/mistral-nemotron"
-      ],
+      "current": "openai/gpt-oss-120b",
+      "fallbacks": ["openai/gpt-oss-20b", "qwen/qwen3.8-27b"],
+      "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Write a 2-sentence cover letter opening for a software engineer role at Google. Return JSON with full_letter field.",
-      "type": "chat",
-      "pinned": true
+      "type": "chat"
     }
   },
-  "preferredPrefixes": [
-    "nvidia/",
-    "meta/",
-    "mistralai/",
-    "nv-mistralai/"
-  ],
-  "lastHealthCheck": "2026-07-24T08:42:11.357Z",
+  "lastHealthCheck": "2026-09-16T00:00:00.000Z",
   "lastHealthyModels": {
-    "jd-parser": "meta/llama-3.1-8b-instruct",
-    "resume-parser": "llama-3.3-70b-versatile",
-    "gap-analyzer": "nvidia/llama-nemotron-embed-1b-v2",
-    "rewrite-suggester": "meta/llama-3.1-8b-instruct",
-    "cover-letter": "llama-3.3-70b-versatile"
+    "jd-parser": "openai/gpt-oss-120b",
+    "resume-parser": "openai/gpt-oss-120b",
+    "gap-analyzer": "openai/gpt-oss-120b",
+    "rewrite-suggester": "qwen/qwen3.8-27b",
+    "cover-letter": "openai/gpt-oss-120b"
   }
 }

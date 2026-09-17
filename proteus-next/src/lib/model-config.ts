@@ -41,7 +41,7 @@ export function getEmbeddingModel(): string {
 
 export function getModelProvider(role: string): string {
   const config = loadConfig();
-  return config.roles[role]?.provider || "nvidia-nim";
+  return config.roles[role]?.provider || "groq";
 }
 
 export function updateModelForRole(role: string, newModel: string): void {

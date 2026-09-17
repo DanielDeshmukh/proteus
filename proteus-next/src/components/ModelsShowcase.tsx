@@ -150,11 +150,11 @@ export function ModelsShowcase() {
                       borderRadius: "100px",
                       background: m.provider === "groq" ? "rgba(168, 85, 247, 0.1)" : "rgba(118, 185, 0, 0.1)",
                       border: `1px solid ${m.provider === "groq" ? "rgba(168, 85, 247, 0.3)" : "rgba(118, 185, 0, 0.3)"}`,
-                      color: m.provider === "groq" ? "#a855f7" : "#76b900",
+                      color: m.provider === "gemini" ? "#3b82f6" : "#a855f7",
                       fontWeight: 500,
                     }}
                   >
-                    {m.provider === "groq" ? "Groq" : "NVIDIA NIM"}
+                    {m.provider === "gemini" ? "Gemini" : "Groq"}
                   </span>
                 </div>
 

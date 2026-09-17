@@ -1,32 +1,25 @@
 #!/usr/bin/env node
 // proteus-next/scripts/model-health.mjs
-// Self-healing model health check (v2):
-// 1. Tests each role's current model in models.json
-// 2. If unhealthy → tests that role's fallback model
-// 3. If fallback works → swaps current ↔ fallback
-// 4. If fallback also dead → queries NIM catalog for a working replacement
-// 5. Updates ONLY models.json (role-scoped, no global find-and-replace)
+// Groq-only model health check:
+// 1. Tests each role's current model
+// 2. If unhealthy → tests fallback
+// 3. If fallback works → swaps
+// 4. If both dead → queries Groq catalog for replacement
 
 import { readFileSync, writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, "..", "..");
-const NEXT_ROOT = join(PROJECT_ROOT, "proteus-next");
-const CONFIG_PATH = join(NEXT_ROOT, "models.json");
-const NIM_BASE_URL = "https://integrate.api.nvidia.com/v1";
+const CONFIG_PATH = join(__dirname, "..", "models.json");
+const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
 const TIMEOUT_MS = 30_000;
-const EMBED_TIMEOUT_MS = 15_000;
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
-const NIM_API_KEY = process.env.NVIDIA_NIM_API_KEY;
-if (!NIM_API_KEY) {
-  console.error("FATAL: NVIDIA_NIM_API_KEY not set");
+if (!GROQ_API_KEY) {
+  console.error("FATAL: GROQ_API_KEY not set");
   process.exit(1);
 }
-
-// ── Config ────────────────────────────────────────────────
 
 function loadConfig() {
   return JSON.parse(readFileSync(CONFIG_PATH, "utf-8"));
@@ -36,71 +29,7 @@ function saveConfig(config) {
   writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2) + "\n");
 }
 
-// ── NIM API ───────────────────────────────────────────────
-
-async function fetchNimModels() {
-  try {
-    const res = await fetch(`${NIM_BASE_URL}/models`, {
-      headers: { Authorization: `Bearer ${NIM_API_KEY}` },
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.data || [];
-  } catch {
-    return [];
-  }
-}
-
-async function testNimChatModel(model, prompt) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  try {
-    const res = await fetch(`${NIM_BASE_URL}/chat/completions`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${NIM_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], max_tokens: 30, temperature: 0.1 }),
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      return { ok: false, error: `HTTP ${res.status}: ${text.substring(0, 100)}` };
-    }
-    const data = await res.json();
-    return { ok: true, content: data.choices?.[0]?.message?.content?.substring(0, 100) || "" };
-  } catch (e) {
-    clearTimeout(timer);
-    return { ok: false, error: e.name === "AbortError" ? `Timeout ${TIMEOUT_MS}ms` : e.message };
-  }
-}
-
-async function testNimEmbedModel(model, text) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), EMBED_TIMEOUT_MS);
-  try {
-    const res = await fetch(`${NIM_BASE_URL}/embeddings`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${NIM_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model, input: text, input_type: "query" }),
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
-    const data = await res.json();
-    return { ok: true, dims: data.data?.[0]?.embedding?.length || 0 };
-  } catch (e) {
-    clearTimeout(timer);
-    return { ok: false, error: e.name === "AbortError" ? `Timeout ${EMBED_TIMEOUT_MS}ms` : e.message };
-  }
-}
-
-// ── Groq API ──────────────────────────────────────────────
-
-const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
-
 async function testGroqChatModel(model, prompt) {
-  if (!GROQ_API_KEY) return { ok: false, error: "GROQ_API_KEY not set" };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -123,44 +52,36 @@ async function testGroqChatModel(model, prompt) {
   }
 }
 
-// ── Model Discovery ───────────────────────────────────────
-
-function categorizeModel(modelId) {
-  const id = modelId.toLowerCase();
-  if (id.includes("embed")) return "embedding";
-  if (id.includes("guard") || id.includes("safety")) return "safety";
-  if (id.includes("vision") || id.includes("vl-")) return "vision";
-  if (id.includes("code")) return "code";
-  return "chat";
+async function fetchGroqModels() {
+  try {
+    const res = await fetch(`${GROQ_BASE_URL}/models`, {
+      headers: { Authorization: `Bearer ${GROQ_API_KEY}` },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.data || []).filter(m =>
+      m.active && m.id &&
+      !m.id.includes("guard") && !m.id.includes("whisper") &&
+      !m.id.includes("compound") && !m.id.includes("allam") &&
+      !m.id.includes("tts") && !m.id.includes("speech")
+    );
+  } catch {
+    return [];
+  }
 }
 
-async function findReplacement(deadModel, roleConfig, allNimModels, preferredPrefixes) {
-  const isEmbed = roleConfig.type === "embedding";
-  const targetCategory = isEmbed ? "embedding" : "chat";
+async function findReplacement(deadModel, roleConfig, allGroqModels) {
+  const candidates = allGroqModels
+    .map(m => m.id)
+    .filter(id => id !== deadModel && !id.includes("guard") && !id.includes("whisper"));
 
-  const candidates = allNimModels
-    .map((m) => m.id)
-    .filter((id) => {
-      const cat = categorizeModel(id);
-      return cat === targetCategory && id !== deadModel;
-    });
-
-  candidates.sort((a, b) => {
-    const aIdx = preferredPrefixes.findIndex((p) => a.startsWith(p));
-    const bIdx = preferredPrefixes.findIndex((p) => b.startsWith(p));
-    const aScore = aIdx >= 0 ? aIdx : preferredPrefixes.length;
-    const bScore = bIdx >= 0 ? bIdx : preferredPrefixes.length;
-    return aScore - bScore || a.localeCompare(b);
-  });
-
-  console.log(`  Found ${candidates.length} candidate ${targetCategory} models from NIM catalog`);
+  console.log(`  Found ${candidates.length} candidate models from Groq catalog`);
   console.log(`  Top candidates: ${candidates.slice(0, 5).join(", ")}`);
 
   for (const candidate of candidates) {
     const start = Date.now();
-    const result = isEmbed
-      ? await testNimEmbedModel(candidate, "test replacement")
-      : await testNimChatModel(candidate, "Return exactly: {\"ok\":true}");
+    const result = await testGroqChatModel(candidate, 'Return exactly: {"ok":true}');
     const latency = Date.now() - start;
 
     if (result.ok) {
@@ -175,70 +96,19 @@ async function findReplacement(deadModel, roleConfig, allNimModels, preferredPre
   return null;
 }
 
-// ── README Auto-Update ────────────────────────────────────
-
-function updateReadmeModels(config) {
-  const readmePath = join(PROJECT_ROOT, "README.md");
-  let readme;
-  try { readme = readFileSync(readmePath, "utf-8"); } catch { return; }
-
-  const startMarker = "<!-- MODELS AUTO-GENERATED START -->";
-  const endMarker = "<!-- END MODELS AUTO-GENERATED -->";
-  const startIdx = readme.indexOf(startMarker);
-  const endIdx = readme.indexOf(endMarker);
-  if (startIdx < 0 || endIdx < 0) return;
-
-  const lines = ["### Active Models (auto-updated by health check bot)\n"];
-  lines.push("| Role | Model | Last Checked |");
-  lines.push("|------|-------|--------------|");
-  for (const [role, model] of Object.entries(config.lastHealthyModels || {})) {
-    lines.push(`| ${role} | \`${model}\` | ${config.lastHealthCheck || "never"} |`);
-  }
-  lines.push("");
-
-  const table = lines.join("\n");
-  const before = readme.substring(0, startIdx + startMarker.length);
-  const after = readme.substring(endIdx);
-  writeFileSync(readmePath, before + "\n" + table + after, "utf-8");
-  console.log("  README.md models table updated.");
-}
-
-// ── Main ──────────────────────────────────────────────────
-
 async function main() {
   const config = loadConfig();
   const report = [];
   const healthyModels = {};
   let changed = false;
 
-  console.log("=== PROTEUS MODEL HEALTH CHECK (v2 — role-scoped) ===\n");
+  console.log("=== PROTEUS MODEL HEALTH CHECK (Groq-only) ===\n");
 
-  // 1. Fetch available models from NIM catalog
-  console.log("Fetching available models from NVIDIA NIM catalog...");
-  const allNimModels = await fetchNimModels();
-  console.log(`  ${allNimModels.length} models available on build.nvidia.com\n`);
+  console.log("Fetching available models from Groq...");
+  const allGroqModels = await fetchGroqModels();
+  console.log(`  ${allGroqModels.length} models available on Groq\n`);
 
-  // 2. Test each role's current model
   for (const [roleName, roleConfig] of Object.entries(config.roles)) {
-    const provider = roleConfig.provider || "nvidia-nim";
-    const isGroq = provider === "groq";
-
-    // Skip pinned models — these are manually curated and should not be auto-swapped
-    if (roleConfig.pinned) {
-      console.log(`Role: ${roleName} — PINNED (provider: ${provider}, skipping auto-swap)`);
-      healthyModels[roleName] = roleConfig.current;
-      report.push({ role: roleName, model: roleConfig.current, status: "pinned", latency: 0 });
-      continue;
-    }
-
-    // Skip Groq roles — health check only covers NIM models
-    if (isGroq) {
-      console.log(`Role: ${roleName} — GROQ (skipping NIM health check)`);
-      healthyModels[roleName] = roleConfig.current;
-      report.push({ role: roleName, model: roleConfig.current, status: "groq_skipped", latency: 0 });
-      continue;
-    }
-
     const isEmbed = roleConfig.type === "embedding";
     const testPrompt = roleConfig.testPrompt || "Say hi";
 
@@ -247,26 +117,19 @@ async function main() {
     console.log(`  Fallback: ${roleConfig.fallbacks?.[0] || "none"}`);
 
     const start = Date.now();
-    const result = isEmbed
-      ? await testNimEmbedModel(roleConfig.current, testPrompt)
-      : await testNimChatModel(roleConfig.current, testPrompt);
+    const result = await testGroqChatModel(roleConfig.current, testPrompt);
     const latency = Date.now() - start;
 
     if (result.ok) {
-      // For chat models, validate response is parseable JSON
-      if (!isEmbed) {
-        try {
-          let jsonStr = result.content.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-          const firstBrace = jsonStr.indexOf("{");
-          if (firstBrace >= 0) jsonStr = jsonStr.substring(firstBrace);
-          const lastBrace = jsonStr.lastIndexOf("}");
-          if (lastBrace >= 0) jsonStr = jsonStr.substring(0, lastBrace + 1);
-          JSON.parse(jsonStr);
-        } catch {
-          console.log(`  Status: UNHEALTHY - non-JSON response: ${result.content.substring(0, 80)}`);
-          // Treat as unhealthy, fall through to fallback logic
-          result.ok = false;
-        }
+      try {
+        let jsonStr = result.content.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
+        const firstBrace = jsonStr.indexOf("{");
+        if (firstBrace >= 0) jsonStr = jsonStr.substring(firstBrace);
+        const lastBrace = jsonStr.lastIndexOf("}");
+        if (lastBrace >= 0) jsonStr = jsonStr.substring(0, lastBrace + 1);
+        JSON.parse(jsonStr);
+      } catch {
+        result.ok = false;
       }
     }
 
@@ -279,64 +142,39 @@ async function main() {
 
     console.log(`  Status: UNHEALTHY - ${result.error}`);
 
-    // 3. Try fallback model first
     const fallbackModel = roleConfig.fallbacks?.[0];
     if (fallbackModel) {
       console.log(`  Testing fallback: ${fallbackModel}`);
       const fbStart = Date.now();
-      const fbResult = isEmbed
-        ? await testNimEmbedModel(fallbackModel, testPrompt)
-        : await testNimChatModel(fallbackModel, testPrompt);
+      const fbResult = await testGroqChatModel(fallbackModel, testPrompt);
       const fbLatency = Date.now() - fbStart;
 
       if (fbResult.ok) {
-        console.log(`  ✓ Fallback healthy — swapping current ↔ fallback (${fbLatency}ms)\n`);
-
-        // Swap: fallback becomes current, old current goes to front of fallbacks
+        console.log(`  ✓ Fallback healthy — swapping (${fbLatency}ms)\n`);
         const oldCurrent = roleConfig.current;
         config.roles[roleName].current = fallbackModel;
         config.roles[roleName].fallbacks = [
           oldCurrent,
-          ...roleConfig.fallbacks.filter((m) => m !== fallbackModel),
+          ...roleConfig.fallbacks.filter(m => m !== fallbackModel),
         ];
         changed = true;
         healthyModels[roleName] = fallbackModel;
-        report.push({
-          role: roleName,
-          model: fallbackModel,
-          replacedFrom: oldCurrent,
-          status: "swapped_to_fallback",
-          latency: fbLatency,
-        });
+        report.push({ role: roleName, model: fallbackModel, replacedFrom: oldCurrent, status: "swapped_to_fallback", latency: fbLatency });
         continue;
       }
       console.log(`  ✗ Fallback also unhealthy: ${fbResult.error}`);
     }
 
-    // 4. Both current and fallback dead → find replacement from NIM catalog
-    console.log(`  Searching NIM catalog for replacement...`);
-    const replacement = await findReplacement(roleConfig.current, roleConfig, allNimModels, config.preferredPrefixes || []);
+    console.log(`  Searching Groq catalog for replacement...`);
+    const replacement = await findReplacement(roleConfig.current, roleConfig, allGroqModels);
 
     if (replacement) {
       const oldModel = roleConfig.current;
-      const newModel = replacement.model;
-
-      // Update ONLY this role in models.json
-      config.roles[roleName].current = newModel;
-      // Put old model + fallback at front of fallbacks
-      config.roles[roleName].fallbacks = [
-        oldModel,
-        ...roleConfig.fallbacks.filter((m) => m !== newModel),
-      ];
+      config.roles[roleName].current = replacement.model;
+      config.roles[roleName].fallbacks = [oldModel, ...roleConfig.fallbacks.filter(m => m !== replacement.model)];
       changed = true;
-      healthyModels[roleName] = newModel;
-      report.push({
-        role: roleName,
-        model: newModel,
-        replacedFrom: oldModel,
-        status: "replaced",
-        latency: replacement.latency,
-      });
+      healthyModels[roleName] = replacement.model;
+      report.push({ role: roleName, model: replacement.model, replacedFrom: oldModel, status: "replaced", latency: replacement.latency });
     } else {
       healthyModels[roleName] = roleConfig.current;
       report.push({ role: roleName, model: roleConfig.current, status: "no_healthy_model", latency });
@@ -344,28 +182,22 @@ async function main() {
     console.log();
   }
 
-  // 5. Save config (ONLY models.json is modified)
   config.lastHealthCheck = new Date().toISOString();
   config.lastHealthyModels = healthyModels;
   saveConfig(config);
 
-  // 6. Update README.md auto-generated section
-  updateReadmeModels(config);
-
-  // 7. Summary
   console.log("=== SUMMARY ===");
   for (const r of report) {
-    const icon = r.status === "healthy" ? "OK" : r.status === "replaced" ? "REPLACED" : r.status === "swapped_to_fallback" ? "SWAPPED" : r.status === "groq_skipped" ? "GROQ" : "FAIL";
+    const icon = r.status === "healthy" ? "OK" : r.status === "replaced" ? "REPLACED" : r.status === "swapped_to_fallback" ? "SWAPPED" : "FAIL";
     const extra = r.replacedFrom ? ` (was: ${r.replacedFrom})` : "";
     console.log(`  [${icon}] ${r.role}: ${r.model}${extra} (${r.latency}ms)`);
   }
 
   console.log(`\nChanged: ${changed}`);
 
-  // 7. GitHub Actions output
   if (process.env.GITHUB_OUTPUT) {
     const { appendFileSync } = await import("fs");
-    const changes = report.filter((r) => r.status === "replaced" || r.status === "swapped_to_fallback");
+    const changes = report.filter(r => r.status === "replaced" || r.status === "swapped_to_fallback");
     appendFileSync(process.env.GITHUB_OUTPUT, `changed=${changed}\n`);
     appendFileSync(process.env.GITHUB_OUTPUT, `changes_json=${JSON.stringify(changes)}\n`);
   }
