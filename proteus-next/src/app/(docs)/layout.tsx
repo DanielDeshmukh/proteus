@@ -8,7 +8,7 @@ const sections = [
   { id: "getting-started", label: "Getting Started" },
   { id: "user-guide", label: "User Guide" },
   { id: "pipeline", label: "Pipeline Architecture" },
-  { id: "models", label: "NVIDIA NIM Models" },
+  { id: "models", label: "AI Models" },
   { id: "rate-limits", label: "Rate Limits & Usage" },
   { id: "tips", label: "Tips & Best Practices" },
   { id: "troubleshooting", label: "Troubleshooting" },
