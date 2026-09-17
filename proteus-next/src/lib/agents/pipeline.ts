@@ -55,6 +55,13 @@ export async function runPipeline(
     errors: [],
   };
 
+  function extractErrorMessage(err: unknown): string {
+    if (err instanceof Error) return err.message;
+    if (typeof err === "object" && err !== null && "message" in err) return String((err as { message: unknown }).message);
+    if (typeof err === "string") return err;
+    return String(err);
+  }
+
   const t0 = performance.now();
   onProgress?.({ stage: "parsing" });
 
@@ -77,8 +84,9 @@ export async function runPipeline(
       onProgress?.({ stage: "jd_parsed", data: jdResult.value });
       console.log("[Pipeline] JD parsed OK");
     } else {
-      console.error("[Pipeline] JD parsing failed:", jdResult.reason);
-      result.errors.push(`JD parsing failed: ${jdResult.reason}`);
+      const msg = extractErrorMessage(jdResult.reason);
+      console.error("[Pipeline] JD parsing failed:", msg);
+      result.errors.push(`JD parsing failed: ${msg}`);
       return result;
     }
 
@@ -87,14 +95,15 @@ export async function runPipeline(
       onProgress?.({ stage: "resume_parsed", data: resumeResult.value });
       console.log("[Pipeline] Resume parsed OK");
     } else {
-      console.error("[Pipeline] Resume parsing failed:", resumeResult.reason);
-      result.errors.push(`Resume parsing failed: ${resumeResult.reason}`);
+      const msg = extractErrorMessage(resumeResult.reason);
+      console.error("[Pipeline] Resume parsing failed:", msg);
+      result.errors.push(`Resume parsing failed: ${msg}`);
       return result;
     }
 
     result.timings["parse"] = (performance.now() - t0) / 1000;
   } catch (e) {
-    result.errors.push(`Parse stage failed: ${e}`);
+    result.errors.push(`Parse stage failed: ${extractErrorMessage(e)}`);
     result.timings["parse"] = (performance.now() - t0) / 1000;
     return result;
   }
@@ -112,8 +121,9 @@ export async function runPipeline(
     onProgress?.({ stage: "gap_analysis", data: result.gap_analysis });
     console.log("[Pipeline] Gap analysis OK");
   } catch (e) {
-    console.error("[Pipeline] Gap analysis failed:", e);
-    result.errors.push(`Gap analysis failed: ${e}`);
+    const msg = extractErrorMessage(e);
+    console.error("[Pipeline] Gap analysis failed:", msg);
+    result.errors.push(`Gap analysis failed: ${msg}`);
     result.timings["gap_analysis"] = (performance.now() - t1) / 1000;
     return result;
   }
@@ -147,8 +157,9 @@ export async function runPipeline(
       onProgress?.({ stage: "rewrites", data: rewritesResult.value });
       console.log("[Pipeline] Rewrites OK");
     } else {
-      console.error("[Pipeline] Rewrites failed:", rewritesResult.reason);
-      result.errors.push(`Rewrite suggester failed: ${rewritesResult.reason}`);
+      const msg = extractErrorMessage(rewritesResult.reason);
+      console.error("[Pipeline] Rewrites failed:", msg);
+      result.errors.push(`Rewrite suggester failed: ${msg}`);
     }
 
     if (coverResult.status === "fulfilled") {
@@ -156,13 +167,14 @@ export async function runPipeline(
       onProgress?.({ stage: "cover_letter", data: coverResult.value });
       console.log("[Pipeline] Cover letter OK");
     } else {
-      console.error("[Pipeline] Cover letter failed:", coverResult.reason);
-      result.errors.push(`Cover letter generator failed: ${coverResult.reason}`);
+      const msg = extractErrorMessage(coverResult.reason);
+      console.error("[Pipeline] Cover letter failed:", msg);
+      result.errors.push(`Cover letter generator failed: ${msg}`);
     }
 
     result.timings["generate"] = (performance.now() - t2) / 1000;
   } catch (e) {
-    result.errors.push(`Generate stage failed: ${e}`);
+    result.errors.push(`Generate stage failed: ${extractErrorMessage(e)}`);
     result.timings["generate"] = (performance.now() - t2) / 1000;
   }
 
@@ -176,8 +188,9 @@ export async function runPipeline(
     onProgress?.({ stage: "result", data: result.aggregated });
     console.log("[Pipeline] Aggregation OK, overall:", result.aggregated?.overall_score);
   } catch (e) {
-    console.error("[Pipeline] Aggregation failed:", e);
-    result.errors.push(`Aggregation failed: ${e}`);
+    const msg = extractErrorMessage(e);
+    console.error("[Pipeline] Aggregation failed:", msg);
+    result.errors.push(`Aggregation failed: ${msg}`);
     result.timings["aggregate"] = (performance.now() - t3) / 1000;
   }
 

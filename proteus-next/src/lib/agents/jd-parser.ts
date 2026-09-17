@@ -1,9 +1,10 @@
-import { getModelForRole } from "../model-config";
+import { getModelForRole, getModelProvider } from "../model-config";
 import { JDStructuredSchema, type JDStructured } from "../../types";
 import { callWithJsonRetry } from "./json-retry";
 import { preFilterJd } from "../jd-prefilter";
 
 const JD_PARSER_MODEL = getModelForRole("jd-parser");
+const JD_PARSER_PROVIDER = getModelProvider("jd-parser");
 
 const MAX_JD_CHARS = 18000;
 
@@ -55,5 +56,6 @@ export function parseJd(rawJdText: string): Promise<JDStructured> {
     temperature: 0,
     maxTokens: 2048,
     role: "jd-parser",
+    provider: JD_PARSER_PROVIDER,
   });
 }

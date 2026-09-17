@@ -2,10 +2,10 @@
   "roles": {
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
-      "provider": "nvidia-nim",
-      "current": "meta/llama-3.1-8b-instruct",
+      "provider": "groq",
+      "current": "llama-3.3-70b-versatile",
       "fallbacks": [
-        "meta/llama-4-maverick-17b-128e-instruct"
+        "llama-3.1-8b-instant"
       ],
       "testPrompt": "Extract skills from this job description and return JSON with hard_skills array: Looking for a Python developer with Django and PostgreSQL experience.",
       "type": "chat",
