@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   health-check:
-    name: Check NIM & Groq Models
+    name: Check Groq & Gemini Models
     runs-on: ubuntu-latest
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -24,11 +24,11 @@ jobs:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      - run: cd proteus-next && npm ci
 
       - name: Run model health check
         id: health
-        run: node scripts/model-health.mjs
+        run: cd proteus-next && node scripts/model-health.mjs
         continue-on-error: true
 
       - name: Commit changes if models were swapped
@@ -36,6 +36,6 @@ jobs:
         run: |
           git config user.name "proteus-bot"
           git config user.email "bot@proteus.app"
-          git add models.json README.md
+          git add proteus-next/models.json
           git diff --staged --quiet || git commit -m "chore: auto-update model health check [skip ci]"
           git push
