@@ -45,7 +45,9 @@ async function testGroqChatModel(model, prompt) {
       return { ok: false, error: `HTTP ${res.status}: ${text.substring(0, 100)}` };
     }
     const data = await res.json();
-    return { ok: true, content: data.choices?.[0]?.message?.content?.substring(0, 100) || "" };
+    const content = data.choices?.[0]?.message?.content?.trim() || "";
+    if (!content) return { ok: false, error: "Empty response" };
+    return { ok: true, content: content.substring(0, 200) };
   } catch (e) {
     clearTimeout(timer);
     return { ok: false, error: e.name === "AbortError" ? `Timeout ${TIMEOUT_MS}ms` : e.message };
