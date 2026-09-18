@@ -3,9 +3,9 @@
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
       "provider": "groq",
-      "current": "openai/gpt-oss-20b",
+      "current": "qwen/qwen3.8-27b",
       "fallbacks": [
-        "qwen/qwen3.8-27b",
+        "openai/gpt-oss-20b",
         "openai/gpt-oss-120b"
       ],
       "gemini_model": "gemini-2.0-flash",
@@ -15,9 +15,9 @@
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
       "provider": "groq",
-      "current": "openai/gpt-oss-20b",
+      "current": "qwen/qwen3.8-27b",
       "fallbacks": [
-        "qwen/qwen3.8-27b",
+        "openai/gpt-oss-20b",
         "openai/gpt-oss-120b"
       ],
       "gemini_model": "gemini-2.0-flash",
@@ -38,9 +38,9 @@
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
       "provider": "groq",
-      "current": "openai/gpt-oss-20b",
+      "current": "qwen/qwen3.8-27b",
       "fallbacks": [
-        "qwen/qwen3.8-27b"
+        "openai/gpt-oss-20b"
       ],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -49,9 +49,9 @@
     "cover-letter": {
       "description": "Generate tailored cover letters",
       "provider": "groq",
-      "current": "openai/gpt-oss-20b",
+      "current": "qwen/qwen3.8-27b",
       "fallbacks": [
-        "qwen/qwen3.8-27b",
+        "openai/gpt-oss-20b",
         "openai/gpt-oss-120b"
       ],
       "gemini_model": "gemini-2.0-flash",
@@ -59,12 +59,12 @@
       "type": "chat"
     }
   },
-  "lastHealthCheck": "2026-09-18T04:42:19.695Z",
+  "lastHealthCheck": "2026-09-18T04:45:07.679Z",
   "lastHealthyModels": {
-    "jd-parser": "openai/gpt-oss-20b",
-    "resume-parser": "openai/gpt-oss-20b",
+    "jd-parser": "qwen/qwen3.8-27b",
+    "resume-parser": "qwen/qwen3.8-27b",
     "gap-analyzer": "qwen/qwen3.8-27b",
-    "rewrite-suggester": "openai/gpt-oss-20b",
-    "cover-letter": "openai/gpt-oss-20b"
+    "rewrite-suggester": "qwen/qwen3.8-27b",
+    "cover-letter": "qwen/qwen3.8-27b"
   }
 }
