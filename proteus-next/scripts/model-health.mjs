@@ -118,6 +118,7 @@ async function main() {
     console.log(`  Current: ${roleConfig.current}`);
     console.log(`  Fallback: ${roleConfig.fallbacks?.[0] || "none"}`);
 
+    await new Promise(r => setTimeout(r, 1500));
     const start = Date.now();
     const result = await testGroqChatModel(roleConfig.current, testPrompt);
     const latency = Date.now() - start;
@@ -147,6 +148,7 @@ async function main() {
     const fallbackModel = roleConfig.fallbacks?.[0];
     if (fallbackModel) {
       console.log(`  Testing fallback: ${fallbackModel}`);
+      await new Promise(r => setTimeout(r, 1500));
       const fbStart = Date.now();
       const fbResult = await testGroqChatModel(fallbackModel, testPrompt);
       const fbLatency = Date.now() - fbStart;
