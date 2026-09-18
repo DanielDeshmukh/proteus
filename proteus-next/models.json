@@ -3,8 +3,8 @@
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
       "provider": "groq",
-      "current": "openai/gpt-oss-120b",
-      "fallbacks": ["openai/gpt-oss-20b", "qwen/qwen3.8-27b"],
+      "current": "qwen/qwen3.8-27b",
+      "fallbacks": ["openai/gpt-oss-20b", "openai/gpt-oss-120b"],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Extract skills from this job description and return JSON with hard_skills array: Looking for a Python developer with Django and PostgreSQL experience.",
       "type": "chat"
@@ -12,8 +12,8 @@
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
       "provider": "groq",
-      "current": "openai/gpt-oss-120b",
-      "fallbacks": ["openai/gpt-oss-20b", "qwen/qwen3.8-27b"],
+      "current": "qwen/qwen3.8-27b",
+      "fallbacks": ["openai/gpt-oss-20b", "openai/gpt-oss-120b"],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Parse this resume into JSON with name, skills array, and experience array: John Smith, Software Engineer, 5 years Python experience at Google.",
       "type": "chat"
@@ -21,10 +21,10 @@
     "gap-analyzer": {
       "description": "Exact + word-level skill matching (no embeddings)",
       "provider": "groq",
-      "current": "openai/gpt-oss-120b",
-      "fallbacks": ["qwen/qwen3.8-27b"],
+      "current": "qwen/qwen3.8-27b",
+      "fallbacks": ["openai/gpt-oss-20b"],
       "gemini_model": "gemini-2.0-flash",
-      "testPrompt": "test",
+      "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "rewrite-suggester": {
@@ -39,19 +39,19 @@
     "cover-letter": {
       "description": "Generate tailored cover letters",
       "provider": "groq",
-      "current": "openai/gpt-oss-120b",
-      "fallbacks": ["openai/gpt-oss-20b", "qwen/qwen3.8-27b"],
+      "current": "qwen/qwen3.8-27b",
+      "fallbacks": ["openai/gpt-oss-20b", "openai/gpt-oss-120b"],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Write a 2-sentence cover letter opening for a software engineer role at Google. Return JSON with full_letter field.",
       "type": "chat"
     }
   },
-  "lastHealthCheck": "2026-09-16T00:00:00.000Z",
+  "lastHealthCheck": "2026-09-18T00:00:00.000Z",
   "lastHealthyModels": {
-    "jd-parser": "openai/gpt-oss-120b",
-    "resume-parser": "openai/gpt-oss-120b",
-    "gap-analyzer": "openai/gpt-oss-120b",
+    "jd-parser": "qwen/qwen3.8-27b",
+    "resume-parser": "qwen/qwen3.8-27b",
+    "gap-analyzer": "qwen/qwen3.8-27b",
     "rewrite-suggester": "qwen/qwen3.8-27b",
-    "cover-letter": "openai/gpt-oss-120b"
+    "cover-letter": "qwen/qwen3.8-27b"
   }
 }
