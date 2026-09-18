@@ -13,7 +13,6 @@ jobs:
     name: Check NIM & Groq Models
     runs-on: ubuntu-latest
     env:
-      NVIDIA_NIM_API_KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
     steps:
       - uses: actions/checkout@v4
