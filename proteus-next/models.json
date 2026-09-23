@@ -59,7 +59,7 @@
       "type": "chat"
     }
   },
-  "lastHealthCheck": "2026-09-23T11:03:41.149Z",
+  "lastHealthCheck": "2026-09-23T16:24:39.143Z",
   "lastHealthyModels": {
     "jd-parser": "qwen/qwen3.8-27b",
     "resume-parser": "qwen/qwen3.8-27b",
