@@ -73,9 +73,38 @@ const BULLET_RE = /^(\s*)([-*•–—▪◦>]|\d+[.)]|[a-zA-Z][.)])(\s+)/;
 const MONTHY = String.raw`(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{4}`;
 const DATE_SIDE = String.raw`(?:${MONTHY}|\d{1,2}/\d{4}|\d{4}|present|current|now)`;
 const DATE_LINE_RE = new RegExp(String.raw`^\s*${DATE_SIDE}\s*[–—-]\s*${DATE_SIDE}\.?\s*$`, "i");
+// Trailing dates fused onto an entry line: "…, Mumbai Aug 2026 – Present"
+const TAIL_DATE_RANGE = new RegExp(String.raw`\s+(${DATE_SIDE}\s*[–—-]\s*${DATE_SIDE})\s*$`, "i");
+const TAIL_SINGLE_DATE = new RegExp(String.raw`\s+(${MONTHY})\s*$`, "i");
+
+// A `Label:` line starts its own block ("Certifications: …", "Skills: …").
+const LABEL_LINE_RE = /^[A-Za-z][A-Za-z0-9 /&+().'-]{0,40}:\s+\S/;
 
 const CONTACT_RE =
   /@|https?:\/\/|\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}|\b\d{3}-\d{4}\b|\blinkedin\b|\bgithub\b/i;
+
+/** True when the line reads as a finished sentence/bullet. */
+function hasTerminalPunct(s: string): boolean {
+  return /[.!?;:][)"'”’\]]*$/.test(s.trim());
+}
+
+/** Split fused trailing dates off an entry line's last segment. */
+function stripTrailingDates(text: string): { text: string; dates: string | null } {
+  const range = text.match(TAIL_DATE_RANGE);
+  if (range?.index !== undefined) {
+    return { text: text.slice(0, range.index).trim(), dates: range[1].trim() };
+  }
+  const single = text.match(TAIL_SINGLE_DATE);
+  if (single?.index !== undefined) {
+    return { text: text.slice(0, single.index).trim(), dates: single[1].trim() };
+  }
+  return { text, dates: null };
+}
+
+/** Drop the trailing "|" of a contact line so joins never show "| |". */
+function cleanContactLine(t: string): string {
+  return t.replace(/\s*\|\s*$/, "").trim();
+}
 
 export function isBulletLine(line: string): boolean {
   return BULLET_RE.test(line);
@@ -90,19 +119,64 @@ export function stripBullet(line: string): string {
   return m ? line.slice(m[0].length) : line;
 }
 
-/** Merge wrapped lines into paragraphs, split on blank lines. */
-export function splitParagraphs(lines: string[]): string[] {
-  const out: string[] = [];
+export type AtsBlockKind = "bullet" | "record" | "prose";
+
+export interface AtsBlock {
+  text: string; // merged paragraph text (marker preserved on bullets)
+  kind: AtsBlockKind;
+}
+
+/** A pipe-separated record line: project title, link row, entry-style line. */
+function isRecordLine(t: string): boolean {
+  const pipes = (t.match(/\|/g) || []).length;
+  if (pipes < 2) return false;
+  const first = t.split("|")[0].trim();
+  return first.length > 0 && first.length <= 40;
+}
+
+/**
+ * Merge wrapped lines into blocks. A new block starts on a blank line, a
+ * bullet marker, a record line (project titles) or a `Label:` line — so each
+ * project and skill category stays a separate, readable unit.
+ */
+export function splitBlocks(lines: string[]): AtsBlock[] {
+  const out: AtsBlock[] = [];
   let buf: string[] = [];
+  let kind: AtsBlockKind = "prose";
+
+  const flush = (): void => {
+    if (buf.length) out.push({ text: buf.join(" "), kind });
+    buf = [];
+    kind = "prose";
+  };
+
   for (const line of lines) {
-    if (line.trim()) {
-      buf.push(line.trim());
-    } else if (buf.length) {
-      out.push(buf.join(" "));
-      buf = [];
+    const t = line.trim();
+    if (!t) {
+      flush();
+      continue;
     }
+    if (isBulletLine(t)) {
+      flush();
+      kind = "bullet";
+      buf = [t];
+      continue;
+    }
+    if (isRecordLine(t)) {
+      flush();
+      kind = "record";
+      buf = [t];
+      continue;
+    }
+    if (LABEL_LINE_RE.test(t)) {
+      flush();
+      kind = "prose";
+      buf = [t];
+      continue;
+    }
+    buf.push(t);
   }
-  if (buf.length) out.push(buf.join(" "));
+  flush();
   return out;
 }
 
@@ -170,11 +244,22 @@ function parseExperience(lines: string[]): AtsEntry[] {
     if (!bullet && (t.includes("|") || isDateLine(nonBlankAfter(i)) || current === null)) {
       const parts = t.split("|").map((p) => p.trim()).filter(Boolean);
       const inline = extractInlineDates(parts[0] || t);
+      let dates = inline.dates;
+      // Dates fused onto the last segment: "Company, Mumbai Aug 2026 – Present"
+      if (!dates && parts.length >= 2) {
+        const last = parts.length - 1;
+        const stripped = stripTrailingDates(parts[last]);
+        if (stripped.dates) {
+          dates = stripped.dates;
+          if (stripped.text) parts[last] = stripped.text;
+          else parts.pop();
+        }
+      }
       current = {
         title: inline.title,
         company: parts[1] ?? null,
         location: parts[2] ?? null,
-        dates: inline.dates,
+        dates,
         body: [],
       };
       entries.push(current);
@@ -182,9 +267,15 @@ function parseExperience(lines: string[]): AtsEntry[] {
     }
 
     if (current) {
-      // Indented, unmarked lines are continuations of the previous bullet
-      if (/^\s/.test(raw) && !bullet && current.body.length > 0) {
-        current.body[current.body.length - 1] = `${current.body[current.body.length - 1].trimEnd()} ${t}`;
+      const prev = current.body.length ? current.body[current.body.length - 1] : "";
+      // Unmarked lines continue the previous bullet when it is explicitly
+      // indented or still unfinished (wrapped flush-left in the source).
+      const continues =
+        !bullet &&
+        prev !== "" &&
+        (/^\s/.test(raw) || (!hasTerminalPunct(prev) && !LABEL_LINE_RE.test(t)));
+      if (continues) {
+        current.body[current.body.length - 1] = `${prev.trimEnd()} ${t}`;
       } else {
         current.body.push(t);
       }
@@ -238,7 +329,7 @@ export function parseAtsResume(text: string): AtsResume {
     const body: string[] = [];
     for (const line of chunks[0].lines) {
       const t = line.trim();
-      if (t && CONTACT_RE.test(t)) contact.push(t);
+      if (t && CONTACT_RE.test(t)) contact.push(cleanContactLine(t));
       else body.push(line);
     }
     sections.push(buildSection("", body));
@@ -248,7 +339,8 @@ export function parseAtsResume(text: string): AtsResume {
   for (const chunk of chunks) {
     if (chunk.heading === null) {
       for (const line of chunk.lines) {
-        if (line.trim()) contact.push(line.trim());
+        const t = cleanContactLine(line.trim());
+        if (t) contact.push(t);
       }
     } else {
       sections.push(buildSection(chunk.heading, chunk.lines));
@@ -285,7 +377,10 @@ export function renderAtsText(ats: AtsResume): string {
         for (const line of e.body) out.push(bulletText(line));
       }
     } else {
-      for (const line of section.lines) out.push(line);
+      for (const block of splitBlocks(section.lines)) {
+        if (block.kind === "record" && out[out.length - 1] !== "") out.push("");
+        out.push(block.text);
+      }
     }
   }
   return out.join("\n");

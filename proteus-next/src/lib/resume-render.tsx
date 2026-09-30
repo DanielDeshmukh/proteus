@@ -3,7 +3,7 @@
 // so the docx and react-pdf bundles never load until a download is requested.
 
 import type { AtsResume } from "@/lib/resume-ats";
-import { bulletText, entryHead, renderAtsText, splitParagraphs } from "@/lib/resume-ats";
+import { bulletText, entryHead, isBulletLine, renderAtsText, splitBlocks } from "@/lib/resume-ats";
 
 const FONT = "Calibri";
 const BODY = "333333";
@@ -14,6 +14,9 @@ const HEADING_SIZE = 26;
 const BODY_SIZE = 21;
 // 0.75in margins in twips (1440 twips = 1in)
 const MARGIN = 1080;
+// Hanging indent for bullets (twips): wrapped lines align under the text.
+const BULLET_LEFT = 360;
+const BULLET_HANGING = 120;
 
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -32,6 +35,29 @@ export function renderResumeTxt(ats: AtsResume): Blob {
 
 export async function renderResumeDocx(ats: AtsResume): Promise<Blob> {
   const { Document, Packer, Paragraph, TextRun } = await import("docx");
+
+  const bulletParagraph = (raw: string): InstanceType<typeof Paragraph> =>
+    new Paragraph({
+      children: [new TextRun({ text: bulletText(raw), size: BODY_SIZE, font: FONT, color: BODY })],
+      indent: { left: BULLET_LEFT, hanging: BULLET_HANGING },
+      spacing: { after: 40 },
+      widowControl: true,
+    });
+
+  const plainParagraph = (text: string): InstanceType<typeof Paragraph> =>
+    new Paragraph({
+      children: [new TextRun({ text, size: BODY_SIZE, font: FONT, color: BODY })],
+      spacing: { after: 80 },
+      widowControl: true,
+    });
+
+  const recordParagraph = (text: string): InstanceType<typeof Paragraph> =>
+    new Paragraph({
+      children: [new TextRun({ text, bold: true, size: BODY_SIZE, font: FONT, color: "000000" })],
+      spacing: { before: 120, after: 40 },
+      widowControl: true,
+    });
+
   const children: InstanceType<typeof Paragraph>[] = [];
 
   if (ats.name) {
@@ -81,22 +107,14 @@ export async function renderResumeDocx(ats: AtsResume): Promise<Blob> {
           );
         }
         for (const line of entry.body) {
-          children.push(
-            new Paragraph({
-              children: [new TextRun({ text: bulletText(line), size: BODY_SIZE, font: FONT, color: BODY })],
-              spacing: { after: 40 },
-            })
-          );
+          children.push(isBulletLine(line) ? bulletParagraph(line) : plainParagraph(line));
         }
       }
     } else {
-      for (const para of splitParagraphs(section.lines)) {
-        children.push(
-          new Paragraph({
-            children: [new TextRun({ text: para, size: BODY_SIZE, font: FONT, color: BODY })],
-            spacing: { after: 80 },
-          })
-        );
+      for (const block of splitBlocks(section.lines)) {
+        if (block.kind === "bullet") children.push(bulletParagraph(block.text));
+        else if (block.kind === "record") children.push(recordParagraph(block.text));
+        else children.push(plainParagraph(block.text));
       }
     }
   }

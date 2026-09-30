@@ -2,7 +2,7 @@
 
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import type { AtsResume } from "@/lib/resume-ats";
-import { bulletText, entryHead, splitParagraphs } from "@/lib/resume-ats";
+import { entryHead, isBulletLine, splitBlocks, stripBullet } from "@/lib/resume-ats";
 
 // ATS-safe layout: single column, 0.75in margins, system font, text-based
 // output, no headers/footers/tables/columns/images.
@@ -61,7 +61,42 @@ const styles = StyleSheet.create({
     color: "#333333",
     marginBottom: 6,
   },
+  record: {
+    fontSize: BODY_SIZE,
+    fontWeight: "bold",
+    color: "#000000",
+    marginTop: 8,
+    marginBottom: 3,
+  },
+  bulletRow: {
+    flexDirection: "row",
+    marginBottom: 3,
+  },
+  bulletMark: {
+    fontSize: BODY_SIZE,
+    color: "#333333",
+    marginRight: 4,
+  },
+  bulletBody: {
+    flex: 1,
+    fontSize: BODY_SIZE,
+    color: "#333333",
+    lineHeight: 1.45,
+  },
 });
+
+// Bullet in its own column so wrapped lines align under the text, not under
+// the marker (the PDF equivalent of a hanging indent). wrap is disabled so a
+// bullet that reaches the page bottom moves to the next page as a unit —
+// splitting it would strand the marker on one page and the text on the other.
+function Bullet({ text }: { text: string }) {
+  return (
+    <View style={styles.bulletRow} wrap={false}>
+      <Text style={styles.bulletMark}>•</Text>
+      <Text style={styles.bulletBody}>{stripBullet(text).trim()}</Text>
+    </View>
+  );
+}
 
 export function ResumePDF({ ats }: { ats: AtsResume }) {
   return (
@@ -79,18 +114,30 @@ export function ResumePDF({ ats }: { ats: AtsResume }) {
                   <View key={ei} wrap>
                     {entryHead(entry) ? <Text style={styles.entryHead}>{entryHead(entry)}</Text> : null}
                     {entry.dates ? <Text style={styles.entryDates}>{entry.dates}</Text> : null}
-                    {entry.body.map((line, li) => (
-                      <Text key={li} style={styles.body}>
-                        {bulletText(line)}
-                      </Text>
-                    ))}
+                    {entry.body.map((line, li) =>
+                      isBulletLine(line) ? (
+                        <Bullet key={li} text={line} />
+                      ) : (
+                        <Text key={li} style={styles.body}>
+                          {line}
+                        </Text>
+                      )
+                    )}
                   </View>
                 ))
-              : splitParagraphs(section.lines).map((para, pi) => (
-                  <Text key={pi} style={styles.paragraph}>
-                    {para}
-                  </Text>
-                ))}
+              : splitBlocks(section.lines).map((block, bi) =>
+                  block.kind === "bullet" ? (
+                    <Bullet key={bi} text={block.text} />
+                  ) : block.kind === "record" ? (
+                    <Text key={bi} style={styles.record}>
+                      {block.text}
+                    </Text>
+                  ) : (
+                    <Text key={bi} style={styles.paragraph}>
+                      {block.text}
+                    </Text>
+                  )
+                )}
           </View>
         ))}
       </Page>

@@ -2,6 +2,8 @@
 // Pure helpers that splice accepted rewrite suggestions into the raw resume
 // text, plus the filename helpers shared by the analyze and history views.
 
+import { isDateLine } from "@/lib/resume-ats";
+
 export interface RewriteCandidate {
   original_bullet: string;
   suggested_rewrite: string;
@@ -36,8 +38,33 @@ function leadingWs(s: string): string {
   return s.slice(0, s.length - s.replace(/^\s+/, "").length);
 }
 
+// The LLM often copies resume text with typographic variants (non-breaking
+// hyphens U+2011, narrow no-break spaces, ligatures) that must not defeat
+// matching — and must not survive into the exported file, where an ATS would
+// fail keyword search on them. En/em dashes are kept: they are display
+// typography, not word characters.
+const OUTPUT_HYPHENS = /[\u2010\u2011\u2012\u2212]/g;
+
+function polishOutput(s: string): string {
+  return s
+    .normalize("NFKC")
+    .replace(OUTPUT_HYPHENS, "-")
+    .replace(/[\u200b\u200c\u200d\u2060]/g, "");
+}
+
 function normalize(s: string): string {
-  return s.replace(/\s+/g, " ").trim().toLowerCase();
+  return s
+    .normalize("NFKC")
+    .replace(/[\u2010\u2011\u2012\u2013\u2014\u2212]/g, "-")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+// True when the accumulated bullet text reads as finished (so the next line,
+// if any, must be something else).
+function hasTerminalPunct(s: string): boolean {
+  return /[.!?;:][)"'”’\]]*$/.test(s.trim());
 }
 
 // Also drops quotes and trailing punctuation so the LLM re-adding a full stop
@@ -75,17 +102,21 @@ function isSectionHeader(line: string): boolean {
  *
  * `original_bullet` comes from the LLM's structured parse, not verbatim from
  * the text, so per anchor line we try in order:
- *   1. exact match of the line body (marker/whitespace/punctuation tolerant)
- *   2. wrapped block — indented continuation lines joined, then matched
- *   3. raw substring (surgical: keeps whatever else is on the line)
- *   4. whole-line containment (only lines carrying a bullet marker)
+ *   1. exact match of the full bullet (wrapped continuation lines joined)
+ *   2. exact match of this line alone (the pulled tail was not part of it)
+ *   3. joined block close enough to the original
+ *   4. raw substring (surgical: keeps whatever else is on the line)
+ *   5. whole-line containment (only single-line bullets carrying a marker)
  *
- * Steps 2-4 are restricted so a heading plus its following line can never be
+ * Wrapped bullets are joined while the text so far lacks terminal
+ * punctuation, so a match replaces every physical line of the bullet and
+ * never leaves orphaned tail fragments behind. Steps 4-5 stay restricted to
+ * single-line bullets so a heading plus its following line can never be
  * swallowed as one bullet. Anything still unmatched is reported, not dropped.
  */
 export function applyRewrites(resumeText: string, accepted: RewriteCandidate[]): ApplyResult {
   if (!resumeText || accepted.length === 0) {
-    return { text: resumeText ?? "", appliedCount: 0, unmatched: [] };
+    return { text: resumeText ? polishOutput(resumeText) : "", appliedCount: 0, unmatched: [] };
   }
 
   const lines = resumeText.split("\n");
@@ -120,28 +151,42 @@ export function applyRewrites(resumeText: string, accepted: RewriteCandidate[]):
       const body = split ? split.body : lines[i];
       const prefix = split ? split.prefix : leadingWs(lines[i]);
 
-      // Span of indented continuation lines that belong to this bullet
+      // Span of continuation lines that belong to this bullet. Sources wrap
+      // flush-left, so keep pulling lines while the text so far has no
+      // terminal punctuation; stop at anything that starts a new record
+      // (markers, headings, dates, pipe-separated lines).
       let end = i;
       let joined = body;
       while (end + 1 < lines.length) {
         const next = lines[end + 1];
-        if (!next.trim()) break;
+        const nt = next.trim();
+        if (!nt) break;
         if (splitMarker(next)) break;
         if (isSectionHeader(next)) break;
-        if (!/^\s/.test(next)) break;
+        if (isDateLine(nt)) break;
+        if (nt.includes("|")) break;
+        if (hasTerminalPunct(joined)) break;
         end++;
-        joined += " " + next.trim();
+        joined += " " + nt;
       }
 
-      // 1. exact single-line match
-      if (looseKey(body) === looseKey(original)) {
+      // 1. exact match of the full (possibly wrapped) bullet
+      if (looseKey(joined) === looseKey(original) && (end === i || free(i, end))) {
+        ops.push({ start: i, end, text: prefix + rewrite });
+        claim(i, end);
+        applied = true;
+        break;
+      }
+
+      // 2. exact match of this line alone — the pulled tail was not part of it
+      if (end > i && looseKey(body) === looseKey(original)) {
         ops.push({ start: i, end: i, text: prefix + rewrite });
         claim(i, i);
         applied = true;
         break;
       }
 
-      // 2. wrapped block — only when a continuation actually exists
+      // 3. wrapped block — only when a continuation actually exists
       if (end > i && isSimilar(joined, original, 0.5) && free(i, end)) {
         ops.push({ start: i, end, text: prefix + rewrite });
         claim(i, end);
@@ -149,9 +194,9 @@ export function applyRewrites(resumeText: string, accepted: RewriteCandidate[]):
         break;
       }
 
-      if (end > i || !split) continue; // steps 3-4 rewrite a whole/marker line
+      if (end > i || !split) continue; // steps 4-5 rewrite a whole/marker line
 
-      // 3. raw substring inside the line
+      // 4. raw substring inside the line
       if (rawable && lines[i].includes(target)) {
         ops.push({ start: i, end: i, text: lines[i].replace(target, rewrite) });
         claim(i, i);
@@ -159,7 +204,7 @@ export function applyRewrites(resumeText: string, accepted: RewriteCandidate[]):
         break;
       }
 
-      // 4. markered line whose body is close enough to the original
+      // 5. markered single-line bullet close enough to the original
       if (rawable && isSimilar(body, original, 0.6)) {
         ops.push({ start: i, end: i, text: prefix + rewrite });
         claim(i, i);
@@ -171,7 +216,7 @@ export function applyRewrites(resumeText: string, accepted: RewriteCandidate[]):
     if (!applied) unmatched.push(original);
   }
 
-  return { text: applyOps(lines, ops), appliedCount: ops.length, unmatched };
+  return { text: polishOutput(applyOps(lines, ops)), appliedCount: ops.length, unmatched };
 }
 
 function applyOps(lines: string[], ops: Array<{ start: number; end: number; text: string }>): string {
