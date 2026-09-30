@@ -36,7 +36,7 @@ async function testGroqChatModel(model, prompt) {
     const res = await fetch(`${GROQ_BASE_URL}/chat/completions`, {
       method: "POST",
       headers: { Authorization: `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], max_tokens: 30, temperature: 0.1 }),
+      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], max_tokens: 1000, temperature: 0.1 }),
       signal: controller.signal,
     });
     clearTimeout(timer);
