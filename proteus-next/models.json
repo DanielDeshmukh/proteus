@@ -3,10 +3,10 @@
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
       "provider": "groq",
-      "current": "qwen/qwen3.8-27b",
+      "current": "openai/gpt-oss-120b",
       "fallbacks": [
         "openai/gpt-oss-20b",
-        "openai/gpt-oss-120b"
+        "qwen/qwen3.8-27b"
       ],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -15,10 +15,10 @@
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
       "provider": "groq",
-      "current": "qwen/qwen3.8-27b",
+      "current": "openai/gpt-oss-120b",
       "fallbacks": [
         "openai/gpt-oss-20b",
-        "openai/gpt-oss-120b"
+        "qwen/qwen3.8-27b"
       ],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -27,9 +27,10 @@
     "gap-analyzer": {
       "description": "Exact + word-level skill matching (no embeddings)",
       "provider": "groq",
-      "current": "qwen/qwen3.8-27b",
+      "current": "openai/gpt-oss-120b",
       "fallbacks": [
-        "openai/gpt-oss-20b"
+        "openai/gpt-oss-20b",
+        "qwen/qwen3.8-27b"
       ],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -38,9 +39,10 @@
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
       "provider": "groq",
-      "current": "qwen/qwen3.8-27b",
+      "current": "openai/gpt-oss-120b",
       "fallbacks": [
-        "openai/gpt-oss-20b"
+        "openai/gpt-oss-20b",
+        "qwen/qwen3.8-27b"
       ],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -49,10 +51,10 @@
     "cover-letter": {
       "description": "Generate tailored cover letters",
       "provider": "groq",
-      "current": "qwen/qwen3.8-27b",
+      "current": "openai/gpt-oss-120b",
       "fallbacks": [
         "openai/gpt-oss-20b",
-        "openai/gpt-oss-120b"
+        "qwen/qwen3.8-27b"
       ],
       "gemini_model": "gemini-2.0-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
@@ -61,10 +63,10 @@
   },
   "lastHealthCheck": "2026-09-30T09:27:07.780Z",
   "lastHealthyModels": {
-    "jd-parser": "qwen/qwen3.8-27b",
-    "resume-parser": "qwen/qwen3.8-27b",
-    "gap-analyzer": "qwen/qwen3.8-27b",
-    "rewrite-suggester": "qwen/qwen3.8-27b",
-    "cover-letter": "qwen/qwen3.8-27b"
+    "jd-parser": "openai/gpt-oss-120b",
+    "resume-parser": "openai/gpt-oss-120b",
+    "gap-analyzer": "openai/gpt-oss-120b",
+    "rewrite-suggester": "openai/gpt-oss-120b",
+    "cover-letter": "openai/gpt-oss-120b"
   }
 }

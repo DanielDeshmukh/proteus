@@ -43,3 +43,6 @@ Thumbs.db
 # Personal files
 resume.pdf
 proteus-interview-prep.md
+
+# MCP server config (copy of proteus-next/models.json)
+/models.json
