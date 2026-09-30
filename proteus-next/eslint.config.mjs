@@ -28,7 +28,6 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Utility scripts and setup files
     "scripts/**",
-    "setup-turso.cjs",
     "test-*.cjs",
     "test-*.mjs",
     "commitlint.config.mjs",
