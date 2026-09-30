@@ -24,7 +24,7 @@ interface HealthResponse {
   checkedAt: string;
 }
 
-export function NimHealthPanel() {
+export function ModelsHealthPanel() {
   const [data, setData] = useState<HealthResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export function NimHealthPanel() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/health/nim");
+      const res = await fetch("/api/health/models");
       const json = await res.json();
       if (json.status === "error") throw new Error(json.message);
       setData(json);
