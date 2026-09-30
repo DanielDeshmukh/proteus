@@ -225,7 +225,7 @@ export default function DocsPage() {
 
           <h4 style={{ color: "var(--text)", fontSize: "14px", margin: "16px 0 8px" }}>Rewrite Suggestions</h4>
           <P>
-            For weak bullets, PROTEUS suggests rewrites that incorporate JD keywords and quantify impact. Each suggestion includes the original text, the rewrite, a rationale, and an impact score showing how much it improves your match.
+            For weak bullets, PROTEUS suggests rewrites that incorporate JD keywords and quantify impact. Each suggestion includes the original text, the rewrite, a rationale, and an impact score showing how much it improves your match. Click <strong>Accept</strong> on the rewrites you want to keep, then export a tailored resume built from your original text with those rewrites applied.
           </P>
 
           <h4 style={{ color: "var(--text)", fontSize: "14px", margin: "16px 0 8px" }}>Cover Letter</h4>
@@ -243,6 +243,9 @@ export default function DocsPage() {
         <SubSection title="Downloading results">
           <P>
             On the History detail page, use the <strong>Copy</strong> and <strong>Download</strong> buttons to export your cover letter as a text file. The filename follows the format <Code>FirstName_RoleName.txt</Code>.
+          </P>
+          <P>
+            Accepted rewrites export as a tailored resume in <strong>Plain text</strong>, <strong>Word</strong>, or <strong>PDF</strong>. The file is named <Code>Firstname_Lastname_Resume</Code> and uses an ATS-safe layout: single column, uniform margins, system fonts, standard section names, and text-based output with no tables, columns, or images.
           </P>
         </SubSection>
       </Section>

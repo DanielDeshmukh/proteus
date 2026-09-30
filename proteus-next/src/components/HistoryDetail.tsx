@@ -8,6 +8,8 @@ import { GapAnalysisDisplay } from "@/components/GapAnalysisDisplay";
 import { CopyButton } from "@/components/CopyButton";
 import { DownloadButton } from "@/components/DownloadButton";
 import { ReportDownloadButton } from "@/components/ReportDownloadButton";
+import { RewriteDisplay } from "@/components/RewriteDisplay";
+import { candidateLabelFrom, safeRoleTitle, sanitizeForFilename } from "@/lib/resume-export";
 import { apiGet } from "@/lib/api";
 
 interface RunDetail {
@@ -95,56 +97,6 @@ function RawText({ text, maxLines = 40 }: { text: string; maxLines?: number }) {
   );
 }
 
-function RewriteCard({ s }: { s: { original_bullet: string; suggested_rewrite: string; rationale: string; target_requirement: string; impact_score: number } }) {
-  return (
-    <div
-      style={{
-        background: "var(--surface-sunken)",
-        border: "1px solid var(--border)",
-        borderRadius: "var(--radius-md)",
-        padding: "16px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px",
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "11px",
-            color: "var(--color-gold)",
-            background: "rgba(201, 169, 98, 0.10)",
-            border: "1px solid rgba(201, 169, 98, 0.2)",
-            borderRadius: "100px",
-            padding: "2px 8px",
-          }}
-        >
-          {Math.round(s.impact_score * 100)}% impact
-        </span>
-        <span style={{ fontSize: "11px", color: "var(--text-faint)" }}>
-          {s.target_requirement}
-        </span>
-      </div>
-      <div>
-        <p style={{ fontSize: "11px", color: "var(--text-faint)", marginBottom: "4px" }}>Original:</p>
-        <p style={{ fontSize: "13px", color: "var(--text-soft)", textDecoration: "line-through", opacity: 0.7, margin: 0 }}>
-          {s.original_bullet}
-        </p>
-      </div>
-      <div>
-        <p style={{ fontSize: "11px", color: "var(--color-gold)", marginBottom: "4px" }}>Suggested:</p>
-        <p style={{ fontSize: "13px", color: "var(--text)", margin: 0 }}>
-          {s.suggested_rewrite}
-        </p>
-      </div>
-      <p style={{ fontSize: "12px", color: "var(--text-faint)", fontStyle: "italic", margin: 0 }}>
-        {s.rationale}
-      </p>
-    </div>
-  );
-}
-
 function dedupeGaps(gaps: Array<{ requirement: string; status: string; similarity_score: number; category: string; matched_evidence: string | null }>) {
   const seen = new Map<string, typeof gaps[0]>();
   for (const g of gaps) {
@@ -183,21 +135,8 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
   try { if (run.cover_letter) coverLetter = JSON.parse(run.cover_letter); } catch {}
 
   // Build cover letter filename: {username}_{applied_role}
-  function sanitizeForFilename(s: string): string {
-    return s.replace(/[^a-zA-Z0-9\s-]/g, "").replace(/\s+/g, "_").substring(0, 50).replace(/_+$/, "");
-  }
-  // Extract candidate name from cover letter closing (e.g. "Sincerely,\nAlexander J. Thunderwolf")
-  function extractNameFromLetter(letter: string): string | null {
-    const closingMatch = letter.match(/(?:sincerely|best regards|kind regards|regards|thank you)[,\s]*\n\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i);
-    return closingMatch ? closingMatch[1].trim() : null;
-  }
-  const candidateName = (coverLetter?.full_letter ? extractNameFromLetter(coverLetter.full_letter) : null)
-    || run.resume_text?.split("\n").find((l: string) => {
-      const t = l.trim();
-      return t.length > 2 && !/^[\s=\-_|#*>]+$/.test(t) && !/^[A-Z\s]{15,}$/.test(t);
-    })?.trim()
-    || "Candidate";
-  const appliedRole = (coverLetter?.job_title && !/ninja|guru|wizard|rockstar|monkey|devil/i.test(coverLetter.job_title)) ? coverLetter.job_title : "Role";
+  const candidateName = candidateLabelFrom(coverLetter?.full_letter ?? null, run.resume_text);
+  const appliedRole = safeRoleTitle(coverLetter?.job_title) ?? "Role";
   const coverFilename = `${sanitizeForFilename(candidateName)}_${sanitizeForFilename(appliedRole)}`;
 
   // Dedupe gaps
@@ -306,16 +245,11 @@ export function HistoryDetail({ runId, onClose }: { runId: number; onClose: () =
       {rewriteSuggestions && rewriteSuggestions.suggestions.length > 0 && (
         <Card>
           <SectionLabel>Rewrite Suggestions ({rewriteSuggestions.suggestions.length})</SectionLabel>
-          {rewriteSuggestions.hidden_experience.length > 0 && (
-            <p style={{ fontSize: "12px", color: "var(--text-faint)", marginBottom: "14px" }}>
-              Hidden experience surfaced: {rewriteSuggestions.hidden_experience.join(", ")}
-            </p>
-          )}
-          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            {rewriteSuggestions.suggestions.map((s, i) => (
-              <RewriteCard key={i} s={s} />
-            ))}
-          </div>
+          <RewriteDisplay
+            rewrites={rewriteSuggestions}
+            resumeText={run.resume_text}
+            candidateLabel={candidateName}
+          />
         </Card>
       )}
 

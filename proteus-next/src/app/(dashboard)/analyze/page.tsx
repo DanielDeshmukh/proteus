@@ -12,6 +12,7 @@ import { GapAnalysisDisplay } from "@/components/GapAnalysisDisplay";
 import { RewriteDisplay } from "@/components/RewriteDisplay";
 import { CoverLetterDisplay } from "@/components/CoverLetterDisplay";
 import { apiPost, apiPostStream, apiGet } from "@/lib/api";
+import { candidateLabelFrom } from "@/lib/resume-export";
 import type { GapAnalysis } from "@/types";
 
 const pipelineStages = [
@@ -41,6 +42,9 @@ export default function AnalyzePage() {
   const [partialRewrites, setPartialRewrites] = useState<Record<string, unknown> | null>(null);
   const [partialCoverLetter, setPartialCoverLetter] = useState<Record<string, unknown> | null>(null);
 
+  // Resume text for the tailored export — file uploads only have it in history
+  const [fetchedResume, setFetchedResume] = useState<{ runId: number; text: string | null } | null>(null);
+
   // Final result — only set on "done"
   const [result, setResult] = useState<{
     run_id?: number | null;
@@ -54,6 +58,16 @@ export default function AnalyzePage() {
   } | null>(null);
 
   const canAnalyze = jd && resume;
+  const resumeText =
+    resume && typeof resume.value === "string"
+      ? resume.value
+      : fetchedResume && fetchedResume.runId === result?.run_id
+        ? fetchedResume.text
+        : null;
+  const candidateLabel = candidateLabelFrom(
+    (result?.cover_letter as { full_letter?: string } | null)?.full_letter ?? null,
+    resumeText
+  );
 
   useEffect(() => {
     apiGet("/api/usage").then((data) => setUsage(data)).catch(() => {});
@@ -64,6 +78,17 @@ export default function AnalyzePage() {
       resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [result]);
+
+  // File uploads: the extracted text is only available via history
+  useEffect(() => {
+    const runId = result?.run_id;
+    if (!runId || (resume && typeof resume.value === "string")) return;
+    let cancelled = false;
+    apiGet(`/api/history/${runId}`)
+      .then((data) => { if (!cancelled) setFetchedResume({ runId, text: data?.resume_text ?? null }); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [result?.run_id, resume]);
 
   useEffect(() => {
     if (!loading) return;
@@ -440,7 +465,11 @@ export default function AnalyzePage() {
             {result.rewrite_suggestions != null && (
               <Card>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "16px", color: "var(--text)", marginBottom: "16px" }}>Rewrite suggestions</h3>
-                <RewriteDisplay rewrites={result.rewrite_suggestions as never} />
+                <RewriteDisplay
+                  rewrites={result.rewrite_suggestions as never}
+                  resumeText={resumeText}
+                  candidateLabel={candidateLabel}
+                />
               </Card>
             )}
 
