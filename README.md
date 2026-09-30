@@ -24,13 +24,14 @@
 
 ## What it does
 
-PROTEUS is a JD-aware resume analyzer that runs a **five-agent NVIDIA NIM pipeline** to produce consistent, actionable outputs from a single job description and resume.
+PROTEUS is a JD-aware resume analyzer that runs a **five-agent pipeline powered by Groq with Google Gemini fallback** to produce consistent, actionable outputs from a single job description and resume.
 
 | Output | What you get |
 |--------|-------------|
-| **Semantic Match Score** | Percentage alignment with category breakdown |
+| **Match Score** | Percentage alignment with category breakdown |
 | **Gap Analysis** | Matched / partial / missing requirements ranked by impact |
 | **Bullet Rewrites** | JD-aware rewrites with rationale and impact scores |
+| **Tailored Resume** | ATS-safe export (TXT, Word, PDF) built from accepted rewrites |
 | **Cover Letter** | Tailored letter from the same parsed context |
 | **Priority Actions** | Ranked steps to improve your application |
 
@@ -40,17 +41,17 @@ Every output reads from the same parsed JD context — no contradictions between
 
 ```
 JD ──┐
-     ├──→ [Parse] → [Calibrate] → [Map] → [Rewrite] → [Draft] ──→ Results
+     ├──→ [Parse] → [Match] → [Rewrite] → [Draft] ──→ Results
 Resume┘
 ```
 
 | Step | Agent | Model | Task |
 |------|-------|-------|------|
-| 01 | JD Parser | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | Extract role, requirements, seniority |
-| 02 | Resume Parser | `nvidia/llama-3.1-70b-instruct` | Extract skills, experience, achievements |
-| 03 | Gap Analyzer | `nvidia/llama-nemotron-embed-1b-v2` | Semantic similarity scoring |
-| 04 | Rewriter | `mistralai/mistral-nemotron` | JD-aware bullet rewrites |
-| 05 | Cover Letter | `nvidia/nemotron-3-super-120b-a12b` | Tailored letter generation |
+| 01 | JD Parser | `openai/gpt-oss-120b` (Groq) | Extract role, requirements, seniority |
+| 02 | Resume Parser | `openai/gpt-oss-120b` (Groq) | Extract skills, experience, achievements |
+| 03 | Gap Analyzer | Local (no LLM) | Exact + word-level requirement matching |
+| 04 | Rewriter | `openai/gpt-oss-120b` (Groq) | JD-aware bullet rewrites |
+| 05 | Cover Letter | `openai/gpt-oss-120b` (Groq) | Tailored letter generation |
 
 > Models auto-update via GitHub Actions health checks every 3 hours.
 
@@ -59,11 +60,11 @@ Resume┘
 
 | Role | Model | Last Checked |
 |------|-------|--------------|
-| jd-parser | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-24T05:52:53.571Z |
-| resume-parser | `nvidia/gliner-pii` | 2026-07-24T05:52:53.571Z |
-| gap-analyzer | `nvidia/llama-nemotron-embed-1b-v2` | 2026-07-24T05:52:53.571Z |
-| rewrite-suggester | `nvidia/gliner-pii` | 2026-07-24T05:52:53.571Z |
-| cover-letter | `nvidia/llama-3.3-nemotron-super-49b-v1.5` | 2026-07-24T05:52:53.571Z |
+| jd-parser | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
+| resume-parser | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
+| gap-analyzer | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
+| rewrite-suggester | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
+| cover-letter | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
 <!-- END MODELS AUTO-GENERATED -->
 
 ## Features
@@ -72,8 +73,8 @@ Resume┘
 <summary><strong>Core Analysis</strong></summary>
 
 - 3 ways to input a JD: paste, upload, or URL
-- 2 ways to input a resume: paste or PDF upload
-- Semantic match scoring (embedding-based, not keyword matching)
+- 2 ways to input a resume: paste or file upload (.pdf, .docx, .txt)
+- Requirement match scoring (deterministic exact + word-level matching)
 - Gap analysis ranked by impact with severity badges
 - Bullet-level rewrite suggestions with before/after comparison
 - Consistent cover letter generated from the same context
@@ -99,7 +100,7 @@ Resume┘
 - Automatic model fallback on failure
 - JSON retry with temperature escalation (3 attempts)
 - 300s timeout on serverless functions
-- Health checks every 6 hours via GitHub Actions
+- Health checks every 3 hours via GitHub Actions
 - Self-healing model registry (auto-replaces failed models)
 
 </details>
@@ -110,7 +111,7 @@ Resume┘
 |-------|-----------|
 | Framework | Next.js 16 · App Router · TypeScript |
 | Styling | Tailwind CSS v4 · Dark theme · Geist fonts |
-| AI/ML | NVIDIA NIM · LLaMA 3.1 70B · Embeddings |
+| AI/ML | Groq (GPT-OSS 120B) · Google Gemini fallback |
 | Database | better-sqlite3 (local) · Turso/libsql (Vercel) |
 | Auth | NextAuth.js v5 · Magic Link · Google · GitHub |
 | Validation | Zod v4 |
@@ -123,13 +124,13 @@ Resume┘
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/analyze` | POST | Run full pipeline |
-| `/api/analyze/stream` | POST | Run pipeline with SSE streaming |
+| `/api/analyze/stream` | POST | Run pipeline with NDJSON streaming |
 | `/api/history` | GET | List past runs |
 | `/api/history/:id` | GET | Get run details |
 | `/api/history/:id` | DELETE | Delete a run |
 | `/api/models` | GET | List configured models |
 | `/api/health` | GET | Health check |
-| `/api/health/nim` | GET | NIM connectivity test |
+| `/api/health/models` | GET | Model connectivity test for all pipeline steps |
 | `/api/usage` | GET | Daily usage stats |
 
 ---

@@ -99,7 +99,7 @@ export default function DocsPage() {
   const [modelRows, setModelRows] = useState<string[][]>([
     ["JD Parser", "Loading...", "Groq", "Parse job descriptions into structured requirements"],
     ["Resume Parser", "Loading...", "Groq", "Extract structured data from resume text"],
-    ["Gap Analyzer", "Loading...", "Groq", "Generate embeddings for semantic similarity scoring"],
+    ["Gap Analyzer", "Loading...", "Groq", "Match JD requirements against resume evidence (exact + word-level)"],
     ["Rewriter", "Loading...", "Groq", "Rewrite resume bullets to match JD requirements"],
     ["Cover Letter", "Loading...", "Groq", "Generate tailored cover letters"],
   ]);
@@ -148,14 +148,15 @@ export default function DocsPage() {
       {/* ─── Introduction ─────────────────────────────── */}
       <Section id="introduction" title="Introduction">
         <P>
-          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline powered by Groq and Google Gemini to deliver consistent, JD-aware results.
+          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline powered by Groq with Google Gemini fallback to deliver consistent, JD-aware results.
         </P>
 
         <SubSection title="What you get">
           <List items={[
-            "Semantic match score — how closely your resume aligns with the role",
+            "Match score — how closely your resume aligns with the role",
             "Gap analysis — specific requirements you're missing or partially matching",
             "Bullet-level rewrites — JD-aware suggestions to strengthen weak experience items",
+            "Tailored resume — accept rewrites and export an ATS-safe resume in plain text, Word, or PDF",
             "Cover letter — a tailored letter written from the same context as your resume",
           ]} />
         </SubSection>
@@ -177,7 +178,7 @@ export default function DocsPage() {
             "GitHub — one-click sign in with your GitHub account",
           ]} />
           <InfoBox variant="tip">
-            Your first analysis is free. PROTEUS allows up to <strong>10 analyses per day</strong>.
+            PROTEUS allows up to <strong>10 analyses per day</strong>.
           </InfoBox>
         </SubSection>
 
@@ -186,7 +187,7 @@ export default function DocsPage() {
           <List ordered items={[
             "Paste text — copy the full job posting and paste it into the text area",
             "Enter a URL — paste a link to the job posting (LinkedIn, Greenhouse, Lever, etc.)",
-            "Upload a file — attach a .txt or .pdf file containing the JD",
+            "Upload a file — attach a .txt, .pdf, or .docx file containing the JD",
           ]} />
         </SubSection>
 
@@ -194,10 +195,10 @@ export default function DocsPage() {
           <P>Provide your resume in one of two ways:</P>
           <List ordered items={[
             "Paste text — copy your resume content into the text area",
-            "Upload a PDF — attach your resume as a .pdf file",
+            "Upload a file — attach your resume as a .pdf, .docx, or .txt file",
           ]} />
           <InfoBox variant="warn">
-            Keep your resume under 8,000 characters for best results. Longer resumes may be truncated.
+            Keep your resume under 10,000 characters for best results. Longer resumes may be truncated.
           </InfoBox>
         </SubSection>
 
@@ -230,7 +231,7 @@ export default function DocsPage() {
 
           <h4 style={{ color: "var(--text)", fontSize: "14px", margin: "16px 0 8px" }}>Cover Letter</h4>
           <P>
-            A tailored cover letter written from the same parsed context as your analysis. You can choose the tone (professional, friendly, confident) before running the pipeline. Use the copy or download buttons to export it.
+            A tailored cover letter written from the same parsed context as your analysis, always in a professional tone. Use the copy button to copy it, or download it as a PDF or Word document.
           </P>
         </SubSection>
 
@@ -242,7 +243,7 @@ export default function DocsPage() {
 
         <SubSection title="Downloading results">
           <P>
-            On the History detail page, use the <strong>Copy</strong> and <strong>Download</strong> buttons to export your cover letter as a text file. The filename follows the format <Code>FirstName_RoleName.txt</Code>.
+            On the History detail page, use the <strong>Copy</strong> button to copy your cover letter, or <strong>Download</strong> to export it as a PDF or Word file. The filename follows the format <Code>FirstName_RoleName.pdf</Code>.
           </P>
           <P>
             Accepted rewrites export as a tailored resume in <strong>Plain text</strong>, <strong>Word</strong>, or <strong>PDF</strong>. The file is named <Code>Firstname_Lastname_Resume</Code> and uses an ATS-safe layout: single column, uniform margins, system fonts, standard section names, and text-based output with no tables, columns, or images.
@@ -263,7 +264,7 @@ export default function DocsPage() {
             ["Auth", "NextAuth.js v5", "Email+password, magic link, Google, GitHub OAuth"],
             ["Database", "Turso (libSQL)", "Per-user data isolation, run history, session storage"],
             ["AI Pipeline", "Groq + Gemini", "Five-agent pipeline — JD parsing through cover letter generation"],
-            ["PDF Generation", "react-pdf + unpdf", "Analysis report and cover letter PDF export"],
+            ["Document Export", "react-pdf, unpdf, docx", "Analysis reports, cover letters, and tailored resume exports (PDF, DOCX, TXT)"],
             ["Deployment", "Vercel", "Serverless functions, edge middleware, auto-deploy from GitHub"],
             ["CI/CD", "GitHub Actions", "Lint, typecheck, Playwright E2E tests, model health checks"],
           ]}
@@ -274,7 +275,7 @@ export default function DocsPage() {
             PROTEUS uses two AI providers:
           </P>
           <List items={[
-            "Groq — powers the JD parser, resume parser, gap analyzer, and rewrite suggester (4 agents). Groq runs open-source models on custom LPU silicon with fast response times.",
+            "Groq — primary provider for all five pipeline steps: JD parser, resume parser, gap analyzer, rewrite suggester, and cover letter. Groq runs open-source models on custom LPU silicon with fast response times.",
             "Google Gemini — powers as a fallback provider when Groq models are unavailable. Gemini 2.0 Flash provides fast, reliable inference.",
           ]} />
         </SubSection>
@@ -291,7 +292,7 @@ export default function DocsPage() {
           rows={[
             ["01", "JD Parser", "Groq", "Extracts role title, requirements, seniority level, and key skills from the job description"],
             ["02", "Resume Parser", "Groq", "Extracts skills, experience, education, and achievements from your resume"],
-            ["03", "Gap Analyzer", "Groq", "Compares parsed JD requirements against resume items using semantic embeddings"],
+            ["03", "Gap Analyzer", "Groq", "Compares parsed JD requirements against your resume using deterministic exact and word-level matching"],
             ["04", "Rewriter", "Groq", "Drafts JD-aware rewrites for weak resume bullets to better match requirements"],
             ["05", "Cover Letter", "Groq", "Writes a tailored cover letter using the same JD context and resume data"],
           ]}
@@ -351,7 +352,7 @@ export default function DocsPage() {
             "Custom LPU hardware — purpose-built for LLM inference, not general-purpose GPUs",
             "Consistent latency — no cold starts or priority queuing",
             "OpenAI-compatible API — same request/response format, drop-in replacement",
-            "Open-source models — runs Llama 3.3 70B and other open-source models with fast response times",
+            "Open-source models — runs models like GPT-OSS 120B with fast response times",
           ]} />
           <div style={{ marginTop: "16px" }}>
             <a
@@ -491,7 +492,7 @@ export default function DocsPage() {
       <Section id="troubleshooting" title="Troubleshooting">
         <SubSection title="Analysis fails with timeout">
           <P>
-            The pipeline has a 300-second limit. If your inputs are very long, try trimming them. Resume should be under 8,000 characters; JD under 12,000 characters.
+            The pipeline has a 300-second limit. If your inputs are very long, try trimming them. Resume should be under 10,000 characters; JD under 18,000 characters.
           </P>
         </SubSection>
 
@@ -509,7 +510,7 @@ export default function DocsPage() {
 
         <SubSection title="Score seems wrong or too low">
           <P>
-            The score measures semantic similarity, not formatting quality. A low score usually means your resume doesn&apos;t contain the keywords the JD is looking for. Check the gap analysis section for specific missing requirements.
+            The score measures requirement coverage, not formatting quality. A low score usually means your resume doesn&apos;t contain the keywords the JD is looking for. Check the gap analysis section for specific missing requirements.
           </P>
         </SubSection>
 
@@ -536,7 +537,7 @@ export default function DocsPage() {
           headers={["Endpoint", "Method", "Description"]}
           rows={[
             ["/api/analyze", "POST", "Run the full pipeline (FormData: jd_text, resume_text, cover_letter_tone)"],
-            ["/api/analyze/stream", "POST", "Run pipeline with SSE streaming events (same params)"],
+            ["/api/analyze/stream", "POST", "Run pipeline with NDJSON streaming events (same params)"],
             ["/api/history", "GET", "List your past analysis runs (?limit, ?offset)"],
             ["/api/history/:id", "GET", "Get a single run's full results"],
             ["/api/history/:id", "DELETE", "Delete a run"],
@@ -556,13 +557,13 @@ export default function DocsPage() {
       <Section id="faq" title="FAQ">
         <SubSection title="Why did my analysis take so long?">
           <P>
-            Each agent makes an API call. Steps use Groq with Gemini fallback. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
+            Each LLM step makes an API call. Steps use Groq with Gemini fallback; gap analysis runs locally. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
           </P>
         </SubSection>
 
         <SubSection title="Why is my score so low?">
           <P>
-            The score reflects semantic similarity between your resume and the JD. A low score means the JD keywords and requirements aren&apos;t well represented in your resume. Use the rewrite suggestions and gap analysis to improve.
+            The score reflects how many JD requirements your resume covers, using exact and word-level matching. A low score means the JD keywords and requirements aren&apos;t well represented in your resume. Use the rewrite suggestions and gap analysis to improve.
           </P>
         </SubSection>
 
@@ -580,7 +581,7 @@ export default function DocsPage() {
 
         <SubSection title="What file formats are supported?">
           <P>
-            JDs: paste text, URLs (LinkedIn, Greenhouse, Lever, etc.), or .txt/.pdf files. Resumes: paste text or .pdf files. The PDF parser uses unpdf for reliable text extraction.
+            JDs: paste text, URLs (LinkedIn, Greenhouse, Lever, etc.), or .txt/.pdf/.docx files. Resumes: paste text or .pdf, .docx, or .txt files. PDFs are parsed with unpdf for reliable text extraction.
           </P>
         </SubSection>
 
@@ -602,6 +603,15 @@ export default function DocsPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           {[
             {
+              version: "1.1.0",
+              date: "September 2026",
+              items: [
+                "Accept rewrite suggestions and export a tailored ATS-safe resume (plain text, Word, or PDF)",
+                "Tailored resume export follows ATS conventions — single column, standard section names, Firstname_Lastname_Resume filename",
+                "Hardened rewrite matching for typographic characters and multi-line bullets",
+              ],
+            },
+            {
               version: "1.0.0",
               date: "July 2026",
               items: [
@@ -611,7 +621,7 @@ export default function DocsPage() {
                 "Rate limiting (10/day)",
                 "Mobile responsive UI",
                 "Dark-themed email templates",
-                "Model health checks every 6 hours",
+                "Model health checks every 3 hours",
               ],
             },
           ].map((release) => (
