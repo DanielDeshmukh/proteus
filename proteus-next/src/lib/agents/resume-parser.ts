@@ -1,8 +1,9 @@
-import { getModelForRole } from "../model-config";
+import { getModelForRole, getModelProvider } from "../model-config";
 import { ResumeStructuredSchema, type ResumeStructured } from "../../types";
 import { callWithJsonRetry } from "./json-retry";
 
 const RESUME_PARSER_MODEL = getModelForRole("resume-parser");
+const RESUME_PARSER_PROVIDER = getModelProvider("resume-parser");
 
 const MAX_RESUME_CHARS = 10000;
 
@@ -54,6 +55,6 @@ export function parseResume(rawResumeText: string): Promise<ResumeStructured> {
     temperature: 0,
     maxTokens: 3072,
     role: "resume-parser",
-    provider: "groq",
+    provider: RESUME_PARSER_PROVIDER,
   });
 }

@@ -3,12 +3,30 @@
     "jd-parser": {
       "description": "Extract structured requirements from job descriptions",
       "provider": "groq",
-      "current": "openai/gpt-oss-120b",
+      "current": "qwen/qwen3.8-27b",
       "fallbacks": [
-        "openai/gpt-oss-20b",
-        "qwen/qwen3.8-27b"
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b"
       ],
-      "gemini_model": "gemini-2.0-flash",
+      "swap_pool": [
+        {
+          "model": "qwen/qwen3.8-27b",
+          "provider": "groq"
+        },
+        {
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq"
+        },
+        {
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq"
+        },
+        {
+          "model": "gemini-2.5-flash",
+          "provider": "gemini"
+        }
+      ],
+      "gemini_model": "gemini-2.5-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
@@ -20,53 +38,111 @@
         "openai/gpt-oss-20b",
         "qwen/qwen3.8-27b"
       ],
-      "gemini_model": "gemini-2.0-flash",
+      "swap_pool": [
+        {
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq"
+        },
+        {
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq"
+        },
+        {
+          "model": "qwen/qwen3.8-27b",
+          "provider": "groq"
+        },
+        {
+          "model": "gemini-2.5-flash",
+          "provider": "gemini"
+        }
+      ],
+      "gemini_model": "gemini-2.5-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "gap-analyzer": {
-      "description": "Exact + word-level skill matching (no embeddings)",
-      "provider": "groq",
-      "current": "openai/gpt-oss-120b",
-      "fallbacks": [
-        "openai/gpt-oss-20b",
-        "qwen/qwen3.8-27b"
+      "description": "Semantic match scoring via Gemini embeddings + exact word matching",
+      "provider": "gemini",
+      "current": "gemini-embedding-001",
+      "fallbacks": [],
+      "swap_pool": [
+        {
+          "model": "gemini-embedding-001",
+          "provider": "gemini"
+        }
       ],
-      "gemini_model": "gemini-2.0-flash",
+      "gemini_model": "gemini-embedding-001",
       "testPrompt": "Return exactly: {\"ok\":true}",
-      "type": "chat"
+      "type": "embedding",
+      "pinned": true
     },
     "rewrite-suggester": {
       "description": "Generate JD-aware bullet point rewrites",
       "provider": "groq",
-      "current": "openai/gpt-oss-120b",
+      "current": "openai/gpt-oss-20b",
       "fallbacks": [
-        "openai/gpt-oss-20b",
-        "qwen/qwen3.8-27b"
+        "qwen/qwen3.8-27b",
+        "openai/gpt-oss-120b"
       ],
-      "gemini_model": "gemini-2.0-flash",
+      "swap_pool": [
+        {
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq"
+        },
+        {
+          "model": "qwen/qwen3.8-27b",
+          "provider": "groq"
+        },
+        {
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq"
+        },
+        {
+          "model": "gemini-2.5-flash",
+          "provider": "gemini"
+        }
+      ],
+      "gemini_model": "gemini-2.5-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "provider": "groq",
-      "current": "openai/gpt-oss-120b",
+      "provider": "gemini",
+      "current": "gemini-2.5-flash",
       "fallbacks": [
-        "openai/gpt-oss-20b",
-        "qwen/qwen3.8-27b"
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b"
       ],
-      "gemini_model": "gemini-2.0-flash",
+      "swap_pool": [
+        {
+          "model": "gemini-2.5-flash",
+          "provider": "gemini"
+        },
+        {
+          "model": "gemini-2.5-flash-lite",
+          "provider": "gemini"
+        },
+        {
+          "model": "openai/gpt-oss-120b",
+          "provider": "groq"
+        },
+        {
+          "model": "openai/gpt-oss-20b",
+          "provider": "groq"
+        }
+      ],
+      "gemini_model": "gemini-2.5-flash",
       "testPrompt": "Return exactly: {\"ok\":true}",
       "type": "chat"
     }
   },
-  "lastHealthCheck": "2026-09-30T17:47:27.724Z",
+  "lastHealthCheck": "2026-09-30T17:18:57.007Z",
   "lastHealthyModels": {
-    "jd-parser": "openai/gpt-oss-120b",
+    "jd-parser": "qwen/qwen3.8-27b",
     "resume-parser": "openai/gpt-oss-120b",
-    "gap-analyzer": "openai/gpt-oss-120b",
-    "rewrite-suggester": "openai/gpt-oss-120b",
-    "cover-letter": "openai/gpt-oss-120b"
+    "gap-analyzer": "gemini-embedding-001",
+    "rewrite-suggester": "openai/gpt-oss-20b",
+    "cover-letter": "gemini-2.5-flash"
   }
 }

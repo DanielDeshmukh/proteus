@@ -99,9 +99,9 @@ export default function DocsPage() {
   const [modelRows, setModelRows] = useState<string[][]>([
     ["JD Parser", "Loading...", "Groq", "Parse job descriptions into structured requirements"],
     ["Resume Parser", "Loading...", "Groq", "Extract structured data from resume text"],
-    ["Gap Analyzer", "Loading...", "Groq", "Match JD requirements against resume evidence (exact + word-level)"],
+    ["Gap Analyzer", "Loading...", "Gemini", "Score semantic match via Gemini embeddings + exact word matching"],
     ["Rewriter", "Loading...", "Groq", "Rewrite resume bullets to match JD requirements"],
-    ["Cover Letter", "Loading...", "Groq", "Generate tailored cover letters"],
+    ["Cover Letter", "Loading...", "Gemini", "Generate tailored cover letters"],
   ]);
   const [lastChecked, setLastChecked] = useState<string | null>(null);
 
@@ -120,7 +120,7 @@ export default function DocsPage() {
             data.models.map((m: { agent: string; model: string; provider: string; task: string }) => [
               m.agent,
               m.model,
-              m.provider,
+              m.provider === "gemini" ? "Gemini" : "Groq",
               m.task,
             ])
           );
@@ -148,7 +148,7 @@ export default function DocsPage() {
       {/* ─── Introduction ─────────────────────────────── */}
       <Section id="introduction" title="Introduction">
         <P>
-          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline powered by Groq with Google Gemini fallback to deliver consistent, JD-aware results.
+          PROTEUS is an AI-powered resume analyzer that compares your resume against a job description and returns actionable insights. It uses a five-agent pipeline with a dedicated model for every step across Groq and Google Gemini to deliver consistent, JD-aware results.
         </P>
 
         <SubSection title="What you get">
@@ -275,8 +275,8 @@ export default function DocsPage() {
             PROTEUS uses two AI providers:
           </P>
           <List items={[
-            "Groq — primary provider for all five pipeline steps: JD parser, resume parser, gap analyzer, rewrite suggester, and cover letter. Groq runs open-source models on custom LPU silicon with fast response times.",
-            "Google Gemini — powers as a fallback provider when Groq models are unavailable. Gemini 2.0 Flash provides fast, reliable inference.",
+            "Groq — fast LLM inference on custom LPU silicon; powers the JD parser, resume parser, and rewrite suggester with dedicated open-source models",
+            "Google Gemini — powers the cover letter generator and the gap analyzer's semantic embeddings, and acts as a cross-provider fallback when Groq models are unavailable",
           ]} />
         </SubSection>
       </Section>
@@ -292,9 +292,9 @@ export default function DocsPage() {
           rows={[
             ["01", "JD Parser", "Groq", "Extracts role title, requirements, seniority level, and key skills from the job description"],
             ["02", "Resume Parser", "Groq", "Extracts skills, experience, education, and achievements from your resume"],
-            ["03", "Gap Analyzer", "Groq", "Compares parsed JD requirements against your resume using deterministic exact and word-level matching"],
+            ["03", "Gap Analyzer", "Gemini", "Embeds JD requirements and resume evidence with Gemini embeddings, then scores the semantic match (exact word matches still short-circuit)"],
             ["04", "Rewriter", "Groq", "Drafts JD-aware rewrites for weak resume bullets to better match requirements"],
-            ["05", "Cover Letter", "Groq", "Writes a tailored cover letter using the same JD context and resume data"],
+            ["05", "Cover Letter", "Gemini", "Writes a tailored cover letter using the same JD context and resume data"],
           ]}
         />
 
@@ -318,7 +318,7 @@ export default function DocsPage() {
       {/* ─── AI Models ────────────────────────────────── */}
       <Section id="models" title="AI Models">
         <P>
-          PROTEUS runs on Groq as primary with Google Gemini as fallback.
+          PROTEUS gives every pipeline step its own model across Groq and Google Gemini, with cross-provider fallback.
         </P>
 
         <Table
@@ -334,7 +334,7 @@ export default function DocsPage() {
 
         <SubSection title="Model health checks">
           <P>
-            A health check script runs every 3 hours via GitHub Actions. It tests each model against its role-specific test prompt. If a model fails, it&apos;s automatically replaced in <Code>models.json</Code>. Groq models are tested separately via the Groq API. Pinned roles are not auto-swapped. The health check results are committed to the repository.
+            A health check script runs every 3 hours via GitHub Actions. It tests each role&apos;s model with that role&apos;s own provider and test prompt — Groq models via the Groq API, Gemini models via the Gemini API, and the embedding model via a live embedding request. If a model fails, the bot swaps it only within that role&apos;s own candidate pool in <Code>models.json</Code>, so one outage can&apos;t push every step onto the same model. Pinned roles are not auto-swapped. The health check results are committed to the repository.
           </P>
         </SubSection>
 
@@ -346,7 +346,7 @@ export default function DocsPage() {
 
         <SubSection title="Groq">
           <P>
-            Groq provides ultra-fast LLM inference on custom LPU (Language Processing Unit) silicon. PROTEUS uses Groq as its primary AI provider for the JD parser, resume parser, gap analyzer, rewrite suggester, and cover letter generator.
+            Groq provides ultra-fast LLM inference on custom LPU (Language Processing Unit) silicon. PROTEUS uses Groq for the JD parser, resume parser, and rewrite suggester, each pinned to its own dedicated model.
           </P>
           <List items={[
             "Custom LPU hardware — purpose-built for LLM inference, not general-purpose GPUs",
@@ -385,13 +385,13 @@ export default function DocsPage() {
 
         <SubSection title="Google Gemini">
           <P>
-            Google Gemini provides fast, reliable inference as a fallback provider when Groq models are unavailable. Gemini 2.0 Flash offers competitive performance with high availability.
+            Google Gemini handles two pipeline steps directly: it powers the cover letter generator (Gemini 2.5 Flash) and the gap analyzer&apos;s semantic matching (gemini-embedding-001). It also serves as a cross-provider fallback when Groq models are unavailable.
           </P>
           <List items={[
-            "High availability — Google's infrastructure ensures consistent uptime",
-            "Fast inference — Gemini 2.0 Flash provides quick response times",
-            "Broad model support — access to Google's latest multimodal AI models",
-            "Seamless fallback — automatically used when primary Groq models are down",
+            "Two roles in production — Gemini 2.5 Flash writes cover letters; gemini-embedding-001 powers gap analysis",
+            "Fast inference — Gemini Flash models provide quick response times",
+            "Semantic embeddings — purpose-built vector scoring for requirement matching",
+            "Cross-provider fallback — pool candidate when Groq models are down",
           ]} />
           <div style={{ marginTop: "16px" }}>
             <a
@@ -557,13 +557,13 @@ export default function DocsPage() {
       <Section id="faq" title="FAQ">
         <SubSection title="Why did my analysis take so long?">
           <P>
-            Each LLM step makes an API call. Steps use Groq with Gemini fallback; gap analysis runs locally. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
+            Each LLM step makes an API call to its configured Groq or Gemini model. Gap analysis uses Gemini embeddings and falls back to local exact matching if the embedding API is unavailable. Complex resumes or JDs with many requirements take longer. Typical runs are 30–120 seconds. If it exceeds 300 seconds, it times out automatically.
           </P>
         </SubSection>
 
         <SubSection title="Why is my score so low?">
           <P>
-            The score reflects how many JD requirements your resume covers, using exact and word-level matching. A low score means the JD keywords and requirements aren&apos;t well represented in your resume. Use the rewrite suggestions and gap analysis to improve.
+            The score reflects how many JD requirements your resume covers, using semantic embeddings plus exact and word-level matching. A low score means the JD keywords and requirements aren&apos;t well represented in your resume. Use the rewrite suggestions and gap analysis to improve.
           </P>
         </SubSection>
 
@@ -609,6 +609,8 @@ export default function DocsPage() {
                 "Accept rewrite suggestions and export a tailored ATS-safe resume (plain text, Word, or PDF)",
                 "Tailored resume export follows ATS conventions — single column, standard section names, Firstname_Lastname_Resume filename",
                 "Hardened rewrite matching for typographic characters and multi-line bullets",
+                "Dedicated model per pipeline step across Groq and Google Gemini — health-bot swaps are role-scoped, so one outage can't collapse every step onto the same model",
+                "Gap analysis upgraded to Gemini semantic embeddings (exact word matches still short-circuit; local fallback if the API is down)",
               ],
             },
             {

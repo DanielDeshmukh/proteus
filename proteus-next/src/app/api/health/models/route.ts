@@ -4,11 +4,12 @@ import { join } from "path";
 
 const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai";
+const GEMINI_NATIVE_URL = "https://generativelanguage.googleapis.com/v1beta";
 
 const PIPELINE_STEPS = [
   { step: 1, agent: "JD Parser",         role: "jd-parser",        task: "Extract structured requirements" },
   { step: 2, agent: "Resume Parser",     role: "resume-parser",    task: "Break resume into structured units" },
-  { step: 3, agent: "Gap Analyzer",      role: "gap-analyzer",     task: "Score semantic match via exact matching" },
+  { step: 3, agent: "Gap Analyzer",      role: "gap-analyzer",     task: "Score semantic match via embeddings + exact matching" },
   { step: 4, agent: "Rewrite Suggester", role: "rewrite-suggester", task: "Draft JD-aware bullet rewrites" },
   { step: 5, agent: "Cover Letter",      role: "cover-letter",     task: "Write tailored cover letter" },
 ];
@@ -101,6 +102,44 @@ async function testChat(model: string, apiKey: string, baseUrl: string, testProm
   }
 }
 
+async function testEmbedding(model: string, apiKey: string, timeout = 30000): Promise<Omit<TestResult, "step" | "agent" | "task" | "provider">> {
+  const start = Date.now();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const res = await fetch(`${GEMINI_NATIVE_URL}/models/${model}:batchEmbedContents`, {
+      method: "POST",
+      headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        requests: [{ model: `models/${model}`, content: { parts: [{ text: "PROTEUS model health check" }] } }],
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    const latency = Date.now() - start;
+    const body = await res.text();
+    if (!res.ok) {
+      const cls = ERROR_CLASSES[String(res.status)] || { name: "UNKNOWN", fix: "Check API status." };
+      return { model, ok: false, latency, error: `HTTP ${res.status}: ${body.substring(0, 100)}`, errorClass: cls.name, fix: cls.fix };
+    }
+    try {
+      const data = JSON.parse(body);
+      const values = data.embeddings?.[0]?.values;
+      if (!Array.isArray(values) || values.length === 0) {
+        return { model, ok: false, latency, error: "Empty embedding vector", errorClass: "INVALID_OUTPUT", fix: "Try a different embedding model." };
+      }
+    } catch {
+      return { model, ok: false, latency, error: "Invalid embedding response", errorClass: "INVALID_OUTPUT", fix: "Try a different embedding model." };
+    }
+    return { model, ok: true, latency };
+  } catch (e) {
+    clearTimeout(timer);
+    const latency = Date.now() - start;
+    if (e instanceof Error && e.name === "AbortError") return { model, ok: false, latency, error: `Timeout ${timeout}ms`, errorClass: "TIMEOUT", fix: "API overloaded. Retry or switch model." };
+    return { model, ok: false, latency, error: e instanceof Error ? e.message : String(e), errorClass: "NETWORK", fix: "Check internet connection." };
+  }
+}
+
 export async function GET() {
   const groqApiKey = process.env.GROQ_API_KEY;
   const geminiApiKey = process.env.GEMINI_API_KEY;
@@ -122,7 +161,13 @@ export async function GET() {
     const provider = cfg.provider || "groq";
     let base;
 
-    if (provider === "gemini") {
+    if (cfg.type === "embedding") {
+      if (!geminiApiKey) {
+        base = { model: cfg.current, ok: false, latency: 0, error: "GEMINI_API_KEY not set", errorClass: "CONFIG", fix: "Set GEMINI_API_KEY environment variable." };
+      } else {
+        base = await testEmbedding(cfg.current, geminiApiKey);
+      }
+    } else if (provider === "gemini") {
       if (!geminiApiKey) {
         base = { model: cfg.current, ok: false, latency: 0, error: "GEMINI_API_KEY not set", errorClass: "CONFIG", fix: "Set GEMINI_API_KEY environment variable." };
       } else {

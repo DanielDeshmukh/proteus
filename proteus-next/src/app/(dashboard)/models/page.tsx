@@ -20,7 +20,7 @@ export default function ModelsPage() {
           AI Models Used by PROTEUS
         </h1>
         <p style={{ fontSize: "13px", color: "var(--text-soft)", maxWidth: "560px", lineHeight: 1.6 }}>
-          All agents run on Groq with Google Gemini as fallback.
+          Each pipeline step runs its own model across Groq and Google Gemini.
           Models are health-checked every 3 hours and auto-replaced if they go down.
         </p>
       </section>

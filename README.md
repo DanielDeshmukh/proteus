@@ -24,7 +24,7 @@
 
 ## What it does
 
-PROTEUS is a JD-aware resume analyzer that runs a **five-agent pipeline powered by Groq with Google Gemini fallback** to produce consistent, actionable outputs from a single job description and resume.
+PROTEUS is a JD-aware resume analyzer that runs a **five-agent pipeline with a dedicated model for every step across Groq and Google Gemini** to produce consistent, actionable outputs from a single job description and resume.
 
 | Output | What you get |
 |--------|-------------|
@@ -47,11 +47,11 @@ Resume┘
 
 | Step | Agent | Model | Task |
 |------|-------|-------|------|
-| 01 | JD Parser | `openai/gpt-oss-120b` (Groq) | Extract role, requirements, seniority |
+| 01 | JD Parser | `qwen/qwen3.8-27b` (Groq) | Extract role, requirements, seniority |
 | 02 | Resume Parser | `openai/gpt-oss-120b` (Groq) | Extract skills, experience, achievements |
-| 03 | Gap Analyzer | Local (no LLM) | Exact + word-level requirement matching |
-| 04 | Rewriter | `openai/gpt-oss-120b` (Groq) | JD-aware bullet rewrites |
-| 05 | Cover Letter | `openai/gpt-oss-120b` (Groq) | Tailored letter generation |
+| 03 | Gap Analyzer | `gemini-embedding-001` (Gemini) | Semantic embedding + exact word requirement matching |
+| 04 | Rewriter | `openai/gpt-oss-20b` (Groq) | JD-aware bullet rewrites |
+| 05 | Cover Letter | `gemini-2.5-flash` (Gemini) | Tailored letter generation |
 
 > Models auto-update via GitHub Actions health checks every 3 hours.
 
@@ -60,11 +60,11 @@ Resume┘
 
 | Role | Model | Last Checked |
 |------|-------|--------------|
-| jd-parser | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
-| resume-parser | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
-| gap-analyzer | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
-| rewrite-suggester | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
-| cover-letter | `openai/gpt-oss-120b` | 2026-09-30T10:36:12.387Z |
+| jd-parser | `qwen/qwen3.8-27b` | 2026-09-30T17:18:57.007Z |
+| resume-parser | `openai/gpt-oss-120b` | 2026-09-30T17:18:57.007Z |
+| gap-analyzer | `gemini-embedding-001` | 2026-09-30T17:18:57.007Z |
+| rewrite-suggester | `openai/gpt-oss-20b` | 2026-09-30T17:18:57.007Z |
+| cover-letter | `gemini-2.5-flash` | 2026-09-30T17:18:57.007Z |
 <!-- END MODELS AUTO-GENERATED -->
 
 ## Features
@@ -74,7 +74,7 @@ Resume┘
 
 - 3 ways to input a JD: paste, upload, or URL
 - 2 ways to input a resume: paste or file upload (.pdf, .docx, .txt)
-- Requirement match scoring (deterministic exact + word-level matching)
+- Requirement match scoring (semantic Gemini embeddings + exact word matching, local fallback)
 - Gap analysis ranked by impact with severity badges
 - Bullet-level rewrite suggestions with before/after comparison
 - Consistent cover letter generated from the same context
@@ -101,7 +101,7 @@ Resume┘
 - JSON retry with temperature escalation (3 attempts)
 - 300s timeout on serverless functions
 - Health checks every 3 hours via GitHub Actions
-- Self-healing model registry (auto-replaces failed models)
+- Self-healing model registry (role-scoped swap pools — one outage can't collapse every step onto the same model)
 
 </details>
 
@@ -111,7 +111,7 @@ Resume┘
 |-------|-----------|
 | Framework | Next.js 16 · App Router · TypeScript |
 | Styling | Tailwind CSS v4 · Dark theme · Geist fonts |
-| AI/ML | Groq (GPT-OSS 120B) · Google Gemini fallback |
+| AI/ML | Groq (Qwen 3.8, GPT-OSS) · Google Gemini (Flash, Embeddings) |
 | Database | better-sqlite3 (local) · Turso/libsql (Vercel) |
 | Auth | NextAuth.js v5 · Magic Link · Google · GitHub |
 | Validation | Zod v4 |

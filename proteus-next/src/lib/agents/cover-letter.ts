@@ -1,6 +1,6 @@
 import { CoverLetterOutputSchema, type CoverLetterOutput, type Tone, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
 import { callWithJsonRetry } from "./json-retry";
-import { getModelForRole } from "../model-config";
+import { getModelForRole, getModelProvider } from "../model-config";
 
 function getCoverLetterModel(): string {
   try { return getModelForRole("cover-letter"); } catch { return "llama-3.3-70b-versatile"; }
@@ -94,6 +94,6 @@ Write a ${tone} cover letter for this candidate applying to this role.`;
     maxTokens: 2000,
     cleanControlChars: true,
     role: "cover-letter",
-    provider: "groq",
+    provider: getModelProvider("cover-letter"),
   });
 }

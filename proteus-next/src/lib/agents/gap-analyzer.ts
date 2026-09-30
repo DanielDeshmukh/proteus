@@ -1,7 +1,25 @@
 import type { JDStructured, ResumeStructured, GapAnalysis, GapItem } from "../../types";
+import { geminiEmbed } from "../gemini-client";
+import { getEmbeddingModel } from "../model-config";
+
+const EMBED_MATCH_THRESHOLD = 0.67;
+const EMBED_PARTIAL_THRESHOLD = 0.61;
 
 function buildResumeEvidence(resume: ResumeStructured): string[] {
   const evidence: string[] = [...resume.skills];
+  for (const exp of resume.experience) {
+    for (const bullet of exp.bullets) {
+      evidence.push(bullet);
+    }
+  }
+  for (const proj of resume.projects) {
+    evidence.push(`${proj.name}: ${proj.description} (${proj.technologies.join(", ")})`);
+  }
+  return evidence;
+}
+
+function buildEmbedEvidence(resume: ResumeStructured): string[] {
+  const evidence: string[] = [];
   for (const exp of resume.experience) {
     for (const bullet of exp.bullets) {
       evidence.push(bullet);
@@ -62,6 +80,58 @@ function matchScore(req: string, lookup: { texts: string[]; lower: string[]; wor
   }
 
   return { score: 0, evidence: null, status: "missing" };
+}
+
+function cosine(a: number[], b: number[]): number {
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  if (normA === 0 || normB === 0) return 0;
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+async function applyEmbeddingUpgrade(gaps: GapItem[], evidenceTexts: string[]): Promise<void> {
+  const pending = gaps.filter((g) => g.status !== "matched");
+  if (pending.length === 0 || evidenceTexts.length === 0) return;
+
+  let reqVecs: number[][];
+  let evVecs: number[][];
+  try {
+    const model = getEmbeddingModel();
+    reqVecs = await geminiEmbed(model, pending.map((g) => g.requirement));
+    evVecs = await geminiEmbed(model, evidenceTexts);
+  } catch (e) {
+    console.warn(`[gap-analyzer] embedding upgrade skipped, using deterministic scores: ${e instanceof Error ? e.message : String(e)}`);
+    return;
+  }
+
+  for (let i = 0; i < pending.length; i++) {
+    let best = 0;
+    let bestIdx = -1;
+    for (let j = 0; j < evVecs.length; j++) {
+      const sim = cosine(reqVecs[i], evVecs[j]);
+      if (sim > best) {
+        best = sim;
+        bestIdx = j;
+      }
+    }
+    const gap = pending[i];
+    const rounded = Math.round(best * 10000) / 10000;
+    if (best >= EMBED_MATCH_THRESHOLD) {
+      gap.status = "matched";
+      gap.similarity_score = rounded;
+      gap.matched_evidence = evidenceTexts[bestIdx] ?? gap.matched_evidence;
+    } else if (best >= EMBED_PARTIAL_THRESHOLD && gap.status === "missing") {
+      gap.status = "partial";
+      gap.similarity_score = rounded;
+      gap.matched_evidence = evidenceTexts[bestIdx] ?? gap.matched_evidence;
+    }
+  }
 }
 
 export async function analyzeGaps(
@@ -129,6 +199,8 @@ export async function analyzeGaps(
       category: category as "hard_skill" | "soft_skill" | "domain_keyword" | "ats_bait",
     });
   }
+
+  await applyEmbeddingUpgrade(gaps, buildEmbedEvidence(resume));
 
   gaps.sort((a, b) => a.similarity_score - b.similarity_score);
 

@@ -164,27 +164,28 @@ export async function callWithJsonRetry<T>(
     }
   }
 
-  // Primary model failed — try Groq fallbacks
+  // Primary model failed — try role fallback chain
   if (role) {
     const fallbacks = getFallbackModels(role);
     for (const fallback of fallbacks) {
       try {
+        const fbProvider = fallback.startsWith("gemini") ? "gemini" : "groq";
         return await callAndParse(fallback, [
           { role: "system" as const, content: systemPrompt },
           { role: "user" as const, content: userContent },
-        ], schema, maxTokens, cleanControlChars, "groq");
+        ], schema, maxTokens, cleanControlChars, fbProvider);
       } catch {
         // Fallback also failed, try next
       }
     }
 
-    // Groq fallbacks exhausted — try Gemini
+    // Fallbacks exhausted — try Gemini escape hatch (unless Gemini was already the primary)
     try {
       const configPath = require("path").join(process.cwd(), "models.json");
       const config = JSON.parse(require("fs").readFileSync(configPath, "utf-8"));
       const geminiModel = config.roles[role]?.gemini_model;
-      if (geminiModel) {
-        console.log(`[json-retry] All Groq models failed for ${role}, trying Gemini: ${geminiModel}`);
+      if (geminiModel && !(provider === "gemini" && geminiModel === model)) {
+        console.log(`[json-retry] Primary and fallbacks failed for ${role}, trying Gemini: ${geminiModel}`);
         return await callAndParse(geminiModel, [
           { role: "system" as const, content: systemPrompt },
           { role: "user" as const, content: userContent },

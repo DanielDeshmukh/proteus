@@ -1,8 +1,9 @@
-import { getModelForRole } from "../model-config";
+import { getModelForRole, getModelProvider } from "../model-config";
 import { RewriteOutputSchema, type RewriteOutput, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
 import { callWithJsonRetry } from "./json-retry";
 
 const REWRITE_MODEL = getModelForRole("rewrite-suggester");
+const REWRITE_PROVIDER = getModelProvider("rewrite-suggester");
 
 const MAX_BULLETS = 20;
 
@@ -86,6 +87,7 @@ Generate rewrite suggestions for the bullets above to better match these gaps.`;
     temperature: 0.3,
     maxTokens: 2560,
     role: "rewrite-suggester",
+    provider: REWRITE_PROVIDER,
   }).then((output) => {
     if (output.suggestions && !Array.isArray(output.suggestions)) {
       output.suggestions = Object.values(output.suggestions as any);

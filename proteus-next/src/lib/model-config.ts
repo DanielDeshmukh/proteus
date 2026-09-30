@@ -6,9 +6,12 @@ interface ModelRole {
   provider?: string;
   current: string;
   fallbacks: string[];
+  swap_pool?: Array<{ model: string; provider: string }>;
+  gemini_model?: string;
   testPrompt: string;
   testModel: string;
   type?: "embedding";
+  pinned?: boolean;
 }
 
 interface ModelsConfig {
