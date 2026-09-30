@@ -1,7 +1,6 @@
 import { CoverLetterOutputSchema, type CoverLetterOutput, type Tone, type GapAnalysis, type JDStructured, type ResumeStructured } from "../../types";
-import { groqChatCompletion } from "../groq-client";
+import { callWithJsonRetry } from "./json-retry";
 import { getModelForRole } from "../model-config";
-import { ZodSchema } from "zod";
 
 function getCoverLetterModel(): string {
   try { return getModelForRole("cover-letter"); } catch { return "llama-3.3-70b-versatile"; }
@@ -44,92 +43,6 @@ Return a JSON object with:
 - "word_count": Approximate word count
 
 Return ONLY valid JSON — no markdown, no explanation, no commentary, no text before or after the JSON.`;
-
-function sanitizeJsonString(s: string): string {
-  let result = "";
-  let inStr = false;
-  let esc = false;
-  for (let i = 0; i < s.length; i++) {
-    const ch = s[i];
-    if (esc) { result += ch; esc = false; continue; }
-    if (inStr && ch === "\\") { result += ch; esc = true; continue; }
-    if (!inStr && ch === '"') { inStr = true; result += ch; continue; }
-    if (inStr && ch === '"') { inStr = false; result += ch; continue; }
-    if (inStr) {
-      const code = ch.charCodeAt(0);
-      if (code === 0x0a) { result += "\\n"; continue; }
-      if (code === 0x0d) { result += "\\r"; continue; }
-      if (code === 0x09) { result += "\\t"; continue; }
-      if (code < 0x20) { result += `\\u${code.toString(16).padStart(4, "0")}`; continue; }
-    }
-    result += ch;
-  }
-  return result;
-}
-
-function extractJson(text: string): string {
-  let cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-  const firstBrace = cleaned.indexOf("{");
-  const firstBracket = cleaned.indexOf("[");
-  let start = -1;
-  if (firstBrace >= 0 && firstBracket >= 0) start = Math.min(firstBrace, firstBracket);
-  else if (firstBrace >= 0) start = firstBrace;
-  else if (firstBracket >= 0) start = firstBracket;
-  if (start > 0) cleaned = cleaned.substring(start);
-
-  let depth = 0, inString = false, escape = false, end = -1;
-  const startChar = cleaned[0];
-  const closeChar = startChar === "{" ? "}" : "]";
-  for (let i = 0; i < cleaned.length; i++) {
-    const ch = cleaned[i];
-    if (escape) { escape = false; continue; }
-    if (ch === "\\") { escape = true; continue; }
-    if (ch === '"') { inString = !inString; continue; }
-    if (inString) continue;
-    if (ch === startChar || ch === closeChar) {
-      if (ch === startChar) depth++; else depth--;
-      if (depth === 0) { end = i; break; }
-    }
-  }
-  if (end >= 0) cleaned = cleaned.substring(0, end + 1);
-  return sanitizeJsonString(cleaned.trim());
-}
-
-async function callWithRetry<T>(
-  model: string,
-  systemPrompt: string,
-  userContent: string,
-  schema: ZodSchema<T>,
-  maxRetries = 2
-): Promise<T> {
-  let messages = [
-    { role: "system" as const, content: systemPrompt },
-    { role: "user" as const, content: userContent },
-  ];
-
-  let lastError: Error | null = null;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await groqChatCompletion(model, messages, {
-        temperature: attempt === 0 ? 0.4 : 0.1,
-        maxTokens: 2000,
-      });
-
-      const jsonStr = extractJson(response);
-      const parsed = JSON.parse(jsonStr);
-      return schema.parse(parsed);
-    } catch (e: any) {
-      lastError = e;
-      messages = [
-        { role: "system" as const, content: systemPrompt + "\n\nIMPORTANT: Your previous response was NOT valid JSON. You MUST return ONLY a valid JSON object. No text before or after. No markdown code fences. Just the raw JSON starting with { and ending with }." },
-        { role: "user" as const, content: userContent },
-      ];
-    }
-  }
-
-  throw lastError || new Error("Cover letter generation failed after retries");
-}
 
 export function generateCoverLetter(
   jd: JDStructured,
@@ -176,5 +89,11 @@ CRITICAL: The candidate's name is "${resume.name}". You MUST use EXACTLY this na
 
 Write a ${tone} cover letter for this candidate applying to this role.`;
 
-  return callWithRetry(getCoverLetterModel(), COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema);
+  return callWithJsonRetry(getCoverLetterModel(), COVER_LETTER_SYSTEM_PROMPT, userPrompt, CoverLetterOutputSchema, {
+    temperature: 0.4,
+    maxTokens: 2000,
+    cleanControlChars: true,
+    role: "cover-letter",
+    provider: "groq",
+  });
 }

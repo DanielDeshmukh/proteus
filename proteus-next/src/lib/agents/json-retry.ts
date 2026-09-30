@@ -53,14 +53,34 @@ function getFallbackModels(role: string): string[] {
   return [];
 }
 
+function sanitizeControlCharsInStrings(s: string): string {
+  let result = "";
+  let inStr = false;
+  let esc = false;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (esc) { result += ch; esc = false; continue; }
+    if (inStr && ch === "\\") { result += ch; esc = true; continue; }
+    if (!inStr && ch === '"') { inStr = true; result += ch; continue; }
+    if (inStr && ch === '"') { inStr = false; result += ch; continue; }
+    if (inStr) {
+      const code = ch.charCodeAt(0);
+      if (code === 0x0a) { result += "\\n"; continue; }
+      if (code === 0x0d) { result += "\\r"; continue; }
+      if (code === 0x09) { result += "\\t"; continue; }
+      if (code < 0x20 || code === 0x7f) { result += `\\u${code.toString(16).padStart(4, "0")}`; continue; }
+    }
+    result += ch;
+  }
+  return result;
+}
+
 function repairJson(raw: string): string {
   let s = raw;
   // Strip markdown fences
   s = s.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
-  // Replace control chars inside string values
-  s = s.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, (ch) =>
-    ch === "\n" ? "\\n" : ch === "\r" ? "" : ch === "\t" ? "\\t" : ""
-  );
+  // Escape control chars inside string values only (preserves valid whitespace between tokens)
+  s = sanitizeControlCharsInStrings(s);
   // Fix trailing commas before } or ]
   s = s.replace(/,\s*([}\]])/g, "$1");
   // Remove trailing text after closing brace/bracket
