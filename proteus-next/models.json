@@ -33,9 +33,9 @@
     "resume-parser": {
       "description": "Parse resumes into structured candidate data",
       "provider": "groq",
-      "current": "openai/gpt-oss-120b",
+      "current": "openai/gpt-oss-20b",
       "fallbacks": [
-        "openai/gpt-oss-20b",
+        "openai/gpt-oss-120b",
         "qwen/qwen3.8-27b"
       ],
       "swap_pool": [
@@ -137,10 +137,10 @@
       "type": "chat"
     }
   },
-  "lastHealthCheck": "2026-10-04T21:02:01.534Z",
+  "lastHealthCheck": "2026-10-05T04:46:25.366Z",
   "lastHealthyModels": {
     "jd-parser": "qwen/qwen3.8-27b",
-    "resume-parser": "openai/gpt-oss-120b",
+    "resume-parser": "openai/gpt-oss-20b",
     "gap-analyzer": "gemini-embedding-001",
     "rewrite-suggester": "openai/gpt-oss-20b",
     "cover-letter": "gemini-2.5-flash"
