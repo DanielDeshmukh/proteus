@@ -108,10 +108,10 @@
     },
     "cover-letter": {
       "description": "Generate tailored cover letters",
-      "provider": "gemini",
-      "current": "gemini-2.5-flash",
+      "provider": "groq",
+      "current": "openai/gpt-oss-120b",
       "fallbacks": [
-        "openai/gpt-oss-120b",
+        "gemini-2.5-flash",
         "openai/gpt-oss-20b"
       ],
       "swap_pool": [
@@ -137,12 +137,12 @@
       "type": "chat"
     }
   },
-  "lastHealthCheck": "2026-10-05T04:46:25.366Z",
+  "lastHealthCheck": "2026-10-05T14:01:04.333Z",
   "lastHealthyModels": {
     "jd-parser": "qwen/qwen3.8-27b",
     "resume-parser": "openai/gpt-oss-20b",
     "gap-analyzer": "gemini-embedding-001",
     "rewrite-suggester": "openai/gpt-oss-20b",
-    "cover-letter": "gemini-2.5-flash"
+    "cover-letter": "openai/gpt-oss-120b"
   }
 }
