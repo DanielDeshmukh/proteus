@@ -5,6 +5,7 @@ import { analyzeGaps } from "./gap-analyzer";
 import { suggestRewrites } from "./rewrite-suggester";
 import { generateCoverLetter } from "./cover-letter";
 import { aggregateScores } from "./aggregator";
+import { checkCoverLetter, checkSuggestions, checkHiddenExperience, formatViolation } from "../guards";
 
 export type ProgressEvent =
   | { stage: "parsing" }
@@ -27,6 +28,7 @@ export interface PipelineResult {
   aggregated: PipelineOutput | null;
   timings: Record<string, number>;
   errors: string[];
+  warnings: string[];
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
@@ -53,6 +55,7 @@ export async function runPipeline(
     aggregated: null,
     timings: {},
     errors: [],
+    warnings: [],
   };
 
   function extractErrorMessage(err: unknown): string {
@@ -154,8 +157,22 @@ export async function runPipeline(
 
     if (rewritesResult.status === "fulfilled") {
       result.rewrites = rewritesResult.value;
-      onProgress?.({ stage: "rewrites", data: rewritesResult.value });
-      console.log("[Pipeline] Rewrites OK");
+      // Hallucination / leakage guards — never break the pipeline on failure
+      try {
+        const resumeBullets = (result.resume?.experience ?? []).flatMap((e) => e.bullets ?? []);
+        const checked = checkSuggestions(result.rewrites, { resumeBullets, resumeText, jdText });
+        const hidden = checkHiddenExperience(result.rewrites.hidden_experience ?? [], resumeText);
+        result.rewrites = {
+          ...result.rewrites,
+          suggestions: checked.kept,
+          hidden_experience: hidden.kept,
+        };
+        result.warnings.push(...[...checked.violations, ...hidden.violations].map(formatViolation));
+      } catch (e) {
+        result.warnings.push(`Rewrite guards failed: ${extractErrorMessage(e)}`);
+      }
+      onProgress?.({ stage: "rewrites", data: result.rewrites });
+      console.log(`[Pipeline] Rewrites OK (${result.rewrites.suggestions.length} suggestions kept)`);
     } else {
       const msg = extractErrorMessage(rewritesResult.reason);
       console.error("[Pipeline] Rewrites failed:", msg);
@@ -164,8 +181,19 @@ export async function runPipeline(
 
     if (coverResult.status === "fulfilled") {
       result.cover_letter = coverResult.value;
-      onProgress?.({ stage: "cover_letter", data: coverResult.value });
-      console.log("[Pipeline] Cover letter OK");
+      try {
+        const check = checkCoverLetter(result.cover_letter, {
+          name: result.resume?.name ?? "",
+          company: result.jd?.company,
+          sourceText: `${resumeText}\n${jdText}`,
+        });
+        result.cover_letter = { ...result.cover_letter, word_count: check.computedWordCount };
+        result.warnings.push(...check.violations.map(formatViolation));
+      } catch (e) {
+        result.warnings.push(`Cover letter guards failed: ${extractErrorMessage(e)}`);
+      }
+      onProgress?.({ stage: "cover_letter", data: result.cover_letter });
+      console.log(`[Pipeline] Cover letter OK (${result.cover_letter.word_count} words)`);
     } else {
       const msg = extractErrorMessage(coverResult.reason);
       console.error("[Pipeline] Cover letter failed:", msg);
@@ -192,6 +220,10 @@ export async function runPipeline(
     console.error("[Pipeline] Aggregation failed:", msg);
     result.errors.push(`Aggregation failed: ${msg}`);
     result.timings["aggregate"] = (performance.now() - t3) / 1000;
+  }
+
+  if (result.warnings.length > 0) {
+    console.warn(`[Pipeline] ${result.warnings.length} guard warning(s):`, result.warnings);
   }
 
   return result;

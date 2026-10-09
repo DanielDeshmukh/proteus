@@ -2,7 +2,7 @@ import { groqChatCompletion } from "../groq-client";
 import { geminiChatCompletion } from "../gemini-client";
 import { ZodSchema } from "zod";
 
-function extractJson(text: string): string {
+export function extractJson(text: string): string {
   let cleaned = text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();
   const firstBrace = cleaned.indexOf("{");
   const firstBracket = cleaned.indexOf("[");
@@ -75,7 +75,7 @@ function sanitizeControlCharsInStrings(s: string): string {
   return result;
 }
 
-function repairJson(raw: string): string {
+export function repairJson(raw: string): string {
   let s = raw;
   // Strip markdown fences
   s = s.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "").trim();

@@ -55,6 +55,7 @@ export default function AnalyzePage() {
     cover_letter?: unknown;
     timings?: Record<string, number> | null;
     errors?: string[] | null;
+    warnings?: string[] | null;
   } | null>(null);
 
   const canAnalyze = jd && resume;
@@ -138,7 +139,7 @@ export default function AnalyzePage() {
         formData.append("resume_text", resume.value as string);
 
         await apiPostStream("/api/analyze/stream", formData, (event) => {
-          const evt = event as { event: string; data?: Record<string, unknown>; run_id?: number; message?: string; errors?: string[] };
+          const evt = event as { event: string; data?: Record<string, unknown>; run_id?: number; message?: string; errors?: string[]; warnings?: string[] };
 
           if (evt.event === "started") {
             setCurrentStage(0);
@@ -170,6 +171,7 @@ export default function AnalyzePage() {
           } else if (evt.event === "done") {
             const p = partialRef.current;
             const doneErrors = (evt.errors as string[] | undefined) ?? null;
+            const doneWarnings = (evt.warnings as string[] | undefined) ?? null;
             if (doneErrors && doneErrors.length > 0 && !p.gaps && !p.rewrites && !p.coverLetter) {
               setError(`Pipeline completed with errors:\n${doneErrors.join("\n")}`);
             } else {
@@ -182,6 +184,7 @@ export default function AnalyzePage() {
                 cover_letter: p.coverLetter,
                 timings: { total: elapsedRef.current },
                 errors: doneErrors,
+                warnings: doneWarnings,
               });
             }
           } else if (evt.event === "error") {
@@ -447,6 +450,29 @@ export default function AnalyzePage() {
             <p style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--color-gold)", marginBottom: "6px" }}>Run result</p>
             <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "clamp(20px, 3vw, 26px)", color: "var(--text)" }}>Analysis Complete</h2>
           </div>
+
+          {result.warnings && result.warnings.length > 0 && (
+            <div
+              data-testid="guard-warnings"
+              style={{
+                background: "rgba(202, 138, 4, 0.08)",
+                border: "1px solid rgba(202, 138, 4, 0.35)",
+                borderRadius: "var(--radius-md)",
+                padding: "14px 18px",
+                marginBottom: "20px",
+              }}
+            >
+              <p style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: "13px", color: "var(--text)", marginBottom: "6px" }}>
+                {result.warnings.length} output{result.warnings.length === 1 ? "" : "s"} filtered or flagged by hallucination guards
+              </p>
+              <ul style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--text-muted, var(--text))", lineHeight: 1.6, margin: 0, paddingLeft: "16px" }}>
+                {result.warnings.slice(0, 8).map((w, i) => (
+                  <li key={i}>{w}</li>
+                ))}
+                {result.warnings.length > 8 && <li>…and {result.warnings.length - 8} more</li>}
+              </ul>
+            </div>
+          )}
 
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {result.overall_score != null && (

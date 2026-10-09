@@ -20,8 +20,10 @@ CRITICAL RULES — VIOLATION WILL RESULT IN REJECTION:
 - NEVER use placeholder text like [Name], [Company], [related skill], [desirable trait], [achievement], [previous position], or any bracketed text
 - NEVER write generic sentences like "I have developed a strong foundation in [related skill or industry]"
 - ALWAYS use the candidate's real name, real company names, real skill names, and real achievements from the resume
+- NEVER introduce a number, percentage, metric, date, certification, or company that does not appear in the resume text provided below — if you cannot ground it, do not write it
 - If you don't have enough information, write briefly about what you DO know rather than using placeholders
 - Every claim must be grounded in something from the resume or JD
+- Address the company by name from the JD
 
 The cover letter should have these sections:
 - Opening: Hook + role interest + company connection (use company name from JD)
@@ -55,10 +57,11 @@ export function generateCoverLetter(
     .slice(0, 5)
     .map((g) => g.requirement);
 
-  const resumeHighlights = resume.experience.slice(0, 3).map((exp) => ({
+  const resumeHighlights = resume.experience.map((exp) => ({
     role: exp.role,
     company: exp.company,
-    top_bullets: exp.bullets.slice(0, 2),
+    duration: exp.duration,
+    bullets: exp.bullets,
   }));
 
   const userPrompt = `Job Description:
@@ -72,8 +75,8 @@ Requirements Summary: ${jd.requirements_summary}
 
 Candidate Resume:
 Name: ${resume.name}
-Top Skills: ${resume.skills.slice(0, 10).join(", ")}
-Experience: ${JSON.stringify(resumeHighlights, null, 2)}
+Skills: ${resume.skills.join(", ")}
+Full Experience: ${JSON.stringify(resumeHighlights, null, 2)}
 Education: ${resume.education.map((e) => `${e.degree} - ${e.institution}`).join(", ")}
 Certifications: ${resume.certifications?.map((c) => c.name).join(", ") || "None listed"}
 

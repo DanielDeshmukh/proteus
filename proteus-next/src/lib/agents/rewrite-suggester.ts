@@ -24,8 +24,12 @@ Rules:
 1. NEVER fabricate experience the candidate doesn't have
 2. Rephrase existing experience to align with JD terminology
 3. Add relevant keywords naturally into existing bullets
-4. Quantify achievements where possible
+4. Only quantify achievements using numbers already present in the original bullet — NEVER invent metrics, percentages, team sizes, or timeframes
 5. Prioritize high-impact rewrites (biggest gaps first)
+6. "original_bullet" must be copied VERBATIM from the resume bullets provided — do not paraphrase it
+7. NEVER introduce company names, certifications, dates, tools, or degrees that do not appear in the resume
+8. NEVER output placeholder text or bracketed tokens like [Name] or [skill]
+9. Each "hidden_experience" must be something the resume explicitly supports — if the resume never mentions it, do not list it
 
 Return a JSON object with:
 - "suggestions": Array of rewrite suggestion objects

@@ -132,6 +132,7 @@ export async function POST(request: Request) {
         cover_letter: result.cover_letter ?? null,
         timings: result.timings,
         errors: result.errors.length > 0 ? result.errors : null,
+        warnings: result.warnings.length > 0 ? result.warnings : null,
       });
     } catch (e) {
       await updateRun(runId, {
