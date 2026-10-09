@@ -33,6 +33,13 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/UNIQUE|duplicate/i.test(msg)) {
+      return NextResponse.json(
+        { error: "An account with this email already exists" },
+        { status: 409 }
+      );
+    }
     console.error("[REGISTER]", err);
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },

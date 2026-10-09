@@ -3,7 +3,7 @@ import OpenAI from "openai";
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai";
 const GEMINI_NATIVE_URL = "https://generativelanguage.googleapis.com/v1beta";
 const EMBED_BATCH_SIZE = 64;
-const EMBED_TIMEOUT_MS = 15000;
+const EMBED_TIMEOUT_MS = 20000;
 const EMBED_MAX_ATTEMPTS = 2;
 
 function getApiKey(): string {

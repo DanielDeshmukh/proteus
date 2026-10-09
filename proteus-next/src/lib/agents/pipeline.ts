@@ -114,7 +114,7 @@ export async function runPipeline(
   try {
     result.gap_analysis = await withTimeout(
       analyzeGaps(result.jd, result.resume),
-      30_000,
+      60_000,
       "Gap analysis"
     );
     result.timings["gap_analysis"] = (performance.now() - t1) / 1000;

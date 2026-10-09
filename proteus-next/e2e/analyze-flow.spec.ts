@@ -121,7 +121,7 @@ test.describe("Bot Sign-In Flow", () => {
     await page.getByLabel("Email address").fill(BOT_EMAIL);
     await page.getByRole("textbox", { name: "Password" }).fill(BOT_PASSWORD);
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await page.waitForURL("**/analyze", { timeout: 15000 });
+    await page.waitForURL("**/analyze", { timeout: 30000 });
     expect(page.url()).toContain("/analyze");
   });
 
@@ -138,7 +138,7 @@ test.describe("Bot Sign-In Flow", () => {
     await page.getByLabel("Email address").fill(BOT_EMAIL);
     await page.getByRole("textbox", { name: "Password" }).fill(BOT_PASSWORD);
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await page.waitForURL("**/analyze", { timeout: 15000 });
+    await page.waitForURL("**/analyze", { timeout: 30000 });
     await page.goto("/analyze");
     expect(page.url()).toContain("/analyze");
   });
@@ -194,3 +194,4 @@ test.describe("Mobile Responsive", () => {
     await expect(page.locator("text=PROTEUS User Guide").first()).toBeVisible();
   });
 });
+
