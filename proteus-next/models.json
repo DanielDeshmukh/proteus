@@ -137,7 +137,7 @@
       "type": "chat"
     }
   },
-  "lastHealthCheck": "2026-10-17T03:36:07.522Z",
+  "lastHealthCheck": "2026-10-17T10:21:06.814Z",
   "lastHealthyModels": {
     "jd-parser": "qwen/qwen3.8-27b",
     "resume-parser": "openai/gpt-oss-20b",
